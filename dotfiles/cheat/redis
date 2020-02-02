@@ -1,0 +1,12 @@
+## 基本命令
+
+cat /etc/passwd | redis-cli -x set mypasswd
+redis-cli get mypasswd
+redis-cli -r 100 lpush mylist x
+redis-cli -r 100 -i 1 info | grep used_memory_human:
+redis-cli --eval myscript.lua key1 key2 , arg1 arg2 arg3
+redis-cli --scan --pattern '*:12345*'
+
+redis-cli -h redis-host -p 26379 -a abc info
+
+sentinel get-master-addr-by-name mymaster

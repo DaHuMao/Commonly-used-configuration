@@ -1,0 +1,29 @@
+snippet subgraph 
+subgraph cluster_${1:title} {
+	graph[label="${1}";fontsize=20;style=rounded]
+	$0
+}
+endsnippet
+
+snippet y_digraph
+digraph ${1:title} {
+	node[shape=box;style="rounded"];
+	newrank=true;
+	rankdir=LR;
+	${0:a->b}
+}
+endsnippet
+
+snippet sf "style=filled"
+style="filled"
+endsnippet
+
+snippet record
+${1:record}[
+	shape="record";
+	label="{
+		${1}|
+		${2:field} \l
+	}";
+]
+endsnippet

@@ -1,0 +1,46 @@
+#!/usr/bin/env zsh
+#=============================================================================
+#       Author: Wenxuan Zhang
+#        Email: wenxuangm@gmail.com
+#     HomePage: wenxuan.info
+#=============================================================================
+
+# Put this line on top to make keybinds work
+bindkey -e
+
+source ~/.fzf.zsh       2>/dev/null
+source ~/.zsh_fzf_extra 2>/dev/null
+source ~/.zsh_local     2>/dev/null
+source ~/.zsh_secret    2>/dev/null
+
+source ~/.zsh_plug
+source ~/.zsh_keybinds
+source ~/.zsh_misc
+source ~/.zsh_aliases
+source ~/.zsh_custom
+source ~/.zsh_docker
+
+source ~/.zsh_theme 2>/dev/null
+(( $+commands[thefuck] )) && source <(thefuck --alias 2>/dev/null)
+(( $+commands[kubectl] )) && source <(kubectl completion zsh)
+(( $+commands[pyenv]   )) && source <(pyenv init -)
+#(( $+commands[fasd] ))    && source <(fasd --init auto)
+#(( $+commands[pip] ))     && source <(pip completion --zsh)  # Too slow!
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+#source ~/.sdkman/bin/sdkman-init.sh 2>/dev/null
+#
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home
+
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+export PATH="/usr/local/opt/mongodb@3.6/bin/:$PATH"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH="/codes/hobot/ph/arcanist/bin/:$PATH"
+export HOMEBREW_NO_AUTO_UPDATE=true
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+alias python="/usr/local/bin/python3"
+source ~/dotfiles/zsh/incr-0.2.zsh
+#source ~/incr-0.2.zsh
+#source /codes/hobot/ph/arcanist/resources/shell/bash-completion

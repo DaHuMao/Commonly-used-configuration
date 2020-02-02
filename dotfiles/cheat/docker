@@ -1,0 +1,8 @@
+# docker常用命令
+
+1. kill all containers
+docker kill $(docker ps -q)
+
+2. delete all stoped containers
+
+docker rm $(docker ps -a -q)

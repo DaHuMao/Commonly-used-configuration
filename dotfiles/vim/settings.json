@@ -1,0 +1,11 @@
+{
+  "initializationOptions": {
+    "cacheDirectory": "/tmp/ccls"
+  },
+  "rust": {
+    "clippy_preference": "on",
+    "all_target": false,
+    "build_on_save": true,
+    "wait_to_build": false
+  }
+}

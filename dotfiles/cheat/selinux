@@ -1,0 +1,6 @@
+sestatus
+
+setenforce 0
+
+/etc/selinux/config 
+

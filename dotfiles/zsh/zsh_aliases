@@ -1,0 +1,147 @@
+#!/usr/bin/env zsh
+alias agall='ag --silent --hidden -g ""'
+alias agdot='ag --silent --hidden -g ".[^/]+"'
+
+alias sudo='sudo ' #可以使sudo支持alias
+
+alias dot='\cd ~/dotfiles'
+alias tmp='\cd /tmp'
+
+# Docker alias
+alias dps='docker ps'
+alias dpsa='dps -a'
+alias drun='docker run'
+alias drm='docker rm'
+alias drmi='docker rmi'
+alias da='docker attach'
+alias dim='docker images'
+alias dp='docker pull'
+alias dstop='docker stop'
+alias dstart='docker start'
+alias dexec='docker exec'
+alias ds='docker service'
+alias dm='docker-machine'
+alias k='kubectl'
+alias mks='tmux kill-session -t'
+alias mkS='tmux kill-server'
+
+alias ptp=ptpython
+
+alias md='\mkdir -p -v'
+alias mv='\mv -iv'
+[[ "$OSTYPE" =~ linux ]] && alias rm='\rm -Iv --one-file-system' || alias rm='\rm -iv'
+alias ..='\cd ..'
+alias disable_touch_pad='sudo modprobe -r psmouse'   # 禁用触控板
+alias enable_touch_pad='sudo modprobe psmouse'       # 启用触控板
+(( $+commands[tac]  )) || alias tac='tail -r'
+(( $+commands[nvim] )) && alias vim='nvim'
+alias svim='sudo -E vim'
+if (( $+commands[exa] )); then
+    alias ls='exa --time-style long-iso'
+    alias tree='ls -T'
+    alias ll='ls -lbhg --git'
+    alias lg='ll -G'    # List by grid
+    alias llg='ll -G'
+    alias la='ll -a'
+    alias lag='llg -a'
+    alias ldot='ll -d .*'
+    alias lss='ll -s size'
+    alias lst='ll -s accessed'
+fi
+alias vv='vim $(fzf)'
+alias vi=vim
+alias vi2='vim -O2'
+alias vw=gvim
+alias em='emacsclient -t'
+alias ew='emacsclient -c -a emacs'
+
+alias gv='vim +GV +"autocmd BufWipeout <buffer> qall"'
+
+alias f='fzf -m'
+
+# copy alias
+alias pc='pbcopy'
+alias pp='pbpaste'
+alias pcurl='pp | xargs curl -s '
+alias pget='pp | xargs wget'
+alias pclone='pp | xargs git clone'
+alias peval='pp | bash'
+
+alias mux=tmuxinator
+alias tn='tmux new-session -s'
+alias daily='tmuxinator daily'
+
+alias weather='curl wttr.in'
+
+alias tl='tmux list-sessions'
+
+(( $+commands[ghq] )) && \
+    alias gget='ghq get' && \
+    alias gcd='ghq look' && \
+    alias gls='ghq list'
+
+#alias -s c=vim
+#alias -s cpp=vim
+#alias -s h=vim
+#alias -s hpp=vim
+#alias -s java=vim
+#alias -s go=vim
+#alias -s sh=vim
+#alias -s zsh=vim
+#alias -s rs=vim
+#alias -s cs=vim
+#alias -s rb=vim
+#alias -s py=vim
+#alias -s js=vim
+#alias -s conf=vim
+#alias -s txt=vim
+#alias -s xml=vim
+#alias -s html=vim
+#alias -s yml=vim
+#alias -s yaml=vim
+#alias -s zip='unzip'
+#alias -s gz='tar -xvf'
+#alias -s tgz='tar -xvf'
+#alias -s bz2='tar -xvf'
+
+# Archlinux
+# -F Causes less to automatically exit if the entire file can be displayed on one screen
+(( $+commands[yaourt] )) && alias yaourt='LESS="-F $LESS" yaourt --pager --color'
+(( $+commands[pacman] )) && alias autoremove='pacman -R $(pacman -Qdtq)'
+
+# Perl-rename
+(( $+commands[perl-rename] )) && alias rename='perl-rename'
+
+# Hub for git
+(( $+commands[hub] )) && alias git=hub
+
+alias gpom='git push origin master'
+
+if (( $+commands[fasd] )) ; then
+    alias v='f -e vim'
+fi
+
+(( $+commands[assh] )) && alias ssh="assh wrapper ssh"
+
+(( $+commands[lein] )) && alias lrepl='lein repl :connect 59237'
+
+# [[ -n "$TMUX" ]] && alias fzf="fzf --preview-window=down:50%" || alias fzf="fzf --preview-window=right:50%"
+
+# Edit dotfile in repo
+function vimdot() { (cd ~/dotfiles && vim $(readlink "$1" || echo "$1")) }
+alias vimrc='vimdot ~/.vimrc'
+alias vimplug='vimdot ~/.vim_plug'
+alias vimbase='vimdot ~/.vim_base'
+alias vimmap='vimdot ~/.vim_map'
+alias gvimrc='vimdot ~/.gvimrc'
+alias zshrc='vimdot ~/.zshrc'
+alias zshenv='vimdot ~/.zshenv'
+alias zshalias='vimdot ~/.zsh_aliases'
+alias zshbind='vimdot ~/.zsh_keybinds'
+alias zshcustom='vimdot ~/.zsh_custom'
+alias zshmisc='vimdot ~/.zsh_misc'
+alias zshplug='vimdot ~/.zsh_plug'
+alias zshlocal='vimdot ~/.zsh_local'
+alias zshtheme='vimdot ~/.zsh_theme'
+alias hostinfo='vimdot ~/.ssh/host_info'
+alias tmuxconf='vimdot ~/.tmux.conf'

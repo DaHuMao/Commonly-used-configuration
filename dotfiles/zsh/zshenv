@@ -1,0 +1,206 @@
+#!/usr/bin/env zsh
+#=============================================================================
+#       Author: Wenxuan Zhang
+#        Email: wenxuangm@gmail.com
+#     HomePage: wenxuan.info
+#=============================================================================
+
+# Get os info
+if (( $+commands[lsb_release] )); then
+    export OSNAME=$(lsb_release -si)
+    export OSVER=$(lsb_release -sr)
+elif [ -f /etc/lsb-release ]; then
+    source /etc/lsb-release
+    export OSNAME=$DISTRIB_ID
+    export OSVER=$DISTRIB_RELEASE
+else
+    export OSNAME=$(uname -s)
+    export OSVER=$(uname -r)
+fi
+
+# Path
+export PATH="$PATH:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/usr/games:/usr/local/games:$HOME/.local/bin:$HOME/bin"
+export PATH="/snap/bin:$PATH"
+
+# Ruby
+export GEM_HOME="$HOME/.gem"
+(( $+commands[ruby] )) && export PATH="$PATH:$(ruby -e 'print Gem.user_dir')/bin:$GEM_HOME/bin"
+
+# C++
+export CPLUS_INCLUDE_PATH="/usr/local/include/c++/v1:$CPLUS_INCLUDE_PATH"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+export CC="${commands[clang]:-$CC}"
+export CXX="${commands[clang++]:-$CXX}"
+
+# Rust
+export PATH="$PATH:$HOME/.cargo/bin"
+export RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static"
+export RUST_SRC_PATH="$HOME/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src"
+[[ "$OSNAME" -eq 'Darwin' ]] && export RUST_SRC_PATH="$HOME/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
+
+export TERM="xterm-256color"
+
+# LANGUAGE must be set by en_US
+export LANGUAGE="en_US.UTF-8"
+export LANG="${LANGUAGE}"
+export LC_ALL="${LANGUAGE}"
+export LC_CTYPE="${LANGUAGE}"
+
+# Editor
+# For Terminal
+export EDITOR="${commands[vim]:-$EDITOR}"
+export EDITOR="${commands[nvim]:-$EDITOR}"
+export CVSEDITOR="${EDITOR}"
+export GIT_EDITOR="${EDITOR}"
+# For GUI
+export VISUAL="${EDITOR}"
+
+# Homebrew Bottles中科大源
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.ustc.edu.cn/homebrew-bottles"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+export NVM_LAZY_LOAD=true
+export NVM_NODEJS_ORG_MIRROR="https://npm.taobao.org/mirrors/node/"
+
+# Golang
+export GOPATH="$HOME/.go"
+export PATH="$PATH:$GOPATH/bin"
+
+# FZF is a general-purpose command-line fuzzy finder.
+# export FZF_COMPLETION_TRIGGER=''
+# bindkey '\t' fzf-completion
+# bindkey '^I' "$fzf_default_completion"
+FZF_FILE_HIGHLIGHTER='cat'
+(( $+commands[rougify]   )) && FZF_FILE_HIGHLIGHTER='rougify'
+(( $+commands[coderay]   )) && FZF_FILE_HIGHLIGHTER='coderay'
+(( $+commands[highlight] )) && FZF_FILE_HIGHLIGHTER='highlight -lO ansi'
+(( $+commands[bat]       )) && FZF_FILE_HIGHLIGHTER='bat --color=always'
+export FZF_FILE_HIGHLIGHTER
+
+(( $+commands[iconful] )) && FZF_PATH_LOC='2..' || FZF_PATH_LOC=''
+export FZF_PATH_LOC
+
+# FZF: default
+(( $+commands[ag]   )) && FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g "" 2>/dev/null'
+(( $+commands[fd]   )) && FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git 2>/dev/null'
+export FZF_DEFAULT_COMMAND
+FZF_DEFAULT_OPTS="
+--border
+--height 80%
+--extended
+--ansi
+--reverse
+--cycle
+--bind alt-p:preview-up,alt-n:preview-down
+--bind ctrl-u:half-page-up
+--bind ctrl-d:half-page-down
+--bind alt-a:select-all,ctrl-r:toggle-all
+--bind ctrl-s:toggle-sort
+--bind ?:toggle-preview,alt-w:toggle-preview-wrap
+--bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort\"
+--bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
+--preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
+--preview-window right:50%:hidden
+"
+export FZF_DEFAULT_OPTS
+
+# FZF: Ctrl - T
+FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+(( $+commands[iconful] )) && FZF_CTRL_T_COMMAND="$FZF_CTRL_T_COMMAND | iconful -f"
+export FZF_CTRL_T_COMMAND
+FZF_CTRL_T_OPTS="
+--preview \"($FZF_FILE_HIGHLIGHTER {$FZF_PATH_LOC} || $FZF_DIR_HIGHLIGHTER {$FZF_PATH_LOC}) 2>/dev/null | head -200\"
+--bind 'enter:execute(echo {$FZF_PATH_LOC})+abort'
+--bind 'alt-e:execute($EDITOR {$FZF_PATH_LOC} >/dev/tty </dev/tty)'
+--bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+$FZF_PATH_LOC} | pbcopy)+abort\"
+--preview-window right:50%
+"
+export FZF_CTRL_T_OPTS
+
+
+# FZF: Ctrl - R
+FZF_CTRL_R_OPTS="
+--preview 'echo {}'
+--preview-window 'down:2:wrap'
+--bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
+--header 'Press CTRL-Y to copy command into clipboard'
+--exact
+--expect=ctrl-x
+"
+export FZF_CTRL_R_OPTS
+
+# FZF: Alt - C
+(( $+commands[fd]   )) && FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git 2>/dev/null'
+(( $+commands[blsd] )) && FZF_ALT_C_COMMAND='blsd $dir | grep -v "^.$"'
+(( $+commands[iconful] )) && FZF_ALT_C_COMMAND="$FZF_ALT_C_COMMAND | iconful -d"
+export FZF_ALT_C_COMMAND
+FZF_DIR_HIGHLIGHTER='ls -l --color=always'
+(( $+commands[tree] )) && FZF_DIR_HIGHLIGHTER='tree -CtrL2'
+(( $+commands[exa]  )) && FZF_DIR_HIGHLIGHTER='exa --color=always -TL2'
+export FZF_DIR_HIGHLIGHTER
+export FZF_ALT_C_OPTS="
+--exit-0
+--bind 'enter:execute(echo {$FZF_PATH_LOC})+abort'
+--preview '($FZF_DIR_HIGHLIGHTER {$FZF_PATH_LOC}) | head -200 2>/dev/null'
+--preview-window=right:50%
+"
+
+# FZF: Alt - E
+FZF_ALT_E_COMMAND="$FZF_DEFAULT_COMMAND"
+(( $+commands[iconful] )) && FZF_ALT_E_COMMAND="$FZF_ALT_E_COMMAND | iconful -f"
+export FZF_ALT_E_COMMAND
+FZF_ALT_E_OPTS="
+--preview \"($FZF_FILE_HIGHLIGHTER {$FZF_PATH_LOC} || $FZF_DIR_HIGHLIGHTER {$FZF_PATH_LOC}) 2>/dev/null | head -200\"
+--bind 'alt-e:execute($EDITOR {$FZF_PATH_LOC} >/dev/tty </dev/tty)'
+--bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+$FZF_PATH_LOC} | pbcopy)+abort\"
+--preview-window right:50%
+"
+export FZF_ALT_E_OPTS
+
+# Less
+export LESS="-R -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+export LESSCHARSET="utf-8"
+# Pager
+export PAGER="${commands[less]:-$PAGER}"
+
+# History
+export HISTFILE="$HOME/.zsh_history" # History file
+export HISTSIZE=100000               # History size in memory
+export SAVEHIST=1000000              # The number of histsize
+export LISTMAX=50                    # The size of asking history
+setopt EXTENDED_HISTORY              # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY            # Write to the history file immediately, not when the shell exits.
+# setopt SHARE_HISTORY               # Share history between all sessions.
+setopt HIST_IGNORE_SPACE             # Do not record an entry starting with a space.
+setopt HIST_REDUCE_BLANKS            # Remove superfluous blanks before recording entry.
+setopt HIST_VERIFY                   # Do not execute immediately upon history expansion.
+setopt HIST_BEEP                     # Beep when accessing nonexistent history.
+# Do not add in root
+if [[ $UID == 0 ]]; then
+    unset HISTFILE
+    export SAVEHIST=0
+fi
+
+# Word split
+export WORDCHARS=''
+
+# SDKMAN
+export SDKMAN_DIR="$HOME/.sdkman"
+
+# Custom zsh completions path
+fpath=($fpath ~/.zsh_completions)
+
+# LS COLORS
+# Ref: https://github.com/ogham/exa/blob/adfee28fb9bb6f491c822ba4506fafef03909945/Vagrantfile#L163
+export LS_COLORS="di=34:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43"
+
+# For emacsclient
+export ALTERNATE_EDITOR=""
+
+# For lein
+(( $+commands[drip] )) && export LEIN_JAVA_CMD='drip'
+
+# For pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
