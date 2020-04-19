@@ -12,7 +12,6 @@ ln -sf "$SCRIPT_DIR/vimrc.vim" ~/.vimrc
 ln -sf "$SCRIPT_DIR/projects.vim" ~/.vim/projects.vim
 ln -sf "$SCRIPT_DIR/coc-settings.json" ~/.vim/coc-settings.json
 ln -sf "$SCRIPT_DIR/settings.json" ~/.vim/settings.json
-exit
 
 # Install plugins managed by vim-plug
 # `tty &>/dev/null` is to make sure the script is run from a tty(ie, not ssh)
