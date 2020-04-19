@@ -5,8 +5,8 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) && cd "$SCRIPT_DIR" || 
 mkdir -p ~/.vim/spell ~/.config
 
 echo "link configs to .vim dir"
-#ln -s "$SCRIPT_DIR/configs" ~/.vim/configs
-#ln -s "$SCRIPT_DIR/autoload" ~/.vim/autoload
+ln -s "$SCRIPT_DIR/configs" ~/.vim/configs
+ln -s "$SCRIPT_DIR/autoload" ~/.vim/autoload
 
 ln -sf "$SCRIPT_DIR/vimrc.vim" ~/.vimrc
 ln -sf "$SCRIPT_DIR/projects.vim" ~/.vim/projects.vim

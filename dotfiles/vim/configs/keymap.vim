@@ -6,6 +6,7 @@ cnoremap <C-e> <end>
 let mapleader = ","
 let g:mapleader = ","
 
+
 "Treat long lines as break lines (useful when moving around in them)
 "se swap之后，同物理行上线直接跳
 nnoremap k gk
@@ -50,6 +51,17 @@ nmap <leader>p :Wd<CR>
 
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
+
+
+
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
 nmap <C-o> :wq<CR>
+nmap <C-f> :Rg<CR>
+
+
+"buffer-vim
+nmap <C-n> :bn<CR>
+nmap <C-p> :bp<CR>
+nmap <C-d> :bdelete<CR>
+nmap <C-t> :badd ~/.vimrc<CR> :buffer ~/.vimrc<CR>
