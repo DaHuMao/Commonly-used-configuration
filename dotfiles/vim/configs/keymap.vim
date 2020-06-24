@@ -40,13 +40,16 @@ nnoremap <silent> g* g*zz
 "copy and paste from clipboard
 nmap Y "+y
 nmap P "+p
+nmap <c-p> "+
 
 "FZF
 nmap <leader>t :FZF<CR>
-nmap <leader>l :Lines <CR>
+nmap <leader>l :<C-U><C-R>=printf("BLines %s", expand("<cword>"))<CR><CR>
+nmap <leader>L :BLines<CR>
 nmap <leader>h :History <CR>
 nmap <leader>r :BTags<CR>
-nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
+"nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
+nmap <leader>f ::LeaderfFile<CR>
 nmap <leader>p :Wd<CR>
 
 "nerdtre
@@ -57,11 +60,12 @@ nmap <leader>n :NERDTreeToggle<CR>
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
 nmap <C-o> :wq<CR>
-nmap <C-f> :Rg<CR>
+nmap <leader>F :Rg<CR>
+noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", expand("<cword>"))<CR><CR>
+noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
 "buffer-vim
 nmap <C-n> :bn<CR>
-nmap <C-p> :bp<CR>
 nmap <C-d> :bdelete<CR>
 nmap <C-t> :badd ~/.vimrc<CR> :buffer ~/.vimrc<CR>

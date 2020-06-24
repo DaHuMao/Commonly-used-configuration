@@ -115,10 +115,10 @@ zplug "reorx/httpstat", \
     #use:'git-recall'
 
 # Remote repository management made easy
-zplug "motemen/ghq", \
-    as:command, \
-    from:gh-r, \
-    rename-to:ghq
+#zplug "motemen/ghq", \
+#    as:command, \
+#    from:gh-r, \
+#    rename-to:ghq
 
 # sparklines
 # usage: sparklines -n 3 null 3 7 4 2 5 6 | lolcat

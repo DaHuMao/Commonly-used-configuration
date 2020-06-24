@@ -81,3 +81,6 @@ hi! link ShowMarksHLl DiffAdd
 hi! link ShowMarksHLu DiffChange
 
 autocmd BufNewFile,BufReadPost *.mmd,*.mermaid set filetype=mermaid
+
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/snippets']
+

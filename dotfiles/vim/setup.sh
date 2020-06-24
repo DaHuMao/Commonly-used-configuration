@@ -7,6 +7,7 @@ mkdir -p ~/.vim/spell ~/.config
 echo "link configs to .vim dir"
 ln -s "$SCRIPT_DIR/configs" ~/.vim/configs
 ln -s "$SCRIPT_DIR/autoload" ~/.vim/autoload
+ln -s "$SCRIPT_DIR/snippets" ~/.vim/snippets
 
 ln -sf "$SCRIPT_DIR/vimrc.vim" ~/.vimrc
 ln -sf "$SCRIPT_DIR/projects.vim" ~/.vim/projects.vim
@@ -26,7 +27,7 @@ if hash nvim &>/dev/null ; then
     ln -sf  ~/.vimrc ~/.config/nvim/init.vim
     hash pip2 &>/dev/null && pip2 install --upgrade neovim
     hash pip3 &>/dev/null && pip3 install --upgrade neovim
-    #hash gem  &>/dev/null && gem install neovim
+    hash gem  &>/dev/null && gem install neovim
     tty &>/dev/null && nvim +PlugInstall +qall
   else
     tty &>/dev/null && vim +PlugInstall +qall

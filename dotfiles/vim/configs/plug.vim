@@ -59,7 +59,17 @@ Plug 'tpope/vim-fugitive'
 Plug 'xieyu/vim-codenote'
 Plug 'xieyu/vim-cd'
 
-Plug 'wannesm/wmgraphviz.vim'
+Plug 'Yggdroot/LeaderF'
+
+"grpahviz
+Plug 'liuchengxu/graphviz.vim'
+let g:graphviz_output_format = 'svg'
+autocmd Filetype dot nnoremap <leader>c :GraphvizCompile svg<CR>
+autocmd Filetype dot nnoremap <leader>r :Graphviz svg<CR>
+"auto compile when save 
+autocmd BufWritePost *.dot GraphvizCompile
+
+set conceallevel=2
 
 call plug#end()
 
