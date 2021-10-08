@@ -42,10 +42,9 @@ nmap Y "+y
 nmap P "+p
 nmap <c-p> "+
 
-"FZF
-nmap <leader>t :FZF<CR>
-nmap <leader>l :<C-U><C-R>=printf("BLines %s", expand("<cword>"))<CR><CR>
-nmap <leader>L :BLines<CR>
+"leaderf
+noremap <leader>l :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
+noremap <leader>L :Leaderf rg --current-buffer<CR>
 nmap <leader>h :History <CR>
 nmap <leader>r :BTags<CR>
 "nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
@@ -62,7 +61,7 @@ nmap <C-e> :w<CR>
 nmap <C-o> :wq<CR>
 nmap <leader>F :Rg<CR>
 noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", expand("<cword>"))<CR><CR>
-noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
+"noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
 "buffer-vim

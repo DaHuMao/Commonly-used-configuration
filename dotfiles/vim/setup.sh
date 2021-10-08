@@ -22,13 +22,13 @@ if hash nvim &>/dev/null ; then
 fi
 
 # nvim
-if hash nvim &>/dev/null ; then
+#if hash nvim &>/dev/null ; then
     ln -snf ~/.vim   ~/.config/nvim
     ln -sf  ~/.vimrc ~/.config/nvim/init.vim
     hash pip2 &>/dev/null && pip2 install --upgrade neovim
     hash pip3 &>/dev/null && pip3 install --upgrade neovim
     hash gem  &>/dev/null && gem install neovim
     tty &>/dev/null && nvim +PlugInstall +qall
-  else
-    tty &>/dev/null && vim +PlugInstall +qall
-fi
+#  else
+#    tty &>/dev/null && vim +PlugInstall +qall
+#fi

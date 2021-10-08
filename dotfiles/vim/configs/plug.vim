@@ -55,19 +55,21 @@ Plug 'fatih/vim-go'
 " git
 Plug 'mhinz/vim-signify' 
 Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
 
-Plug 'xieyu/vim-codenote'
-Plug 'xieyu/vim-cd'
+"Plug 'xieyu/vim-codenote'
+"Plug 'xieyu/vim-cd'
 
 Plug 'Yggdroot/LeaderF'
+"Plug 'Valloric/YouCompleteMe',{'do':'python3 install.py'}
 
 "grpahviz
-Plug 'liuchengxu/graphviz.vim'
-let g:graphviz_output_format = 'svg'
-autocmd Filetype dot nnoremap <leader>c :GraphvizCompile svg<CR>
-autocmd Filetype dot nnoremap <leader>r :Graphviz svg<CR>
+"Plug 'liuchengxu/graphviz.vim'
+"let g:graphviz_output_format = 'svg'
+"autocmd Filetype dot nnoremap <leader>c :GraphvizCompile svg<CR>
+"autocmd Filetype dot nnoremap <leader>r :Graphviz svg<CR>
 "auto compile when save 
-autocmd BufWritePost *.dot GraphvizCompile
+"autocmd BufWritePost *.dot GraphvizCompile
 
 set conceallevel=2
 
@@ -91,5 +93,3 @@ let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
 
 let g:mkdp_auto_close = 0
 let g:WMGraphviz_output="svg"
-abbre gs GraphvizShow
-abbre gc GraphvizCompile
