@@ -46,21 +46,22 @@ nmap <c-p> "+
 noremap <leader>l :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
 noremap <leader>L :Leaderf rg --current-buffer<CR>
 nmap <leader>h :History <CR>
-nmap <leader>r :BTags<CR>
-"nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
+nmap <leader>r :source ~/.vimrc<CR>
+nmap <leader>F :Rgf<CR>
+noremap <C-f> :call CustomGrep("*.{h,c,cc,cpp,m,mm}", ['::%', "#define %", "class %", "struct % ", "%;"])<CR>
+noremap <leader>m :call CustomGrep("*.{h,c,cc,cpp,m,mm}", [])<CR>
 nmap <leader>f ::LeaderfFile<CR>
 nmap <leader>p :Wd<CR>
 
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
 
-
+"git
+nnoremap <Leader>s :<C-u>call gitblame#echo()<CR>
 
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
-nmap <C-o> :wq<CR>
-nmap <leader>F :Rg<CR>
-noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", expand("<cword>"))<CR><CR>
+"nmap <C-o> :wq<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
@@ -68,3 +69,12 @@ noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", 
 nmap <C-n> :bn<CR>
 nmap <C-d> :bdelete<CR>
 nmap <C-t> :badd ~/.vimrc<CR> :buffer ~/.vimrc<CR>
+
+"ycm 
+let g:ycm_error_symbol = '>>'
+let g:ycm_warning_symbol = '>*'
+nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
+nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
+nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+

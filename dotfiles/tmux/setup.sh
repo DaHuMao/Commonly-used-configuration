@@ -11,3 +11,10 @@ ln -sf "$SCRIPT_DIR/tmux.conf" ~/.tmux.conf
 
 # tmuxinator
 ln -snf "$SCRIPT_DIR/tmuxinator" ~/.tmuxinator
+ln -snf "$SCRIPT_DIR/fzf_window.sh" ~/.tmux/fzf_window.sh
+
+#字体设置
+#size: 14
+#  normal:
+#    family: 'SauceCodePro Nerd Font Mono'
+#    style: 'Light'

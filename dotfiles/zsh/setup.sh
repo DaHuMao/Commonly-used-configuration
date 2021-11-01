@@ -27,4 +27,7 @@ ln -sf "$SCRIPT_DIR/zshrc" ~/.zshrc
 
 [[ "$SHELL" =~ "zsh" ]] || chsh -s "$(command -v zsh)"
 
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
 source ~/.zshrc

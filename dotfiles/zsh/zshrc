@@ -15,7 +15,7 @@ source ~/.myzsh/.zsh_secret    2>/dev/null
 
 source ~/.myzsh/.zsh_plug
 source ~/.myzsh/.zsh_keybinds
-source ~/.myzsh/.zsh_misc
+source ~/.myzsh/.zsh_theme
 source ~/.myzsh/.zsh_aliases
 source ~/.myzsh/.zsh_custom
 source ~/.myzsh/.incr-0.2.zsh
@@ -32,7 +32,7 @@ source ~/.zsh_theme 2>/dev/null
 #source ~/.sdkman/bin/sdkman-init.sh 2>/dev/null
 #
 #export CHROMIUM_BUILDTOOLS_PATH=/Users/zhangtongxiao/Desktop/yfd_work/sdk-demo-app-ios/tutor-engine-ios/live_engine/tutor-webrtc/src/buildtools/
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home
 export ANDROID_HOME=/Users/zhangtongxiao/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/platform-tools
@@ -41,10 +41,26 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 alias python="/usr/bin/python3"
+export DEPOT_TOOLS_UPDATE=0
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
+#bindkey '^R' history-incremental-search-back
+
+# Èò≤Ê≠¢ÈáçÂ§çÁöÑhistory
+setopt EXTENDED_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_BEEP
+setopt inc_append_history
+setopt share_history
 
 #source /codes/hobot/ph/arcanist/resources/shell/bash-completion
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

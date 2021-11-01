@@ -38,3 +38,48 @@ function! Fzf_dev()
         \ 'options': '-m ' . l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
+
+let g:rg_command = '
+  \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
+  \ -g "*.{h,hpp,js,json,php,md,styl,jade,html,config,py,cpp,c,go,hs,rb,conf}"
+  \ -g "!{.git,node_modules,vendor,xcode*}/*" '
+
+command! -bang -nargs=* Rgf call fzf#vim#grep(g:rg_command .shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+
+function! CustomGrep(file_reg, reg_arr)
+  let l:command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -g '.'"'.a:file_reg.'"'
+  let l:pattern_reg = expand("<cword>")
+  if len(a:reg_arr) > 0
+    let l:reg_str_loc = join(a:reg_arr, '|')
+    let l:reg_arr_loc = split(l:reg_str_loc, '%')
+    let l:pattern_reg = join(l:reg_arr_loc, l:pattern_reg) 
+  endif
+  let l:command_fmt = l:command_fmt.' -e '.'"'.l:pattern_reg.'"'
+  "let command_fmt = 'rg -g '.a:file_reg.' -e '.'"'.l:pattern_reg.'"'
+  echo l:command_fmt
+  call fzf#vim#grep(l:command_fmt, 1, fzf#vim#with_preview(), 0)
+endfunction  
+
+function! CustomGrepCurrentFile(is_current_word)
+  let l:command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case '.expand('%')
+  if a:is_current_word
+    let l:command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -e '.expand("<cword>")." ".expand('%')
+  endif
+  echo l:command_fmt
+  call fzf#vim#grep(l:command_fmt, 1, fzf#vim#with_preview(), 0)
+endfunction
+
+function! Mytest()
+  let s:filename=expand('<cfile>')
+  let s:afile=expand('<afile>')
+  let s:abuf=expand('<abuf>')
+  let s:amatch=expand('<amatch>')
+      echo '1'.s:filename
+      echo '2'.s:afile
+      echo '3'.s:abuf
+      echo '4'.s:amatch
+      echo '5'.expand('<sfile>:p')
+      echo '6'.expand('%')
+endfunction
+   
+  

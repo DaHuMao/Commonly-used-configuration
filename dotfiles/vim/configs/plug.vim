@@ -56,12 +56,14 @@ Plug 'fatih/vim-go'
 Plug 'mhinz/vim-signify' 
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
+Plug 'zivyangll/git-blame.vim'
 
 "Plug 'xieyu/vim-codenote'
 "Plug 'xieyu/vim-cd'
 
 Plug 'Yggdroot/LeaderF'
-"Plug 'Valloric/YouCompleteMe',{'do':'python3 install.py'}
+"Plug 'Valloric/YouCompleteMe'
+Plug 'ycm-core/YouCompleteMe'
 
 "grpahviz
 "Plug 'liuchengxu/graphviz.vim'
