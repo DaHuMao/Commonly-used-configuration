@@ -23,6 +23,7 @@ zplug "plugins/git", from:oh-my-zsh
 # Git completions. On OS X with Homebrew, you need to install git with brew install git --without-completions. Otherwise, git's _git will take precedence, and you won't see the completions for git-extras commands.
 zplug "plugins/git-extras", from:oh-my-zsh
 zplug "plugins/extract", from:oh-my-zsh
+zplug "plugins/zsh-history", from:oh-my-zsh
 #zplug "plugins/cp", from:oh-my-zsh
 (( $+commands[mvn]        )) && zplug "plugins/mvn",        from:oh-my-zsh, lazy:yes
 (( $+commands[cargo]      )) && zplug "plugins/cargo",      from:oh-my-zsh, lazy:yes
@@ -42,24 +43,11 @@ ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
 
 zplug "morhetz/gruvbox", use:"gruvbox_256palette.sh"
 zplug "felixonmars/ydcv", as:command, use:"src/ydcv.py", rename-to:"ydcv"
-#zplug 'ytet5uy4/fzf-widgets'
-#bindkey '^@'  fzf-select-widget
-#bindkey '^@ga' fzf-git-add-files
 
 ################################################################################
 # Themes
 ################################################################################
 zplug "wfxr/spaceship-zsh-theme", use:spaceship.zsh, as:theme
-#zplug "denysdovhan/spaceship-zsh-theme", use:spaceship.zsh, as:theme
-#zplug "bhilburn/powerlevel9k", use:powerlevel9k.zsh-theme, as:theme
-#zplug "b4b4r07/zsh-vimode-visual", use:"*.zsh", defer:3
-#zplug "b4b4r07/ultimate", as:theme
-#zplug "subnixr/minimal", as:theme, use:"minimal.zsh"
-#zplug "mafredri/zsh-async", from:github
-#zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
-#if zplug check "b4b4r07/ultimate"; then
-    #zstyle ':ultimate:prompt:path' mode 'shortpath'
-#fi
 
 zplug 'so-fancy/diff-so-fancy', \
     as:command, use:diff-so-fancy, \
@@ -81,22 +69,10 @@ EMOJI_CLI_KEYBIND='^[m'
 zplug 'wfxr/pbcopy', as:command, use:'(*).sh', rename-to:'$1'
 zplug 'wfxr/epoch-cli', as:plugin
 
-# A simple gist editor for CLI
-#zplug "b4b4r07/gist", \
-    #as:command, \
-    #from:gh-r
 
 # jq is a lightweight and flexible command-line JSON processor.
 (( $+commands[jq] )) || zplug "stedolan/jq", as:command, from:gh-r, rename-to:jq
 
-# Short, simple, direct scripts for creating ASCII graphical histograms in the terminal.
-#zplug "philovivero/distribution", \
-    #as:command, \
-    #use:distribution
-
-#zplug "holman/spark", \
-    #as:command, \
-    #use:spark
 
 # httpstat visualizes curl(1) statistics in a way of beauty and clarity.
 zplug "reorx/httpstat", \
@@ -104,22 +80,6 @@ zplug "reorx/httpstat", \
     use:'(httpstat).py', \
     rename-to:'$1'
 
-# wrk - a HTTP benchmarking tool
-# eg: wrk -t12 -c400 -d30s http://127.0.0.1:8080/index.html
-#zplug "wg/wrk", \
-    #as:command, \
-    #hook-build:"make -j8"
-
-# An interactive way to peruse your git history from the terminal
-#zplug 'Fakerr/git-recall', \
-    #as:command, \
-    #use:'git-recall'
-
-# Remote repository management made easy
-#zplug "motemen/ghq", \
-#    as:command, \
-#    from:gh-r, \
-#    rename-to:ghq
 
 # sparklines
 # usage: sparklines -n 3 null 3 7 4 2 5 6 | lolcat

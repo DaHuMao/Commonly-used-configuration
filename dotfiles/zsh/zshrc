@@ -8,20 +8,19 @@
 # Put this line on top to make keybinds work
 bindkey -e
 
-source ~/.myzsh/.fzf.zsh       2>/dev/null
-source ~/.myzsh/.zsh_fzf_extra 2>/dev/null
-source ~/.myzsh/.zsh_local     2>/dev/null
-source ~/.myzsh/.zsh_secret    2>/dev/null
+source ~/.myzsh/fzf.zsh       
+source ~/.myzsh/zsh_fzf_extra 
 
-source ~/.myzsh/.zsh_plug
-source ~/.myzsh/.zsh_keybinds
-source ~/.myzsh/.zsh_misc
-source ~/.myzsh/.zsh_aliases
-source ~/.myzsh/.zsh_custom
-source ~/.myzsh/.incr-0.2.zsh
+source ~/.myzsh/zshenv
+source ~/.myzsh/zsh_plug
+source ~/.myzsh/zsh_keybinds
+source ~/.myzsh/zsh_misc
+source ~/.myzsh/zsh_aliases
+source ~/.myzsh/zsh_custom
+source ~/.myzsh/incr-0.2.zsh
+source ~/.myzsh/zsh_theme
 #source ~/.zsh_docker
 
-source ~/.zsh_theme 2>/dev/null
 
 setopt EXTENDED_HISTORY
 setopt HIST_EXPIRE_DUPS_FIRST

@@ -189,7 +189,7 @@ export WORDCHARS=''
 export SDKMAN_DIR="$HOME/.sdkman"
 
 # Custom zsh completions path
-fpath=($fpath ~/.zsh_completions)
+fpath=($fpath ~/.myzsh/zsh_completions)
 
 # LS COLORS
 # Ref: https://github.com/ogham/exa/blob/adfee28fb9bb6f491c822ba4506fafef03909945/Vagrantfile#L163
