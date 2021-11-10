@@ -3,6 +3,7 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) && cd "$SCRIPT_DIR" || return 1
 
 ln -sf "$SCRIPT_DIR/tmux.conf" ~/.tmux.conf
+ln -sf "$SCRIPT_DIR/fzf_window.sh" ~/.fzf_window.sh
 
 [[ $(uname) == *Darwin* ]] && ln -sf "$SCRIPT_DIR/tmux_osx.conf" ~/.tmux_osx.conf
 
