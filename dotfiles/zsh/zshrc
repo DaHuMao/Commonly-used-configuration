@@ -13,7 +13,6 @@ source ~/.myzsh/zsh_fzf_extra
 
 source ~/.myzsh/zshenv
 source ~/.myzsh/zsh_plug
-source ~/.myzsh/zsh_keybinds
 source ~/.myzsh/zsh_misc
 source ~/.myzsh/zsh_aliases
 source ~/.myzsh/zsh_custom

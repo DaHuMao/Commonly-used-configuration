@@ -58,7 +58,6 @@ nmap <leader>n :NERDTreeToggle<CR>
 
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
-nmap <C-o> :wq<CR>
 nmap <leader>F :Rg<CR>
 noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", expand("<cword>"))<CR><CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
