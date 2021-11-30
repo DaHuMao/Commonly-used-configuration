@@ -23,13 +23,14 @@ This is a temporary script file.
 #plt.xlabel('x label')
 #plt.ylabel('y label')
 import matplotlib.pyplot as plt
+import plot_tools as plt_tool
 import copy
 
 color_dict = ['blue', 'red', 'orange', 'yellow', 'green', 'black']
 
 def compress_data(ori_arr,compress_times):
     arr_size=int(len(ori_arr)/compress_times)
-    print(arr_size)
+    plt_tools.log_info(arr_size)
     arr=[]
     for j in range(0,arr_size):
         sumsum=0.00
@@ -136,14 +137,13 @@ class myplot:
             plt.ylabel(self._ytitle)
         if self._y_show_range[1] > self._y_show_range[0]:
             plt.ylim(self._y_show_range)
-        print(self._x_show_range)
         if self._x_show_range[1] > self._x_show_range[0]:
             if len(self._xlabel) > 0:
                 data_y_dim = self._x_show_range[1] - self._x_show_range[0]
                 xlabel = GenarateXLabel(self._x_show_range[0], self._x_show_range[1], len(self._xlabel) - 1)
                 dot = max(1, data_y_dim / (len(xlabel) - 1))
                 x2 = range(self._x_show_range[0], self._x_show_range[1] + dot, dot)
-                print(x2, xlabel, data_y_dim, dot)
+                plt_tools.log_info(x2, xlabel, data_y_dim, dot)
                 plt.xticks(x2, xlabel)
             plt.xlim(self._x_show_range)
         if len(self._title) > 0:
@@ -195,7 +195,7 @@ class PlotData:
 
 
     def update_config(self, key, value):
-        if self._config_dict.has_key(key):
+        if key in self._config_dict:
             self._config_dict[key] = value.strip().split()
             return True
         else:
@@ -258,9 +258,16 @@ class PlotData:
                     (plot_list_len, len(data_x), len(data_y)))
         for i in range(0,plot_list_len):
             self._plot_list[i].plot(data_x[i], data_y[i], plot_list_len,1,i+1)
-            plt.legend()
-    
+            plt.legend(loc='upper right')
+   
+    def show_plot(self, data_x, data_y):
+        self.plotplot(data_x, data_y)
         plt.show()
+
+    def pause_plot(self, data_x, data_y, pause_second):
+        plt.clf()
+        self.plotplot(data_x, data_y)
+        plt.pause(pause_second)
 
 
 
