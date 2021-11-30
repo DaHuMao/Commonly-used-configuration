@@ -51,6 +51,7 @@ export PATH=$PATH:$HOME/GitDownLoad/depot_tools
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export HOMEBREW_NO_AUTO_UPDATE=true
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+export PATH="$PATH:$HOME/Library/Python/2.7/bin"
 alias python="/usr/bin/python3"
 
 export NVM_DIR="$HOME/.nvm"
