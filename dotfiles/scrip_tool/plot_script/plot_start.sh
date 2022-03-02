@@ -12,17 +12,18 @@ file_path=''
 #x_select_range='-1 3000'表示只解析3000行以前的数据
 #x_select_range='1000 -1'表示只解析1000行以后的数据
 #x_select_range='1000 3000'表示只解析1000-3000行的数据
-x_select_range='-1 -1'
+x_select_range=''
 #####  file_mode
 
 
 #####  stream_mode
-ip='127.0.0.1'
+#ip='127.0.0.1'
+ip='0.0.0.0'
 port='9600'
 #流式读取数据时存储的数据长度，单位为点个数
 #注：存储多少并不代表显示多少，存储只是代表存储的数据跨度
 #    真正显示是由后面的图配置中的x_show_range决定的
-data_storage_len='500'
+data_storage_len='1000'
 #####  stream_mode
 
 #=======================工作模式==================================
@@ -30,15 +31,24 @@ data_storage_len='500'
 #=======================选择X轴Y轴的数据==================================
 #这个选项是用来筛选Y轴关键词的数据，在日志场景会很有用:
 #比如文本为： [INFO] audio_delay:30,video_delay:40 x_tt 50
-#select_y_key='audio_delay, video_delay',表示提取关键字为audio_delay, video_delay的数据，分别打印两张图
+#select_y_key='audio_delay video_delay',表示提取关键字为audio_delay, video_delay的数据，分别打印两张图
 #如果要放在一张图：select_y_key='audio_delay,video_delay' 用逗号链接即可.
 #后面所有选项都是如此，用空格分隔代表不在一张图上，用逗号分隔代表在一张图上
-select_y_key='send_speak_count aec_speak_count,send_speak_energy'
+#NOTE: 这种模式会覆盖selete_y_raw
+select_y_key='current_buffer_size seq'
+
+#与上面不同的是，上面的选项只针对一行数据，必须有全部的key,也就是说如果某一行数据没有全部的key会报错
+#这个更加通用，是在所有数据里查找，也就是不限制行，但是不同行不能有重复key，否则会覆盖。
+#比如文本为：[INFO] audio_delay:30  [INFO] video_delay:50 这两个key分别在不同行，
+#按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
+#NOTE1: 上面的模式效率更高.
+#NOTE2: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可：select_y_key_multi_line=''
+select_y_key_multi_line=''
 
 #这个也是用来筛选Y轴数据，但是却是用列来选取，比如当前有一行文本为： 【INFO】audio_delay:30 video_delay:40
 #按空格跟冒号切割变成（后面会说到）：【INFO】audio_delay 30 video_delay 40, 那么第2列跟第四列就是我们要的数字
 #我们可以设置select_y_raw='2 4'  如果要让两个数据在同一张图： select_y_raw='2,4'
-#注：select_y_key不为空的话 这个不生效。因为两个都表示选取Y轴数据
+#NOTE: 这种模式只会在上面两种模式都为空的情况下才会生效，优先级最低
 select_y_raw=''
 
 #这个跟select_y_raw是差不多的，不过这个是用来设置X轴的数据
@@ -54,7 +64,7 @@ point_size=''
 
 #=======================数据过滤与筛选==================================
 #filter_include_keywords='recv media_info' 表示只有包含'recv media_info'的行才会被解析
-filter_include_keywords='media_info'
+filter_include_keywords='NeteqTest'
 
 #filter_exclude_keywords='recv media_info' 表示包含'recv media_info'的行不会被解析
 filter_exclude_keywords=''
@@ -102,7 +112,7 @@ ytitle=''
 #比如 x_show_range='1000,2000' 表示只显示1000-2000个点
 #这个主要为了以后界面化的时候使用，尤其是X轴设置
 y_show_range=''
-x_show_range='0,500'
+x_show_range=''
 
 #自己设置X的显示label
 #用于需要自己定制label的场景，比如时间： xlabel='10:20 10:30 10:40 10:50 11:00 11:10'
@@ -113,6 +123,7 @@ xlabel=''
 #比如 xlabel_range='0,300,5'表示0-300生成5个间隔，会生成【0 60 120 180 240 300】
 xlabel_range=''
 #=======================图配置==================================
+
 
 if [ $# -gt 0 ];then
     file_path=$1
@@ -126,6 +137,7 @@ python3 $plotpath "file_path=$file_path"  \
                  "data_storage_len=$data_storage_len" \
                  "select_y_raw=$select_y_raw"  \
                  "select_y_key=$select_y_key"  \
+                 "select_y_key_multi_line=$select_y_key_multi_line"  \
                  "select_x_raw=$select_x_raw" \
                  "x_select_range=$x_select_range" \
                  "point_size=$point_size" \

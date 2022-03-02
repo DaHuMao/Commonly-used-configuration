@@ -31,7 +31,7 @@ class TxTFileReader:
         if len(self._config_dict['x_select_range']) == 2:
             start_line = int(self._config_dict['x_select_range'][0])
             end_line = int(self._config_dict['x_select_range'][1])
-            print("x_select_range is %d~%d" % (start_line, end_line))
+            plt_tool.log_info("x_select_range is %d~%d" % (start_line, end_line))
 
         count = 0
         first = True
@@ -50,6 +50,8 @@ class TxTFileReader:
                 select_index_y = plt_tool.key_to_index(select_raw_y, data)
             plt_tool.select_data(select_index_x, data, self._return_data_x)
             plt_tool.select_data(select_index_y, data, self._return_data_y)
+        if len(return_data_y) > 0:
+            plt_tool.log_info("select_data length: %d" % (len(return_data_y[0])))
 
     def load_data(self):
         return self._return_data_x, self._return_data_y

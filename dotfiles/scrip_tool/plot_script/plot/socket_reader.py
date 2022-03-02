@@ -15,12 +15,13 @@ class SocketReader:
     _listen_thread = None
     _listen_socket = None
     _recever_socket = None
+    _rlock = threading.Lock()
+
     _text_processor = None
     _select_raw_y = None
     _select_data_y = []
     _select_data_y_prepare = []
     _remainder_str = ''
-    _rlock = threading.Lock()
    
     def update_config(self, key, value):
         if  key not in self._config_dict:
@@ -97,16 +98,18 @@ class SocketReader:
                         self._recever_socket.close()
                         self._recever_socket = None
                     else:
-                            has_remain_str = recv_str[-1] != '\n'
-                            str_data = recv_str.split('\n')
-                            if self._remainder_str != '':
-                                str_data[0] = self._remainder_str + str_data[0]
-                                self._remainder_str = ''
-                            if has_remain_str:
-                                self._remainder_str = str_data[-1]
-                                str_data.pop()
-                            self.get_x_y(str_data)
-                            
+                        has_remain_str = recv_str[-1] != '\n'
+                        str_data = recv_str.split('\n')
+                        if str_data[-1] == '':
+                            str_data.pop()
+                        if self._remainder_str != '':
+                            str_data[0] = self._remainder_str + str_data[0]
+                            self._remainder_str = ''
+                        if has_remain_str:
+                            self._remainder_str = str_data[-1]
+                            str_data.pop()
+                        self.get_x_y(str_data)
+
                 else:
                     plt_tool.log_info('no data')
                     time.sleep(2)

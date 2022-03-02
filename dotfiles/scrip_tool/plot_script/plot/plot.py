@@ -40,7 +40,7 @@ def compress_data(ori_arr,compress_times):
     return arr
 
 def GenarateXLabel(min_label, max_label, count):
-    gap = (max_label - min_label + count - 1) / count;
+    gap = (int)((max_label - min_label + count - 1) / count);
     label=[]
     while(min_label <= max_label):
         label.append(str(min_label))
@@ -128,8 +128,10 @@ class myplot:
         if self._show_xlabel is False:
             plt.xticks([])
         elif len(self._xlabel) > 0:
-            dot = max(1, data_y_dim/(len(self._xlabel)-1))
-            x2 = range(0,data_y_dim, dot)
+            dot = max(1, data_y_dim / (len(self._xlabel)-1))
+            x2 = list(range(0, data_y_dim, int(dot)))
+            if (len(x2) < len(self._xlabel)):
+                x2.append(data_y_dim)
             plt.xticks(x2, self._xlabel)
         if len(self._xtitle) > 0:
             plt.xlabel(self._xtitle)

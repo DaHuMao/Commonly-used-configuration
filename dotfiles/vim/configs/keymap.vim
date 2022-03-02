@@ -48,8 +48,7 @@ noremap <leader>L :Leaderf rg --current-buffer<CR>
 nmap <leader>h :History <CR>
 nmap <leader>r :BTags<CR>
 "nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
-nmap <leader>f ::LeaderfFile<CR>
-nmap <leader>p :Wd<CR>
+nmap <leader>f :Files<CR>
 
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
@@ -67,3 +66,13 @@ noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,m,mm}' ./", 
 nmap <C-n> :bn<CR>
 nmap <C-d> :bdelete<CR>
 nmap <C-t> :badd ~/.vimrc<CR> :buffer ~/.vimrc<CR>
+
+
+"clang-format
+function! Formatonsave()
+  let l:formatdiff = 1
+  pyf /usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format.py
+endfunction
+nmap <C-d> :call Formatonsave()<CR>
+
+

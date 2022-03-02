@@ -18,7 +18,7 @@ set helplang=cn
 "set termencoding=utf-8
 
 "代码字数限制线
-set colorcolumn=120
+set colorcolumn=100
 
 set nobackup
 set noswapfile
