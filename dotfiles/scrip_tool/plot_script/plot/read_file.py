@@ -50,8 +50,8 @@ class TxTFileReader:
                 select_index_y = plt_tool.key_to_index(select_raw_y, data)
             plt_tool.select_data(select_index_x, data, self._return_data_x)
             plt_tool.select_data(select_index_y, data, self._return_data_y)
-        if len(return_data_y) > 0:
-            plt_tool.log_info("select_data length: %d" % (len(return_data_y[0])))
+        if len(self._return_data_y) > 0:
+            plt_tool.log_info("select_data length: %d" % (len(self._return_data_y[0])))
 
     def load_data(self):
         return self._return_data_x, self._return_data_y

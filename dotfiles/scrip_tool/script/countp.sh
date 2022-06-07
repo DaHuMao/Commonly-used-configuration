@@ -1,7 +1,10 @@
 function getdir(){
-    for element in `ls $1`
+    for element in `ls -a $1`
     do  
         dir_or_file=$1"/"$element
+        if [ '.' = $element -o '..' = $element ] ;then
+            continue
+        fi
         if [ -d $dir_or_file ]
         then 
             cd $dir_or_file

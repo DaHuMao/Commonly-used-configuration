@@ -29,12 +29,12 @@ do
       shift
       ;;
     --git)
-      func='TraverseFileForGit'
+      func='TraverseFromGit'
       shift
       ;;
     --write_file)
       shift
-      func='TraverseFileForGit'
+      func='TraverseFromGit'
       cmd="write_to_file $1"
       shift
       ;;
@@ -47,7 +47,7 @@ do
       shift
       ;;
     --A)
-      CombineFirstParam '^\?\?'
+      CombineFirstParam '\?\?'
       shift
       ;;
     --M)
