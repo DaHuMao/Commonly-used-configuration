@@ -1,26 +1,42 @@
 #include "plot_client.h"
-#include <cstdarg>
-#include <unordered_map>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
 #include <arpa/inet.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <cstdarg>
+#include <memory>
+#include <unordered_map>
+#include "rtinterphonelog.h"
 
 class SocketForLog {
 public:
     SocketForLog();
     ~SocketForLog();
     void write(const void* data, size_t size);
+    void try_connect();
 private:
     int write_n(const void* data, size_t size);
     int _socket_fd = -1;
 };
 
-SocketForLog::SocketForLog() {
-    const char* ip_address = "127.0.0.1";
+SocketForLog::SocketForLog() {}
+
+SocketForLog::~SocketForLog() {
+    if (_socket_fd > 0) {
+        close(_socket_fd);
+        _socket_fd = -1;
+    }
+}
+
+void SocketForLog::try_connect() {
+    if (_socket_fd > 0) {
+        return;
+    }
+    const char* ip_address = "172.24.220.219";
     int ip_port = 9600;
     _socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socket_fd < 0) {
@@ -31,21 +47,23 @@ SocketForLog::SocketForLog() {
     t_sockaddr.sin_family = AF_INET;
     t_sockaddr.sin_port = htons(ip_port);
     inet_pton(AF_INET, ip_address, &t_sockaddr.sin_addr);
-    if((connect(_socket_fd, (struct sockaddr*)&t_sockaddr, sizeof(struct sockaddr))) < 0 ) {
-        close(_socket_fd);
-    }
-}
-
-SocketForLog::~SocketForLog() {
-    if (_socket_fd > 0) {
+    int ret = 0;
+    if((ret = ::connect(_socket_fd, (struct sockaddr*)&t_sockaddr, sizeof(struct sockaddr))) < 0 ) {
+        LOGE("ztx_test connect error %s %d", strerror(errno), ret);
         close(_socket_fd);
         _socket_fd = -1;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1 * 1000));
+        return;
     }
+    LOGI("ztx_test connect sucess");
 }
 
 void SocketForLog::write(const void *data, size_t size) {
+    if (_socket_fd < 0) {
+        return;
+    }
     if(write_n(data, size) < 0) {
-        fprintf(stderr, "send message error: %s errno : %d", strerror(errno), errno);
+        LOGE("ztx_test send message error: %s errno : %d", strerror(errno), errno);
     }
 }
 
@@ -105,10 +123,11 @@ bool DataSrtream::read() {
 }
 
 size_t LogClientStream::kDataStreamVectorMaxSize = 20;
-size_t LogClientStream::kDataStreamInitSize = 200;
+size_t LogClientStream::kDataStreamInitSize = 1024;
 
+static SocketForLog sockt_sink;
 LogClientStream& LogClientStream::get_instance() {
-    static SocketForLog sockt_sink;
+    LOGI("ztx_test test test");
     static LogClientStream log_client_stream([](const void* data, size_t size) {
                 sockt_sink.write(data, size);
             });
@@ -122,9 +141,9 @@ void LogClientStream::run_thread(void* handle) {
 LogClientStream::LogClientStream(std::function<void(const void*, size_t)> call_back) : _call_back(call_back) {
     _is_stop = false;
     constexpr size_t kInitSize = 10; 
-    for(size_t i = 0; i < 10; ++i) {
+    for(size_t i = 0; i < kInitSize; ++i) {
        _data_stream_vector.push_back(
-               std::make_unique<DataSrtream>(kDataStreamInitSize, _call_back)); 
+               std::unique_ptr<DataSrtream>(new DataSrtream(kDataStreamInitSize, _call_back))); 
     }
     _thread_t = std::thread(run_thread, this);
 }
@@ -136,8 +155,16 @@ LogClientStream::~LogClientStream() {
 
 void LogClientStream::run() {
     while(!_is_stop) {
-        std::lock_guard<std::mutex> lk(_mutex);
-        if (_data_stream_vector[_cur_read_index]->read()) {
+        bool is_read = false;
+        sockt_sink.try_connect();
+        DataSrtream* ptr = nullptr;
+        {
+            std::lock_guard<std::mutex> lk(_mutex);
+            ptr = _data_stream_vector[_cur_read_index].get();
+        }
+        is_read = ptr->read();
+        if (is_read) {
+            std::lock_guard<std::mutex> lk(_mutex);
             _cur_read_index = (_cur_read_index + 1) % _data_stream_vector.size();
         } else {
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
@@ -147,24 +174,25 @@ void LogClientStream::run() {
 
 void LogClientStream::resize_vector_and_write(const void* data, size_t size) {
     std::lock_guard<std::mutex> lk(_mutex);
-    printf("resize_vector_and_write: %d\n", _data_stream_vector.size());
+    LOGI("ztx_test resize_vector_and_write start: %d\n", _data_stream_vector.size());
     const size_t cur_vec_size = _data_stream_vector.size();
     size_t new_size = std::max(cur_vec_size * 3 / 2, kDataStreamVectorMaxSize);
     auto tmp_vector = std::vector<std::unique_ptr<DataSrtream>>(new_size);
     size_t cur_index = _cur_read_index;
     size_t tmp_index = 0;
     for (; tmp_index < cur_vec_size; ++tmp_index) {
-        tmp_vector[tmp_index] = std::move(_data_stream_vector[cur_index]);
         cur_index = (_cur_read_index + tmp_index) % cur_vec_size;
+        tmp_vector[tmp_index] = std::move(_data_stream_vector[cur_index]);
     }
     for (; tmp_index < tmp_vector.size(); ++tmp_index) {
-        tmp_vector[tmp_index] = std::make_unique<DataSrtream>(kDataStreamInitSize, _call_back);
+        tmp_vector[tmp_index] = 
+            std::unique_ptr<DataSrtream>(new DataSrtream(kDataStreamInitSize, _call_back));
     }
     std::swap(_data_stream_vector, tmp_vector);
     _data_stream_vector[cur_vec_size]->write(data, size);
     _cur_read_index = 0;
     _cur_write_index = cur_vec_size;
-    printf("resize_vector_and_write: %d\n", _data_stream_vector.size());
+    LOGI("ztx_test resize_vector_and_write end: %d\n", _data_stream_vector.size());
 }
 
 void LogClientStream::write(const void *data, size_t size) {
@@ -183,7 +211,15 @@ void LogClientStream::write(const void *data, size_t size) {
     }
 }
 
-const std::unordered_map<LogLevel, const char*> kLogLeveToString = {
+struct MyKeyHashHasher
+{
+	size_t operator()(const LogLevel& level) const noexcept
+	{
+		return static_cast<size_t>(level);
+	}
+};
+
+const std::unordered_map<LogLevel, const char*, MyKeyHashHasher> kLogLeveToString = {
     {LogLevel::kDebug, "DEBUG: "},
     {LogLevel::kInfo, "INFO: "},
     {LogLevel::kWarnning, "WARN: "},

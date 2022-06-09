@@ -74,4 +74,4 @@ private:
     LogClientStream& _log_client_stream;
 };
 
-#define LOGI(tag) LogStream(LogLevel::kInfo, tag, LogClientStream::get_instance())
+#define LOG_I(tag) LogStream(LogLevel::kInfo, tag, LogClientStream::get_instance())
