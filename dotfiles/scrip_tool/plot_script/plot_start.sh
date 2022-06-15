@@ -3,7 +3,7 @@
 #=======================工作模式==================================
 #工作模式有两种，一种是从文件读取数据，一次画一个静态图，一种是从流中动态读取数据，实时画
 #file_mode  or stream_mode
-work_mode='stream_mode'
+work_mode='file_mode'
 
 #####  file_mode
 file_path=''
@@ -35,7 +35,8 @@ data_storage_len='1000'
 #如果要放在一张图：select_y_key='audio_delay,video_delay' 用逗号链接即可.
 #后面所有选项都是如此，用空格分隔代表不在一张图上，用逗号分隔代表在一张图上
 #NOTE: 这种模式会覆盖selete_y_raw
-select_y_key='current_buffer_size seq'
+#select_y_key=''
+select_y_key='current_buffer_size_max_num current_buffer_size_avg,opt_buffer_level_max_num current_iat_value_avg,current_iat_value_max_num'
 
 #与上面不同的是，上面的选项只针对一行数据，必须有全部的key,也就是说如果某一行数据没有全部的key会报错
 #这个更加通用，是在所有数据里查找，也就是不限制行，但是不同行不能有重复key，否则会覆盖。
@@ -43,7 +44,7 @@ select_y_key='current_buffer_size seq'
 #按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
 #NOTE1: 上面的模式效率更高.
 #NOTE2: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可：select_y_key_multi_line=''
-select_y_key_multi_line=''
+#select_y_key_multi_line='jitter,opt_buffer_level_max_num recv_pkg_num'
 
 #这个也是用来筛选Y轴数据，但是却是用列来选取，比如当前有一行文本为： 【INFO】audio_delay:30 video_delay:40
 #按空格跟冒号切割变成（后面会说到）：【INFO】audio_delay 30 video_delay 40, 那么第2列跟第四列就是我们要的数字
@@ -64,7 +65,7 @@ point_size=''
 
 #=======================数据过滤与筛选==================================
 #filter_include_keywords='recv media_info' 表示只有包含'recv media_info'的行才会被解析
-filter_include_keywords='NeteqTest'
+filter_include_keywords='opt_buffer_level_max_num'
 
 #filter_exclude_keywords='recv media_info' 表示包含'recv media_info'的行不会被解析
 filter_exclude_keywords=''
@@ -72,7 +73,7 @@ filter_exclude_keywords=''
 #filter_include_keywords差不多的功能，只不过这个会以正则表达式的形式去解析
 #举个例子 filter_include_keywords=media_info.c,表示包含media_info.c的行，在media_info.c中的点
 #在正则表达式里表示任意字母
-reg_pattern_include=''
+#reg_pattern_include='recv media_info i:0|opt_buffer_level_max_num'
 
 #同上，只不过是不包含
 reg_pattern_exclude=''
@@ -98,7 +99,7 @@ split_pattern_reg='[ :,]+'
 #此时可以设置title='RTT audio_delay/video_delay',因为是两张图，所以两个标题
 #此时图例：legend_name='RTT audio_delay,video_delay' 第二个图有两个图例，所以有两个值用逗号分开
 #注: 在 select_y_key模式下，这两个选项不生效，因为在select_y_key模式下title legend_name自动等于select_y_key
-title=''
+title='MEMERY CPU'
 legend_name=''
 
 #设置X轴跟Y轴的单位。比如xtile='time(ms)' ytitle='百分比%'
@@ -115,13 +116,60 @@ y_show_range=''
 x_show_range=''
 
 #自己设置X的显示label
-#用于需要自己定制label的场景，比如时间： xlabel='10:20 10:30 10:40 10:50 11:00 11:10'
-#这些label会均匀的分布在X轴上
+#用于需要自己定制label的场景
+#例子： xlabel='10:20,10:30,10:40 null 1,4,7'
+#表示第一幅图配置的xlabel是10:20 10:30 10:40
+#第二幅图不配置
+#第三幅图配置的xlabel是1 4 7
+#这些label会均匀的分布在X轴上.
+#注：如果xlabel只配置了一个，默认为最后一幅图的xlabel
 xlabel=''
 
 #给定数据范围，生成label
 #比如 xlabel_range='0,300,5'表示0-300生成5个间隔，会生成【0 60 120 180 240 300】
 xlabel_range=''
+
+#指定第几副图显示X轴坐标
+#比如 show_xlabel='1 0 1'表示第一幅第三幅图显示X轴坐标，第二幅不显示
+#注：默认只显示最后一幅图
+show_xlabel=''
+
+#这两个参数表示各个图的排列方式
+#is_raw_arrange为1表示先按行分割，否则按照先按列分割
+#plot_arrange_way 是每行或者每列具体又分割成几个部分
+#例子1：is_raw_arrange='1' plot_arrange_way='2 1 2'
+#这个表示以行优先划分，实际上就是plot_arraneg_way的长度，也就是3，
+#然后第一行分割成2份，第二行分割成1份，第三行分割成2份
+#它画出来的图的布局应该是下面的样子
+# |--------------|--------------|   
+# |     1        |       2      |
+# |              |              |
+# |--------------|--------------|
+# |              3              |
+# |                             |
+# |--------------|--------------|
+# |     4        |       5      |
+# |              |              |
+# |--------------|--------------|
+# 数字代表从1到五副图的排列
+#
+#例子2：is_raw_arrange='0' plot_arrange_way='2 1 2'
+#这个表示以列优先划分，实际上就是plot_arraneg_way的长度，也就是3，
+#然后第一列分割成2份，第二列分割成1份，第三列分割成2份
+#它画出来的图的布局应该是下面的样子
+# |---------|---------|---------|   
+# |         |         |         |
+# |    1    |         |    4    |
+# |         |         |         |
+# |         |         |         |
+# |---------|    3    |---------|
+# |         |         |         |
+# |    2    |         |    5    |
+# |         |         |         |
+# |---------|---------|---------|
+# 数字代表从1到五副图的排列
+is_raw_arrange='1'
+plot_arrange_way=''
 #=======================图配置==================================
 
 
@@ -149,13 +197,15 @@ python3 $plotpath "file_path=$file_path"  \
                  "x_show_range=$x_show_range" \
                  "legend_name=$legend_name" \
                  "ytitle=$ytitle"  \
-                 "x_need_lable_seq=$x_need_lable_col"\
                  "xlabel_range=$xlabel_range" \
                  "filter_include_keywords=$filter_include_keywords" \
                  "filter_exclude_keywords=$filter_exclude_keywords" \
                  "reg_pattern_include=$reg_pattern_include" \
                  "reg_pattern_exclude=$reg_pattern_exclude" \
                  "split_pattern_reg=$split_pattern_reg" \
+                 "show_xlabel=$show_xlabel" \
+                 "is_raw_arrange=$is_raw_arrange" \
+                 "plot_arrange_way=$plot_arrange_way"
 
 
 #注：第一个参数必须是文件路径,除了文件路径跟Y轴数据 其他参数都是可选.

@@ -180,7 +180,6 @@ class myplot:
 class PlotData:
     _config_dict = { \
                     'xlabel':[], \
-                    'x_need_lable_seq':[], \
                     'select_y_raw':[], \
                     'title':[], \
                     'point_size':[], \
@@ -191,9 +190,13 @@ class PlotData:
                     'legend_name':[], \
                     'xlabel_range':[], \
                     'show_xlabel':[], \
-                    'y_filter_range':[]
+                    'y_filter_range':[], \
+                    'is_raw_arrange':'1', \
+                    'plot_arrange_way':[]
                 } 
     _plot_list = []
+    _is_raw_arrange='1'
+    _plot_arrange_way=[]
 
 
     def update_config(self, key, value):
@@ -215,7 +218,13 @@ class PlotData:
         xlabel_range = self._config_dict['xlabel_range']
         show_xlabel = self._config_dict['show_xlabel']
         x_show_range = self._config_dict['x_show_range']
-        
+        if len(self._config_dict['is_raw_arrange']) > 0:
+            self._is_raw_arrange = self._config_dict['is_raw_arrange'][0]
+        try:
+            self._plot_arrange_way = [int(x) for x in self._config_dict['plot_arrange_way']]
+        except:
+            plt_tool.log_error("invalid config plot_arrange_way: %s" \
+                    % str(self._config_dict['plot_arrange_way']))
         self._plot_list = [myplot() for _ in range(count_plot)]
         plot_list = self._plot_list
         for i in range(1, count_plot):
@@ -254,14 +263,37 @@ class PlotData:
                 if len(str_range) == 2:
                     plot_list[i].set_y_show_range(int(str_range[0]),int(str_range[1]))
     
-    
+    def get_plot_pos(self, index):
+        plot_list_len = len(self._plot_list)
+        if sum(self._plot_arrange_way) < plot_list_len:
+            if self._is_raw_arrange == '1':
+                return [plot_list_len, 1, index]
+            else:
+                return [1, plot_list_len, index]
+        cur_sum, x, y = 0, 0, 0
+        plot_arrange_len = len(self._plot_arrange_way)
+        for i in range(0, plot_arrange_len):
+            i_num = self._plot_arrange_way[i]
+            if index <= cur_sum + i_num:
+                x = i + 1
+                y = index - cur_sum
+                break
+            cur_sum += i_num
+        if self._is_raw_arrange == '1':
+            return [plot_arrange_len, i_num, (x - 1) * i_num + y]
+        else:
+            return [i_num, plot_arrange_len, (y - 1) * plot_arrange_len + x]
+
+
     def plotplot(self, data_x, data_y):
         plot_list_len = len(self._plot_list)
         if plot_list_len != len(data_x) or plot_list_len != len(data_y):
             raise Exception("dim(plot_list):%d != dim(data_x or data_y):%d,%d" % \
                     (plot_list_len, len(data_x), len(data_y)))
-        for i in range(0,plot_list_len):
-            self._plot_list[i].plot(data_x[i], data_y[i], plot_list_len,1,i+1)
+        for i in range(0, plot_list_len):
+            plot_pos = self.get_plot_pos(i + 1)
+            plt_tool.log_info("index:%d, pos is :%s" % (i + 1, str(plot_pos)))
+            self._plot_list[i].plot(data_x[i], data_y[i], plot_pos[0], plot_pos[1], plot_pos[2])
             plt.legend(loc='upper right')
    
     def show_plot(self, data_x, data_y):
