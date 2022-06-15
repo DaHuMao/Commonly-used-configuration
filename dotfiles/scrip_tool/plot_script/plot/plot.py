@@ -101,18 +101,13 @@ class myplot:
         self._xlabel = xlabel
 
     def set_y_filter_range(self, lo, hi):
-        self._y_filter_range[0] = lo
-        self._y_filter_range[1] = hi
+        self._y_filter_range = [lo, hi]
 
     def set_y_show_range(self, lo, hi):
-        if hi > lo:
-            self._y_show_range[0] = lo
-            self._y_show_range[1] = hi
+        self._y_show_range = [lo, hi]
 
     def set_x_show_range(self, lo, hi):
-        if hi > lo:
-            self._x_show_range[0] = lo
-            self._x_show_range[1] = hi
+        self._x_show_range = [lo, hi]
    
     def set_legend_name(self, legend_name):
         self._legend_name = legend_name
@@ -132,6 +127,10 @@ class myplot:
             x2 = list(range(0, data_y_dim, int(dot)))
             if (len(x2) < len(self._xlabel)):
                 x2.append(data_y_dim)
+            if len(x2) < len(self._xlabel):
+                self._xlabel = self._xlabel[0 : len(x2)]
+            if len(x2) > len(self._xlabel):
+                x2 = x2[0 : len(self._xlabel)]
             plt.xticks(x2, self._xlabel)
         if len(self._xtitle) > 0:
             plt.xlabel(self._xtitle)
@@ -162,13 +161,14 @@ class myplot:
 
     def plot(self, data_x, data_y, x_pos, y_pos, index):
         if len(data_y) == 0:
-            raise Exception('invalid data_len: ', len(data_y))
+            raise Exception('invalid data_len: %d' % len(data_y))
         if self._point_size > 1:
             for i in range(len(data_y)):
                 data_y[i] = compress_data(self.data_y[i], self._point_size)
             data_x = compress_data(self.data_x, self._point_size)
         if self.check_data(data_x, data_y):
-            raise Exception("dim(data_x) != dim(data_y)")
+            raise Exception("dim(data_x) != dim(data_y), "\
+                    "dim(data_x): %d dim(data_y): %d" % (len(data_x), len(data_y)))
         plt.subplot(x_pos, y_pos, index)
         self.config_plt(len(data_y[0]))
         for i in range(len(data_y)):
@@ -220,6 +220,8 @@ class PlotData:
         plot_list = self._plot_list
         for i in range(1, count_plot):
             plot_list[i]=copy.deepcopy(plot_list[0])
+        if len(xlabel) == 1:
+            plot_list[count_plot - 1].set_xlabel(xlabel[0].split(','))
         for i in range(0,count_plot):
             if (i < len(show_xlabel) and show_xlabel[i] == '1') or i == count_plot - 1:
                 plot_list[i].show_xlabel()
@@ -231,8 +233,8 @@ class PlotData:
                 plot_list[i].set_xtitle(xtitle[0])
             if len(ytitle) > i and ytitle[i] != 'null':
                 plot_list[i].set_ytitle(ytitle[i])
-            if len(xlabel) > 0 and i == count_plot - 1:
-                plot_list[i].set_xlabel(xlabel)
+            if len(xlabel) > 1 and i < len(xlabel) and xlabel[i] != 'null':
+                plot_list[i].set_xlabel(xlabel[i].split(','))
             if len(xlabel_range) > 0:
                 tmp = xlabel_range[0].split(',')
                 if len(tmp) == 3:

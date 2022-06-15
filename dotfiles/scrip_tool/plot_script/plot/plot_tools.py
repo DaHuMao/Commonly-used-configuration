@@ -58,9 +58,19 @@ def select_data(select_index, data, return_data):
         index = int(select_index[i])
         if index >= len(data):
             raise Exception("select_raw[%d]: %d overflow" % (i, index))
-        return_data[i].append(float(data[index]))
+        try:
+            return_data[i].append(float(data[index]))
+        except:
+            log_error("in %s\n, index: %d value: %s is invalid" % \
+                    (str(data), index, data[index]))
+            raise Exception("can not  convert  %s to float" % (data[index]))
+
 
 def get_data(data_x, data_y, select_y):
+    if len(data_y) == 0 or len(select_y) == 0:
+        raise Exception("invalid length of array, " \
+                "len(data_y):%d, len(select_y): %d" % \
+                (len(data_y), len(select_y)))
     x_data = data_x
     x_data_default = range(0, len(data_y[0]))
     if len(x_data) > 0:
