@@ -122,7 +122,7 @@ class myplot:
     def config_plt(self, data_y_dim):
         if self._show_xlabel is False:
             plt.xticks([])
-        elif len(self._xlabel) > 0:
+        elif len(self._xlabel) > 1:
             dot = max(1, data_y_dim / (len(self._xlabel)-1))
             x2 = list(range(0, data_y_dim, int(dot)))
             if (len(x2) < len(self._xlabel)):
@@ -206,6 +206,26 @@ class PlotData:
         else:
             return False
 
+    def is_last_raw(self, index):
+        if index == len(self._plot_list):
+            return True
+        if len(self._plot_arrange_way) == 0:
+            return index == len(self._plot_list)
+        tmp_arr = self._plot_arrange_way
+        sub_sum_plot_arrange = sum(tmp_arr[:len(tmp_arr) - 1])
+        if self._is_raw_arrange == "1":
+            return index > sub_sum_plot_arrange
+        else:
+            tmp_sum = 0
+            for ee in self._plot_arrange_way:
+                tmp_sum += ee
+                if tmp_sum == index:
+                    return True
+                if tmp_sum > index:
+                    break
+        return False
+
+
     def init_plot(self, count_plot):
         title = self._config_dict['title']
         xlabel = self._config_dict['xlabel']
@@ -229,10 +249,17 @@ class PlotData:
         plot_list = self._plot_list
         for i in range(1, count_plot):
             plot_list[i]=copy.deepcopy(plot_list[0])
-        if len(xlabel) == 1:
-            plot_list[count_plot - 1].set_xlabel(xlabel[0].split(','))
+        if len(self._plot_arrange_way) > 0 and count_plot > sum(self._plot_arrange_way):
+            raise Exception( \
+                    "count of plot: %d less than sum of plot_arrange_way %d plot_arrange_way is: %s"\
+                    % (count_plot, sum(self._plot_arrange_way), self._plot_arrange_way))
+        for i in range(len(plot_list)):
+            if self.is_last_raw(i + 1):
+                plot_list[i].show_xlabel()
+                if len(xlabel) == 1:
+                    plot_list[i].set_xlabel(xlabel[0].split(','))
         for i in range(0,count_plot):
-            if (i < len(show_xlabel) and show_xlabel[i] == '1') or i == count_plot - 1:
+            if (i < len(show_xlabel) and show_xlabel[i] == '1'):
                 plot_list[i].show_xlabel()
             if i < len(title) and title[i] != 'null':
                 plot_list[i].set_title(title[i])
@@ -274,6 +301,9 @@ class PlotData:
         plot_arrange_len = len(self._plot_arrange_way)
         for i in range(0, plot_arrange_len):
             i_num = self._plot_arrange_way[i]
+            if i_num <= 0:
+                raise Exception("invalid plot_arrange_way:%s, index of %d less than 1: %d" %\
+                        (str(self._plot_arrange_way), i, i_num))
             if index <= cur_sum + i_num:
                 x = i + 1
                 y = index - cur_sum
