@@ -259,6 +259,8 @@ class PlotData:
                 plot_list[i].show_xlabel()
                 if len(xlabel) == 1:
                     plot_list[i].set_xlabel(xlabel[0].split(','))
+                if (len(xtitle)) == 1:
+                    plot_list[i].set_xtitle(xtitle[0])
         for i in range(0,count_plot):
             if (i < len(show_xlabel) and show_xlabel[i] == '1'):
                 plot_list[i].show_xlabel()
@@ -266,8 +268,8 @@ class PlotData:
                 plot_list[i].set_title(title[i])
             if len(point_size) > 0:
                 plot_list[i].set_point_size(int(point_size[0]))
-            if len(xtitle) > 0 and i == count_plot - 1:
-                plot_list[i].set_xtitle(xtitle[0])
+            if len(xtitle) > 1:
+                plot_list[i].set_xtitle(xtitle[i])
             if len(ytitle) > i and ytitle[i] != 'null':
                 plot_list[i].set_ytitle(ytitle[i])
             if len(xlabel) > 1 and i < len(xlabel) and xlabel[i] != 'null':
