@@ -136,9 +136,10 @@ class SocketReader:
             self._data_parser.clear_cache()
         finally:
             self._rlock.release()
-        remove_end_index = len(self._select_data_y[0]) - int(self._config_dict['data_storage_len'])
-        if remove_end_index > 0:
-            for ele in self._select_data_y:
+        for ele in self._select_data_y:
+            remove_end_index = len(ele) \
+                    - int(self._config_dict['data_storage_len'])
+            if remove_end_index > 0:
                 del ele[0 : remove_end_index]
         return [], self._select_data_y
 
