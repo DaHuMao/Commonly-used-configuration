@@ -72,14 +72,11 @@ def get_data(data_x, data_y, select_y):
                 "len(data_y):%d, len(select_y): %d" % \
                 (len(data_y), len(select_y)))
     x_data = data_x
-    x_data_default = range(0, len(data_y[0]))
-    if len(x_data) > 0:
-        x_data_default = x_data[0]
     y_data = []
     start_index = 0
     for i in range(len(select_y)):
         if i >= len(x_data):
-            x_data.append(x_data_default)
+            x_data.append(range(0, len(data_y[start_index])))
         end_index = len(select_y[i].split(',')) + start_index
         y_data.append(data_y[start_index : end_index])
         start_index = end_index

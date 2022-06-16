@@ -1,8 +1,11 @@
+import sys 
+
 import plot_tools as plt_tool 
 import read_file
 import socket_reader
 import plot
-import sys 
+import single_line_parser
+import multi_line_parser
 
 class PlotEngine:
     _reader = read_file.TxTFileReader()
@@ -12,7 +15,8 @@ class PlotEngine:
                 'work_mode': '', \
                 'select_y_raw': [], \
                 'select_x_raw': [], \
-                'select_y_key': []
+                'select_y_key': [], \
+                'select_y_key_multi_line': []
                 }
 
     def update_config(self, key, value):
@@ -30,13 +34,10 @@ class PlotEngine:
             for ee in ele.split(','):
                 select_y_index.append(ee)
         work_mode = self._config_dict['work_mode']
-        if work_mode == 'file_mode':
-            self._reader.init(self._text_processor, \
-                    self._config_dict['select_x_raw'], select_y_index)
-        elif work_mode == 'stream_mode':
-            self._reader.init(self._text_processor, select_y_index)
-        else:
-            Exception('unknow work_mode: %s' % work_mode)
+        line_parser_x = multi_line_parser.MultiLineParser(\
+                self._config_dict['select_x_raw'])
+        line_parser_y = multi_line_parser.MultiLineParser(select_y_index)
+        self._reader.init(self._text_processor, line_parser_x, line_parser_y)
 
 
     def init_plot(self):
@@ -61,6 +62,8 @@ class PlotEngine:
             flag = ele.split('=')
             if len(flag) == 2:
                 self.update_config(flag[0], flag[1])
+        if len(self._config_dict['select_y_key_multi_line']) != 0:
+            self._config_dict['select_y_key'] = self._config_dict['select_y_key_multi_line']
         work_mode = self._config_dict['work_mode']
         if work_mode == 'file_mode':
             self._reader = read_file.TxTFileReader()

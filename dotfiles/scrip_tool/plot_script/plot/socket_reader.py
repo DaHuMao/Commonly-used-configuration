@@ -18,9 +18,8 @@ class SocketReader:
     _rlock = threading.Lock()
 
     _text_processor = None
-    _select_raw_y = None
     _select_data_y = []
-    _select_data_y_prepare = []
+    _data_parser = None
     _remainder_str = ''
    
     def update_config(self, key, value):
@@ -32,12 +31,10 @@ class SocketReader:
             self._config_dict[key] = value.strip().split() 
         return True
 
-    def init(self, text_processor, select_raw_y):
+    def init(self, text_processor, data_parser_x, data_parser_y):
         self._text_processor = text_processor
-        self._select_raw_y = select_raw_y
-        self._is_first = True
-        self._select_data_y = [[] for _ in range(0, len(self._select_raw_y))]
-        self._select_data_y_prepare = [[] for _ in range(0, len(self._select_raw_y))]
+        self._data_parser = data_parser_y
+        self._select_data_y = [[] for _ in range(0, data_parser.y_raw_dim())]
 
     def start_server(self):
         if self._stop is False:
@@ -73,15 +70,30 @@ class SocketReader:
             if self._text_processor.is_valid_line(line) == False:
                 continue
             data = self._text_processor.split_str_to_data(line)
-            if self._is_first is True:
-                self._is_first = False
-                self._select_raw_y = plt_tool.key_to_index(self._select_raw_y, data)
             self._rlock.acquire()
             try:
-                plt_tool.select_data(self._select_raw_y, \
-                        data, self._select_data_y_prepare)
+                self._data_parser.insert_line(data)
             finally:
                 self._rlock.release()
+
+    def decode_data(self, recv_str):
+        if recv_str == 'exit':
+            plt_tool.log_info('client close')
+            self._recever_socket.close()
+            self._recever_socket = None
+        else:
+            has_remain_str = recv_str[-1] != '\n'
+            str_data = recv_str.split('\n')
+            if str_data[-1] == '':
+                str_data.pop()
+            if self._remainder_str != '':
+                str_data[0] = self._remainder_str + str_data[0]
+                self._remainder_str = ''
+            if has_remain_str:
+                self._remainder_str = str_data[-1]
+                str_data.pop()
+            self.get_x_y(str_data)
+
 
     def receiver_data(self):
         while self._stop is False:
@@ -93,23 +105,7 @@ class SocketReader:
                 data = self._recever_socket.recv(1024)
                 recv_str = bytes.decode(data)
                 if len(data) > 0:
-                    if recv_str == 'exit':
-                        plt_tool.log_info('client close')
-                        self._recever_socket.close()
-                        self._recever_socket = None
-                    else:
-                        has_remain_str = recv_str[-1] != '\n'
-                        str_data = recv_str.split('\n')
-                        if str_data[-1] == '':
-                            str_data.pop()
-                        if self._remainder_str != '':
-                            str_data[0] = self._remainder_str + str_data[0]
-                            self._remainder_str = ''
-                        if has_remain_str:
-                            self._remainder_str = str_data[-1]
-                            str_data.pop()
-                        self.get_x_y(str_data)
-
+                    decode_data(recv_str)
                 else:
                     plt_tool.log_info('no data')
                     time.sleep(2)
@@ -134,9 +130,10 @@ class SocketReader:
     def load_data(self):
         self._rlock.acquire()
         try:
-            for i in range(len(self._select_data_y_prepare)):
-                self._select_data_y[i].extend(self._select_data_y_prepare[i])
-                self._select_data_y_prepare[i].clear()
+            tmp_data = self._data_parser.reference_data()
+            for ee in tmp_data:
+                self._select_data_y[i].extend(ee)
+            self._data_parser.clear_cache()
         finally:
             self._rlock.release()
         remove_end_index = len(self._select_data_y[0]) - int(self._config_dict['data_storage_len'])

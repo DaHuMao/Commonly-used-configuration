@@ -19,13 +19,9 @@ class TxTFileReader:
             self._config_dict[key] = value.strip().split() 
         return True
 
-    def init(self, text_processor, select_raw_x, select_raw_y):
+    def init(self, text_processor, data_parser_x, data_parser_y):
         self._text_processor = text_processor
         f = open(self._config_dict['file_path'], "r")
-        select_index_y = []
-        select_index_x = []
-        self._return_data_x = [[] for _ in range(len(select_raw_x))] 
-        self._return_data_y = [[] for _ in range(len(select_raw_y))]
         start_line = -1
         end_line = -1
         if len(self._config_dict['x_select_range']) == 2:
@@ -34,7 +30,6 @@ class TxTFileReader:
             plt_tool.log_info("x_select_range is %d~%d" % (start_line, end_line))
 
         count = 0
-        first = True
         for line in f:
             count += 1
             if start_line > -1 and count < start_line:
@@ -44,14 +39,18 @@ class TxTFileReader:
             if self._text_processor.is_valid_line(line) == False:
                 continue
             data = self._text_processor.split_str_to_data(line)
-            if first is True:
-                first = False
-                select_index_x = plt_tool.key_to_index(select_raw_x, data)
-                select_index_y = plt_tool.key_to_index(select_raw_y, data)
-            plt_tool.select_data(select_index_x, data, self._return_data_x)
-            plt_tool.select_data(select_index_y, data, self._return_data_y)
+            if data_parser_x != None:
+                data_parser_x.insert_line(data)
+            if data_parser_y != None:
+                data_parser_y.insert_line(data)
+
+        if data_parser_x != None:
+            self._return_data_x = data_parser_x.move_data()
+        self._return_data_y = data_parser_y.move_data()
         if len(self._return_data_y) > 0:
-            plt_tool.log_info("select_data length: %d" % (len(self._return_data_y[0])))
+            for i in range(len(self._return_data_y)):
+                plt_tool.log_info("index of :%d, select_data length: %d" %\
+                        (i, len(self._return_data_y[0])))
 
     def load_data(self):
         return self._return_data_x, self._return_data_y

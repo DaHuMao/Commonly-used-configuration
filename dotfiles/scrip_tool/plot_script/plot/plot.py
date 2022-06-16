@@ -64,12 +64,12 @@ class myplot:
     def check_data(self, data_x, data_y):
         if len(data_y) == 0:
             return False
-        data_len = len(data_y)
+        data_len = len(data_x)
         for i in range(len(data_y)):
-            if data_len != data_y[i]:
+            if data_len != len(data_y[i]):
+                plt_tool.log_error("index of %d: dim(x): %d not eq dim(y): %d" % \
+                        (i, data_len,len(data_y[i])))
                 return False
-        if len(data_x) != len(data_y):
-            return False
         return True
 
     def set_xlabel(self, xlabel):
@@ -166,9 +166,8 @@ class myplot:
             for i in range(len(data_y)):
                 data_y[i] = compress_data(self.data_y[i], self._point_size)
             data_x = compress_data(self.data_x, self._point_size)
-        if self.check_data(data_x, data_y):
-            raise Exception("dim(data_x) != dim(data_y), "\
-                    "dim(data_x): %d dim(data_y): %d" % (len(data_x), len(data_y)))
+        if self.check_data(data_x, data_y) is False:
+            raise Exception("invalid dim(data_x) dim(data_y)")
         plt.subplot(x_pos, y_pos, index)
         self.config_plt(len(data_y[0]))
         for i in range(len(data_y)):
