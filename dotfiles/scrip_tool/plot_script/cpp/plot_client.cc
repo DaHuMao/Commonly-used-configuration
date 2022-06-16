@@ -12,6 +12,14 @@
 #include <unordered_map>
 #include "rtinterphonelog.h"
 
+static std::string gs_ip_address = "172.24.220.219"
+static int gs_ip_port = 9600;
+
+void set_ip_address(const std::string ip, int port) {
+    gs_ip_address = ip;
+    gs_ip_port = port;
+}
+
 class SocketForLog {
 public:
     SocketForLog();
@@ -36,8 +44,8 @@ void SocketForLog::try_connect() {
     if (_socket_fd > 0) {
         return;
     }
-    const char* ip_address = "172.24.220.219";
-    int ip_port = 9600;
+    const char* ip_address = gs_ip_address.c_str();
+    int ip_port = gs_ip_port;
     _socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socket_fd < 0) {
         return;
@@ -231,27 +239,3 @@ LogStream::LogStream(LogLevel log_level, const char* tag, LogClientStream& log_c
    _stream << kLogLeveToString.find(log_level)->second << tag << ": ";
 }
 
-//************************example***********************************
-/*
-int main() {
-    const size_t count = 1000;
-    const size_t max_val = 50;
-    int val = 0;
-    int flag = 1;
-    for (size_t i = 0; i < count; ++i) {
-        LOGI("media_info") << "send_speak_count:" << val << " "
-                     << "aec_speak_count:" << val + 1 << " "
-                     << "sssadsa" << " "
-                     << "RTT:" << val + 3 << " "
-                     << "send_speak_energy:" << val + 10 << " ";
-        LOGI("test") << "ssssssdfsad";
-        if (val <= 0) {
-            flag = 1;
-        } else if (val >= max_val) {
-            flag = -1;
-        }
-        val += flag;
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    }
-}
-*/

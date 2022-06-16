@@ -35,8 +35,8 @@ data_storage_len='1000'
 #如果要放在一张图：select_y_key='audio_delay,video_delay' 用逗号链接即可.
 #后面所有选项都是如此，用空格分隔代表不在一张图上，用逗号分隔代表在一张图上
 #NOTE: 这种模式会覆盖selete_y_raw
-#select_y_key=''
-select_y_key='current_buffer_size_max_num current_buffer_size_avg,opt_buffer_level_max_num current_iat_value_avg,current_iat_value_max_num'
+select_y_key='a b'
+#select_y_key='current_buffer_size_max_num current_buffer_size_avg,opt_buffer_level_max_num current_iat_value_avg,current_iat_value_max_num'
 
 #与上面不同的是，上面的选项只针对一行数据，必须有全部的key,也就是说如果某一行数据没有全部的key会报错
 #这个更加通用，是在所有数据里查找，也就是不限制行，但是不同行不能有重复key，否则会覆盖。
@@ -54,7 +54,7 @@ select_y_raw=''
 
 #这个跟select_y_raw是差不多的，不过这个是用来设置X轴的数据
 #注：这个选项不填，会自动生成
-select_x_raw=''
+select_x_raw='0 3'
 
 
 #当数据太多需要做平滑的时候，可能会把好几个点合并成一个点
@@ -65,7 +65,7 @@ point_size=''
 
 #=======================数据过滤与筛选==================================
 #filter_include_keywords='recv media_info' 表示只有包含'recv media_info'的行才会被解析
-filter_include_keywords='opt_buffer_level_max_num'
+filter_include_keywords=''
 
 #filter_exclude_keywords='recv media_info' 表示包含'recv media_info'的行不会被解析
 filter_exclude_keywords=''
@@ -172,7 +172,7 @@ is_raw_arrange='1'
 plot_arrange_way=''
 #=======================图配置==================================
 
-
+file_path=./example.txt
 if [ $# -gt 0 ];then
     file_path=$1
 fi

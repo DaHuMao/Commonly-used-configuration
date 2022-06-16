@@ -4,7 +4,8 @@
 #include <mutex>
 #include <functional>
 #include <thread>
-
+namespace  plot_plot {
+void set_ip_address(const std::string& ip, int port);
 class DataSrtream final {
 public:
     DataSrtream(size_t init_size, std::function<void(const void*, size_t)> call_back);
@@ -73,5 +74,6 @@ private:
     std::ostringstream _stream;
     LogClientStream& _log_client_stream;
 };
+} // plot_plot
 
-#define LOG_I(tag) LogStream(LogLevel::kInfo, tag, LogClientStream::get_instance())
+#define LOG_I(tag) LogStream(LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())
