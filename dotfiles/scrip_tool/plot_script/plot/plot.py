@@ -196,6 +196,7 @@ class PlotData:
     _plot_list = []
     _is_raw_arrange='1'
     _plot_arrange_way=[]
+    _is_first = True
 
 
     def update_config(self, key, value):
@@ -226,6 +227,7 @@ class PlotData:
 
 
     def init_plot(self, count_plot):
+        self._is_first = True
         title = self._config_dict['title']
         xlabel = self._config_dict['xlabel']
         point_size = self._config_dict['point_size']
@@ -321,7 +323,9 @@ class PlotData:
                     (plot_list_len, len(data_x), len(data_y)))
         for i in range(0, plot_list_len):
             plot_pos = self.get_plot_pos(i + 1)
-            plt_tool.log_info("index:%d, pos is :%s" % (i + 1, str(plot_pos)))
+            if self._is_first:
+                plt_tool.log_info("index:%d, pos is :%s" % (i + 1, str(plot_pos)))
+                self._is_first = False
             self._plot_list[i].plot(data_x[i], data_y[i], plot_pos[0], plot_pos[1], plot_pos[2])
             plt.legend(loc='upper right')
    

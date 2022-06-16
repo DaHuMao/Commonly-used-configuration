@@ -33,10 +33,13 @@ class PlotEngine:
         for ele in self.get_select_y():
             for ee in ele.split(','):
                 select_y_index.append(ee)
-        work_mode = self._config_dict['work_mode']
-        line_parser_x = multi_line_parser.MultiLineParser(\
-                self._config_dict['select_x_raw'])
-        line_parser_y = multi_line_parser.MultiLineParser(select_y_index)
+        line_parser_x = None
+        line_parser_y = None
+        if len(self._config_dict['select_y_key_multi_line']) != 0:
+            line_parser_y = multi_line_parser.MultiLineParser(select_y_index)
+        else:
+            line_parser_x = single_line_parser.SingleLineParser(self._config_dict['select_x_raw'])
+            line_parser_y = single_line_parser.SingleLineParser(select_y_index)
         self._reader.init(self._text_processor, line_parser_x, line_parser_y)
 
 

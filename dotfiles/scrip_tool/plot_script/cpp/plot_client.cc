@@ -10,12 +10,11 @@
 #include <cstdarg>
 #include <memory>
 #include <unordered_map>
-#include "rtinterphonelog.h"
-
-static std::string gs_ip_address = "172.24.220.219"
+namespace plot_plot {
+static std::string gs_ip_address = "172.24.220.219";
 static int gs_ip_port = 9600;
 
-void set_ip_address(const std::string ip, int port) {
+void set_ip_address(const char* ip, int port) {
     gs_ip_address = ip;
     gs_ip_port = port;
 }
@@ -57,13 +56,13 @@ void SocketForLog::try_connect() {
     inet_pton(AF_INET, ip_address, &t_sockaddr.sin_addr);
     int ret = 0;
     if((ret = ::connect(_socket_fd, (struct sockaddr*)&t_sockaddr, sizeof(struct sockaddr))) < 0 ) {
-        LOGE("ztx_test connect error %s %d", strerror(errno), ret);
+        printf("ztx_test connect error %s %d", strerror(errno), ret);
         close(_socket_fd);
         _socket_fd = -1;
         std::this_thread::sleep_for(std::chrono::milliseconds(1 * 1000));
         return;
     }
-    LOGI("ztx_test connect sucess");
+    printf("ztx_test connect sucess");
 }
 
 void SocketForLog::write(const void *data, size_t size) {
@@ -71,7 +70,7 @@ void SocketForLog::write(const void *data, size_t size) {
         return;
     }
     if(write_n(data, size) < 0) {
-        LOGE("ztx_test send message error: %s errno : %d", strerror(errno), errno);
+        printf("ztx_test send message error: %s errno : %d", strerror(errno), errno);
     }
 }
 
@@ -135,7 +134,6 @@ size_t LogClientStream::kDataStreamInitSize = 1024;
 
 static SocketForLog sockt_sink;
 LogClientStream& LogClientStream::get_instance() {
-    LOGI("ztx_test test test");
     static LogClientStream log_client_stream([](const void* data, size_t size) {
                 sockt_sink.write(data, size);
             });
@@ -182,7 +180,7 @@ void LogClientStream::run() {
 
 void LogClientStream::resize_vector_and_write(const void* data, size_t size) {
     std::lock_guard<std::mutex> lk(_mutex);
-    LOGI("ztx_test resize_vector_and_write start: %d\n", _data_stream_vector.size());
+    printf("ztx_test resize_vector_and_write start: %lu\n", _data_stream_vector.size());
     const size_t cur_vec_size = _data_stream_vector.size();
     size_t new_size = std::max(cur_vec_size * 3 / 2, kDataStreamVectorMaxSize);
     auto tmp_vector = std::vector<std::unique_ptr<DataSrtream>>(new_size);
@@ -200,7 +198,7 @@ void LogClientStream::resize_vector_and_write(const void* data, size_t size) {
     _data_stream_vector[cur_vec_size]->write(data, size);
     _cur_read_index = 0;
     _cur_write_index = cur_vec_size;
-    LOGI("ztx_test resize_vector_and_write end: %d\n", _data_stream_vector.size());
+    printf("ztx_test resize_vector_and_write end: %lu\n", _data_stream_vector.size());
 }
 
 void LogClientStream::write(const void *data, size_t size) {
@@ -238,4 +236,4 @@ LogStream::LogStream(LogLevel log_level, const char* tag, LogClientStream& log_c
         _log_client_stream(log_client_stream) {
    _stream << kLogLeveToString.find(log_level)->second << tag << ": ";
 }
-
+} // plot_plot

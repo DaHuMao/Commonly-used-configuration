@@ -34,7 +34,7 @@ class SocketReader:
     def init(self, text_processor, data_parser_x, data_parser_y):
         self._text_processor = text_processor
         self._data_parser = data_parser_y
-        self._select_data_y = [[] for _ in range(0, data_parser.y_raw_dim())]
+        self._select_data_y = [[] for _ in range(0, self._data_parser.y_raw_dim())]
 
     def start_server(self):
         if self._stop is False:
@@ -105,7 +105,7 @@ class SocketReader:
                 data = self._recever_socket.recv(1024)
                 recv_str = bytes.decode(data)
                 if len(data) > 0:
-                    decode_data(recv_str)
+                    self.decode_data(recv_str)
                 else:
                     plt_tool.log_info('no data')
                     time.sleep(2)
@@ -131,8 +131,8 @@ class SocketReader:
         self._rlock.acquire()
         try:
             tmp_data = self._data_parser.reference_data()
-            for ee in tmp_data:
-                self._select_data_y[i].extend(ee)
+            for i in range(0, len(tmp_data)):
+                self._select_data_y[i].extend(tmp_data[i])
             self._data_parser.clear_cache()
         finally:
             self._rlock.release()

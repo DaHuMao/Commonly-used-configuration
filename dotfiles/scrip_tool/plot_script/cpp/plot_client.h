@@ -4,8 +4,9 @@
 #include <mutex>
 #include <functional>
 #include <thread>
+#include <iostream>
 namespace  plot_plot {
-void set_ip_address(const std::string& ip, int port);
+void set_ip_address(const char* ip, int port);
 class DataSrtream final {
 public:
     DataSrtream(size_t init_size, std::function<void(const void*, size_t)> call_back);
@@ -17,9 +18,9 @@ private:
     const size_t _size;
     int8_t* _data = nullptr;
     size_t _writed_size = 0;
-    std::mutex _mutex;
+    ::std::mutex _mutex;
     bool _can_be_read = false;
-    std::function<void(const void*, size_t)> _call_back;
+    ::std::function<void(const void*, size_t)> _call_back;
     static char kSplitCharFlag;
 };
 
@@ -42,11 +43,11 @@ private:
 
     size_t _cur_read_index = 0;
     size_t _cur_write_index = 0;
-    std::function<void(const void*, size_t)> _call_back;
-    std::vector<std::unique_ptr<DataSrtream>> _data_stream_vector;
+    ::std::function<void(const void*, size_t)> _call_back;
+    ::std::vector<std::unique_ptr<DataSrtream>> _data_stream_vector;
     bool _is_stop;
-    std::thread _thread_t;
-    std::mutex _mutex;
+    ::std::thread _thread_t;
+    ::std::mutex _mutex;
 };
 
 enum class LogLevel {
@@ -56,12 +57,10 @@ enum class LogLevel {
     kError
 };
 
-#include <iostream>
 class LogStream {
 public:
     LogStream(LogLevel log_level, const char* tag, LogClientStream& log_client_stream);
     ~LogStream() {
-        static int count = 0;
         _stream << '\n';
         _log_client_stream.write(_stream.str().c_str(), _stream.str().size());
     }
@@ -71,9 +70,9 @@ public:
         return *this;
     }
 private:
-    std::ostringstream _stream;
+    ::std::ostringstream _stream;
     LogClientStream& _log_client_stream;
 };
 } // plot_plot
 
-#define LOG_I(tag) LogStream(LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())
+#define LOG_I(tag) plot_plot::LogStream(plot_plot::LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())

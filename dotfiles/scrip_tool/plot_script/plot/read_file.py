@@ -3,8 +3,8 @@ import plot_tools as plt_tool
 class TxTFileReader:
     _file_path = ''
     _text_processor = None
-    _return_data_x = None
-    _return_data_y = None
+    _return_data_x = []
+    _return_data_y = []
     _config_dict = {
                 'file_path':'', \
                 'x_select_range':[]
