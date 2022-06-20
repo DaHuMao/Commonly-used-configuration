@@ -3,7 +3,7 @@
 #=======================工作模式==================================
 #工作模式有两种，一种是从文件读取数据，一次画一个静态图，一种是从流中动态读取数据，实时画
 #file_mode  or stream_mode
-work_mode='file_mode'
+work_mode='stream_mode'
 
 #####  file_mode
 file_path=''
@@ -29,6 +29,14 @@ data_storage_len='1000'
 #=======================工作模式==================================
 
 #=======================选择X轴Y轴的数据==================================
+#与下select_y_key面不同的是，下面的选项只针对一行数据，必须有全部的key,也就是说如果某一行数
+#据没有全部的key会报错
+#这个更加通用，是在所有数据里查找，也就是不限制行，但是不同行不能有重复key，否则会覆盖。
+#比如文本为：[INFO] audio_delay:30  [INFO] video_delay:50 这两个key分别在不同行
+#按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
+#NOTE: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可
+select_y_key_multi_line='send_speak_count aec_speak_count bb'
+
 #这个选项是用来筛选Y轴关键词的数据，在日志场景会很有用:
 #比如文本为： [INFO] audio_delay:30,video_delay:40 x_tt 50
 #select_y_key='audio_delay video_delay',表示提取关键字为audio_delay, video_delay的数据，分别打印两张图
