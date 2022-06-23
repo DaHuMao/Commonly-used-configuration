@@ -1,2 +1,2 @@
-source ~/.fzf/shell/completion.zsh
-source ~/.fzf/shell/key-bindings.zsh
+source  /usr/local/opt/fzf/shell/completion.zsh
+source  /usr/local/opt/fzf/shell//key-bindings.zsh

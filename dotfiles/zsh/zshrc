@@ -8,17 +8,16 @@
 # Put this line on top to make keybinds work
 bindkey -e
 
+source ~/.myzsh/zsh_plug
 source ~/.myzsh/fzf.zsh       
 source ~/.myzsh/zsh_fzf_extra 
 
 source ~/.myzsh/zshenv
-source ~/.myzsh/zsh_plug
 source ~/.myzsh/zsh_misc
 source ~/.myzsh/zsh_aliases
 source ~/.myzsh/zsh_custom
 source ~/.myzsh/incr-0.2.zsh
 source ~/.myzsh/zsh_theme
-#source ~/.zsh_docker
 
 
 setopt EXTENDED_HISTORY
@@ -47,18 +46,25 @@ export ANDROID_HOME=/Users/zhangtongxiao/Library/Android/sdk
 export NDK_HOME=/Users/zhangtongxiao/GitDownLoad/android-ndk-r12b
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$HOME/GitDownLoad/depot_tools
 export PATH=$PATH:$NDK_HOME
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export HOMEBREW_NO_AUTO_UPDATE=true
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
-export PATH="$PATH:$HOME/Library/Python/2.7/bin"
-alias python="/usr/bin/python3"
+export PATH="$PATH:$HOME/Library/Python/3.8/bin"
+alias python="/usr/local/bin/python2"
 alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
+export HOMEBREW_NO_AUTO_UPDATE=true
+
+# depot_toos
+export PATH=$PATH:$HOME/GitDownLoad/depot_tools
+export DEPOT_TOOLS_UPDATE=0
+
+#nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+export TERM=screen-256color
 
 #size: 14
 #  normal:
@@ -66,3 +72,5 @@ export NVM_DIR="$HOME/.nvm"
 #    style: 'Light'
 
 #source /codes/hobot/ph/arcanist/resources/shell/bash-completion
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

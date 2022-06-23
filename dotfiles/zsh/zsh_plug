@@ -74,29 +74,6 @@ zplug 'wfxr/epoch-cli', as:plugin
 (( $+commands[jq] )) || zplug "stedolan/jq", as:command, from:gh-r, rename-to:jq
 
 
-# httpstat visualizes curl(1) statistics in a way of beauty and clarity.
-zplug "reorx/httpstat", \
-    as:command, \
-    use:'(httpstat).py', \
-    rename-to:'$1'
-
-
-# sparklines
-# usage: sparklines -n 3 null 3 7 4 2 5 6 | lolcat
-#zplug "deeplook/sparklines", hook-build:"sudo pip install -e ."
-
-#[[ ${(L)OSNAME} =~ darwin ]] && zplug "plugins/osx",       from:oh-my-zsh
-#[[ ${(L)OSNAME} =~ ubuntu ]] && zplug "plugins/ubuntu",    from:oh-my-zsh
-#[[ ${(L)OSNAME} =~ arch   ]] && zplug "plugins/archlinux", from:oh-my-zsh
-#case ${(L)OSNAME} in
-    #*arch* )
-        #zplug "plugins/archlinux", from:oh-my-zsh ;;
-    #*ubuntu* )
-        #zplug "plugins/ubuntu", from:oh-my-zsh ;;
-    #*darwin* )
-        #zplug "plugins/darwin", from:oh-my-zsh ;;
-#esac
-
 # Install plugins if there are plugins that have not been installed
 if ! zplug check --verbose; then
     printf "Install? [y/N]: "
