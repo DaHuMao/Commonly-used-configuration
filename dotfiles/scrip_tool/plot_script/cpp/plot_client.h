@@ -74,5 +74,21 @@ private:
     LogClientStream& _log_client_stream;
 };
 } // plot_plot
+  //
+#define DISABLE_PLOT_CLIENT 0
 
-#define LOG_I(tag) plot_plot::LogStream(plot_plot::LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())
+#if DISABLE_PLOT_CLIENT
+
+namespace plot_plot {
+class LogStreamNull {
+public:
+  template<class T>
+    LogStreamNull& operator<<(const T& val) { return *this; }
+};
+} // plot_plot
+#define PLOT_I(tag) plot_plot::LogStreamNull()
+
+#else
+#define PLOT_I(tag) plot_plot::LogStream(plot_plot::LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())
+#endif
+

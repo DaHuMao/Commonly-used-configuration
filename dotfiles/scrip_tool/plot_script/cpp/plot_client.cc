@@ -180,7 +180,7 @@ void LogClientStream::run() {
 
 void LogClientStream::resize_vector_and_write(const void* data, size_t size) {
     std::lock_guard<std::mutex> lk(_mutex);
-    printf("ztx_test resize_vector_and_write start: %lu\n", _data_stream_vector.size());
+    printf("ztx_test resize_vector_and_write start: %zu\n", _data_stream_vector.size());
     const size_t cur_vec_size = _data_stream_vector.size();
     size_t new_size = std::max(cur_vec_size * 3 / 2, kDataStreamVectorMaxSize);
     auto tmp_vector = std::vector<std::unique_ptr<DataSrtream>>(new_size);
@@ -198,7 +198,7 @@ void LogClientStream::resize_vector_and_write(const void* data, size_t size) {
     _data_stream_vector[cur_vec_size]->write(data, size);
     _cur_read_index = 0;
     _cur_write_index = cur_vec_size;
-    printf("ztx_test resize_vector_and_write end: %lu\n", _data_stream_vector.size());
+    printf("ztx_test resize_vector_and_write end: %zu\n", _data_stream_vector.size());
 }
 
 void LogClientStream::write(const void *data, size_t size) {

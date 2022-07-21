@@ -38,3 +38,26 @@ function! Fzf_dev()
         \ 'options': '-m ' . l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
+
+
+function! RipgrepFzf(query, fullscreen)
+    let command_fmt = "rg --column --line-number --no-heading --color=always --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s || true"
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let reload_command = printf(command_fmt, '{q}')
+    let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+    call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+function! RipgrepFzfInCurrentBuffer(query, fullscreen)
+    echom expand(expand("<cword>"))
+    let command_fmt = "rg --current-buffer -e %s"
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let reload_command = printf(command_fmt, '{q}')
+    let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+    call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+command! -nargs=* -bang Rl call RipgrepFzfInCurrentBuffer(<q-args>, <bang>0)
+
+

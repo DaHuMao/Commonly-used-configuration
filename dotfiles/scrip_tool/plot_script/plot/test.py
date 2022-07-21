@@ -31,6 +31,12 @@ def add_labels(rects):
 
 # add_labels(p1)
 
+loss_arr = []
+def CaculateCost(loss_weight):
+    loss = 1.0
+    for i in range(len(arr)):
+        loss -= loss_arr[i]
+
 autolabel(p1)
 
 plt.legend(loc='best')

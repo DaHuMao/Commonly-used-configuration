@@ -42,11 +42,14 @@ setopt share_history
 #
 #export CHROMIUM_BUILDTOOLS_PATH=/Users/zhangtongxiao/Desktop/yfd_work/sdk-demo-app-ios/tutor-engine-ios/live_engine/tutor-webrtc/src/buildtools/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
-export ANDROID_HOME=/Users/zhangtongxiao/Library/Android/sdk
-export NDK_HOME=/Users/zhangtongxiao/GitDownLoad/android-ndk-r12b
-export PATH=$PATH:$ANDROID_HOME/tools
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$NDK_HOME
+export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+export ANDROID_NDK_ROOT=$HOME/GitDownLoad/android-ndk-r21e
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/tools
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/platform-tools
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/tools/bin
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/emulator
+export PATH=$PATH:$ANDROID_SDK_ROOT/tools
+export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH

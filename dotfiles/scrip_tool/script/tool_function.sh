@@ -3,12 +3,25 @@ function traversalFolder(){
   for element in `ls $1`
   do  
     dir_or_file=$1"/"$element
-    if [ -d $dir_or_file ];then 
+    if [ -d $dir_or_file ] && [[ $2 != '' ]];then
       $2 $dir_or_file
-    elif [ -f $dir_or_file ];then
+    elif [ -f $dir_or_file ] && [[ $3 != '' ]];then
       $3 $dir_or_file
     fi  
   done
+}
+
+function recursiveTraversalFolder() {
+  for element in `ls $1`
+  do  
+    dir_or_file=$1"/"$element
+    if [ -d $dir_or_file ];then
+      recursiveTraversalFolder $dir_or_file $2
+    elif [ -f $dir_or_file ] && [[ $2 != '' ]];then
+      $2 $dir_or_file
+    fi  
+  done
+  
 }
 
 function TraverseFromGit(){
