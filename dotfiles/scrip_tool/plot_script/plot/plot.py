@@ -25,9 +25,9 @@ This is a temporary script file.
 import matplotlib.pyplot as plt
 import copy
 import line_plot
+import histogram_plot
 import plot_tools as plt_tool
 
-color_dict = ['blue', 'red', 'orange', 'yellow', 'green', 'deeppink']
 
 
 class PlotData:
@@ -45,7 +45,10 @@ class PlotData:
                     'show_xlabel':[], \
                     'y_filter_range':[], \
                     'is_raw_arrange':'1', \
-                    'plot_arrange_way':[]
+                    'plot_arrange_way':[], \
+                    'plot_type': None, \
+                    'width': '0.9', \
+                    'x_classification': []
                 } 
     _plot_list = []
     _is_raw_arrange='1'
@@ -79,35 +82,55 @@ class PlotData:
                     break
         return False
 
+    def init_line_plot(self, count_plot):
+        x_show_range = self._config_dict['x_show_range']
+        point_size = self._config_dict['point_size']
+        xlabel_range = self._config_dict['xlabel_range']
+        self._plot_list = [line_plot.LinePlot() for _ in range(count_plot)]
+        plot_list = self._plot_list
+        for i in range(1, count_plot):
+            plot_list[i] = copy.deepcopy(plot_list[0])
+        for i in range(0,count_plot):
+            if len(point_size) > 0:
+                plot_list[i].set_point_size(int(point_size[0]))
+            if len(x_show_range) > 0:
+                tmp = x_show_range[0].split(',')
+                if len(tmp) == 2:
+                    plot_list[i].set_x_show_range(int(tmp[0]), int(tmp[1]))
+            if len(xlabel_range) > 0:
+                tmp = xlabel_range[0].split(',')
+                if len(tmp) == 3:
+                    plot_list[i].set_xlabel_range(int(tmp[0]), int(tmp[1]), int(tmp[2]))
+        return
+    
+    def init_histogram_plot(self, count_plot):
+        width = self._config_dict['width']
+        x_classification = self._config_dict['x_classification']
+        self._plot_list = [histogram_plot.HistogramPlot() for _ in range(count_plot)]
+        plot_list = self._plot_list
+        for i in range(1, count_plot):
+            plot_list[i] = copy.deepcopy(plot_list[0])
+        for i in range(0,count_plot):
+            if len(width) == 1:
+                plot_list[i].set_width(float(width[0]))
+            elif i < len(width) and width[i] != 'null':
+                plot_list[i].set_width(float(width[i]))
+            if len(x_classification) == 1:
+                plot_list[i].set_x_classification(x_classification[0])
+            elif i < len(x_classification) and x_classification[i] != 'null':
+                plot_list[i].set_x_classification(x_classification[i])
+        return
 
-    def init_plot(self, count_plot):
-        self._is_first = True
+    def init_base_plot(self):
         title = self._config_dict['title']
         xlabel = self._config_dict['xlabel']
-        point_size = self._config_dict['point_size']
         xtitle = self._config_dict['xtitle']
         ytitle = self._config_dict['ytitle']
         y_filter_range = self._config_dict['y_filter_range']
         y_show_range = self._config_dict['y_show_range']
         legend_name = self._config_dict['legend_name']
-        xlabel_range = self._config_dict['xlabel_range']
         show_xlabel = self._config_dict['show_xlabel']
-        x_show_range = self._config_dict['x_show_range']
-        if len(self._config_dict['is_raw_arrange']) > 0:
-            self._is_raw_arrange = self._config_dict['is_raw_arrange'][0]
-        try:
-            self._plot_arrange_way = [int(x) for x in self._config_dict['plot_arrange_way']]
-        except:
-            plt_tool.log_error("invalid config plot_arrange_way: %s" \
-                    % str(self._config_dict['plot_arrange_way']))
-        self._plot_list = [line_plot.LinePlot() for _ in range(count_plot)]
         plot_list = self._plot_list
-        for i in range(1, count_plot):
-            plot_list[i]=copy.deepcopy(plot_list[0])
-        if len(self._plot_arrange_way) > 0 and count_plot > sum(self._plot_arrange_way):
-            raise Exception( \
-                    "count of plot: %d less than sum of plot_arrange_way %d plot_arrange_way is: %s"\
-                    % (count_plot, sum(self._plot_arrange_way), self._plot_arrange_way))
         for i in range(len(plot_list)):
             if self.is_last_raw(i + 1):
                 plot_list[i].show_xlabel()
@@ -115,27 +138,17 @@ class PlotData:
                     plot_list[i].set_xlabel(xlabel[0].split(','))
                 if (len(xtitle)) == 1:
                     plot_list[i].set_xtitle(xtitle[0])
-        for i in range(0,count_plot):
-            if (i < len(show_xlabel) and show_xlabel[i] == '1'):
+            if (len(show_xlabel) == 1 and show_xlabel[0] == 'all') or \
+                    (i < len(show_xlabel) and show_xlabel[i] == '1'):
                 plot_list[i].show_xlabel()
             if i < len(title) and title[i] != 'null':
                 plot_list[i].set_title(title[i])
-            if len(point_size) > 0:
-                plot_list[i].set_point_size(int(point_size[0]))
             if len(xtitle) > 1:
                 plot_list[i].set_xtitle(xtitle[i])
             if len(ytitle) > i and ytitle[i] != 'null':
                 plot_list[i].set_ytitle(ytitle[i])
             if len(xlabel) > 1 and i < len(xlabel) and xlabel[i] != 'null':
                 plot_list[i].set_xlabel(xlabel[i].split(','))
-            if len(xlabel_range) > 0:
-                tmp = xlabel_range[0].split(',')
-                if len(tmp) == 3:
-                    plot_list[i].set_xlabel_range(int(tmp[0]), int(tmp[1]), int(tmp[2]))
-            if len(x_show_range) > 0:
-                tmp = x_show_range[0].split(',')
-                if len(tmp) == 2:
-                    plot_list[i].set_x_show_range(int(tmp[0]), int(tmp[1]))
             if i < len(legend_name) and legend_name[i] != 'null':
                 plot_list[i].set_legend_name(legend_name[i].split(','))
             if i < len(y_filter_range) and y_filter_range[i] != 'null':
@@ -146,6 +159,32 @@ class PlotData:
                 str_range = y_show_range[i].split(',')
                 if len(str_range) == 2:
                     plot_list[i].set_y_show_range(int(str_range[0]),int(str_range[1]))
+        return
+
+    def init_plot(self, count_plot):
+        self._is_first = True
+        plot_type = self._config_dict['plot_type'][0]
+        
+        if len(self._config_dict['is_raw_arrange']) > 0:
+            self._is_raw_arrange = self._config_dict['is_raw_arrange'][0]
+        try:
+            self._plot_arrange_way = [int(x) for x in self._config_dict['plot_arrange_way']]
+        except:
+            plt_tool.log_error("invalid config plot_arrange_way: %s" \
+                    % str(self._config_dict['plot_arrange_way']))
+        if len(self._plot_arrange_way) > 0 and count_plot > sum(self._plot_arrange_way):
+            raise Exception( \
+                    "count of plot: %d less than sum of plot_arrange_way %d plot_arrange_way is: %s"\
+                    % (count_plot, sum(self._plot_arrange_way), self._plot_arrange_way))
+
+        if plot_type == 'line':
+            self.init_line_plot(count_plot)
+        elif plot_type == 'histogram':
+            self.init_histogram_plot(count_plot)
+        else:
+            raise Exception("unknow plot_type: %s" % plot_type)
+
+        self.init_base_plot()
     
     def get_plot_pos(self, index):
         plot_list_len = len(self._plot_list)
@@ -156,6 +195,7 @@ class PlotData:
                 return [1, plot_list_len, index]
         cur_sum, x, y = 0, 0, 0
         plot_arrange_len = len(self._plot_arrange_way)
+        i_num = 0
         for i in range(0, plot_arrange_len):
             i_num = self._plot_arrange_way[i]
             if i_num <= 0:

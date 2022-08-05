@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+import plot_tools as plt_tool
+import copy
 
 color_dict = ['blue', 'red', 'orange', 'yellow', 'green', 'deeppink']
 
@@ -25,10 +27,6 @@ class BasePlot:
                 return False
         return True
 
-    def set_xlabel_range(self, min_label, max_label, label_count):
-        if len(self._xlabel) == 0:
-            self._xlabel = GenarateXLabel(min_label, max_label, label_count)
-    
     def set_xtitle(self, xtitle):
         self._xtitle = xtitle
    
@@ -56,9 +54,6 @@ class BasePlot:
     def set_y_show_range(self, lo, hi):
         self._y_show_range = [lo, hi]
 
-    def set_x_show_range(self, lo, hi):
-        self._x_show_range = [lo, hi]
-   
     def set_legend_name(self, legend_name):
         self._legend_name = legend_name
     

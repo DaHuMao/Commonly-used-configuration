@@ -25,6 +25,13 @@ class LinePlot(base_plot.BasePlot):
     _point_size = 1
     _x_show_range = [0, -1]
 
+    def set_xlabel_range(self, min_label, max_label, label_count):
+        if len(self._xlabel) == 0:
+            self._xlabel = GenarateXLabel(min_label, max_label, label_count)
+
+    def set_x_show_range(self, lo, hi):
+        self._x_show_range = [lo, hi]
+   
     def config_plt(self, data_y_dim):
         self.base_config_plt(data_y_dim)
         if self._x_show_range[1] > self._x_show_range[0]:
