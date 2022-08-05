@@ -63,24 +63,41 @@ class PlotData:
         else:
             return False
 
-    def is_last_raw(self, index):
-        if index == len(self._plot_list):
-            return True
+    def raw_first_array(self):
+        count_of_plot = len(self._plot_list)
         if len(self._plot_arrange_way) == 0:
-            return index == len(self._plot_list)
-        tmp_arr = self._plot_arrange_way
-        sub_sum_plot_arrange = sum(tmp_arr[:len(tmp_arr) - 1])
-        if self._is_raw_arrange == "1":
-            return index > sub_sum_plot_arrange
+           return [count_of_plot]
+        end_index = 0
+        tmp_sum = 0
+        for ee in self._plot_arrange_way:
+            tmp_sum += ee
+            if tmp_sum >= count_of_plot:
+                break
+            end_index += 1
+        if end_index > 0 and \
+                self._plot_arrange_way[end_index - 1] == self._plot_arrange_way[end_index]:
+            return [count_of_plot - i for i in range(self._plot_arrange_way[end_index])]
         else:
-            tmp_sum = 0
-            for ee in self._plot_arrange_way:
-                tmp_sum += ee
-                if tmp_sum == index:
-                    return True
-                if tmp_sum > index:
-                    break
-        return False
+            return [tmp_sum - i for i in range(self._plot_arrange_way[end_index])]
+            
+
+    def col_first_array(self):
+        count_of_plot = len(self._plot_list)
+        if len(self._plot_arrange_way) == 0:
+            return range(1, count_of_plot + 1)
+        ans = []
+        tmp_sum = 0
+        ans.append(count_of_plot)
+        for ee in self._plot_arrange_way:
+            tmp_sum += ee
+            ans.append(tmp_sum)
+        return ans
+
+    def last_raw_index_array(self):
+        if self._is_raw_arrange == '1':
+            return self.raw_first_array()
+        else:
+            return self.col_first_array()
 
     def init_line_plot(self, count_plot):
         x_show_range = self._config_dict['x_show_range']
@@ -131,8 +148,10 @@ class PlotData:
         legend_name = self._config_dict['legend_name']
         show_xlabel = self._config_dict['show_xlabel']
         plot_list = self._plot_list
+        last_raw_index_array = self.last_raw_index_array()
+        print(last_raw_index_array)
         for i in range(len(plot_list)):
-            if self.is_last_raw(i + 1):
+            if i + 1 in last_raw_index_array:
                 plot_list[i].show_xlabel()
                 if len(xlabel) == 1:
                     plot_list[i].set_xlabel(xlabel[0].split(','))
