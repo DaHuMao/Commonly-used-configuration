@@ -40,7 +40,7 @@ class HistogramPlot(base_plot.BasePlot):
     def config_plt(self, data_y_dim):
         self.base_config_plt(data_y_dim)
 
-    def get_default_data(self, data):
+    def get_default_data(self, data, data_y_dim, index):
         data_x = []
         data_y = []
         if len(data) == 0:
@@ -54,7 +54,7 @@ class HistogramPlot(base_plot.BasePlot):
             else:
                 data_y.append(1)
                 data_x.append(data[i])
-        return data_x,data_y
+        return get_histogram_x(data_x, data_y_dim, index, self._width), data_y
        
     def get_classfi_data(self, data, data_y_dim, index):
         data_y = len(self._x_classification) * [0]
@@ -68,10 +68,8 @@ class HistogramPlot(base_plot.BasePlot):
         if len(data) == 0:
             plot_tools.log_warn("len(data) is 0");
         data_dim = len(self._x_classification)
-        if data_dim == 0 and data_y_dim > 1:
-            raise Exception("len(self._x_classification) is 0 but data_y_dim is %d" % data_y_dim)
         if data_dim == 0:
-            return self.get_default_data(data)
+            return self.get_default_data(data, data_y_dim, index)
         else:
             return self.get_classfi_data(data, data_y_dim, index)
 
