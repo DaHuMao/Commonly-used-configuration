@@ -149,7 +149,6 @@ class PlotData:
         show_xlabel = self._config_dict['show_xlabel']
         plot_list = self._plot_list
         last_raw_index_array = self.last_raw_index_array()
-        print(last_raw_index_array)
         for i in range(len(plot_list)):
             if i + 1 in last_raw_index_array:
                 plot_list[i].show_xlabel()

@@ -30,7 +30,6 @@ class HistogramPlot(base_plot.BasePlot):
             if len(tmp) != 2:
                 raise Exception("invalid len(x_classification): %d" % len(tmp))
         self._x_classification.sort()
-        print(self._x_classification)
         for ee in self._x_classification:
             self._xlabel.append('[%d-%d]' % (ee[0], ee[1]))
 
@@ -78,13 +77,13 @@ class HistogramPlot(base_plot.BasePlot):
         y_dim = len(data_y)
         if y_dim == 0:
             raise Exception('invalid data_len: %d' % y_dim)
-        if self.check_data(data_x, data_y) is False:
-            raise Exception("invalid dim(data_x) dim(data_y)")
         plt.subplot(x_pos, y_pos, index)
         self.config_plt(len(self._x_classification))
         for i in range(y_dim):
             bar = None
             x, y = self.get_data(data_y[i], y_dim, i)
+            if len(x) != len(y) is False:
+                raise Exception("dim(x)->(%d) != dim(y)->(%d)" % (len(x), len(y)))
             if i < len(self._legend_name) and len(self._legend_name[i]) > 0:
                 bar = plt.bar(x, y, width=self._width / y_dim, facecolor=base_plot.color_dict[i], \
                         label=self._legend_name[i])
