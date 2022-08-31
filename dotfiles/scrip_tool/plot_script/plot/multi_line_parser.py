@@ -14,7 +14,7 @@ class MultiLineParser(base_line_parser.BaseLineParser):
                     try:
                         self._select_data[j].append(float(data[i + 1]))
                     except:
-                        plt_tool.log_error("in %s\n, index: %d value: %s is invalid" % \
+                        log_tool.log_error("in %s\n, index: %d value: %s is invalid" % \
                                 (str(data), i, data[i + 1]))
                         raise Exception("can not  convert  %s to float" % (data[i + 1]))
                     break

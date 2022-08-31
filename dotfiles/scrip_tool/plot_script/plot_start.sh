@@ -1,17 +1,31 @@
 #!/bin/bash
 
+#======================================================日志设置========================================================
+#日志级别 0:debug 1:info 2:warn 3:error
+log_level=0
+
+#日志过滤
+#注： 下面四个条件是与的关系
+log_filter_include_keywords=''
+log_filter_exclude_keywords='media_info'
+#与上面不同的地方在于，这个支持正则
+log_reg_pattern_include=''
+log_reg_pattern_exclude=''
+#======================================================日志设置========================================================
+
+
 #======================================================工作模式========================================================
 #工作模式有两种，一种是从文件读取数据，一次画一个静态图，一种是从流中动态读取数据，实时画 
 #file_mode  or stream_mode
-work_mode='file_mode'
+work_mode='stream_mode'
 
 #####  file_mode
 file_path=''
 #文件中，尤其是日志文件可能不是所有数据都是我们要的，这个就是选取固定范围的行数
 #-1 表示不限制
 #x_select_range='-1 3000'表示只解析3000行以前的数据
-#x_select_range='1000 -1'表示只解析1000行以后的数据
-#x_select_range='1000 3000'表示只解析1000-3000行的数据
+#x_select_range='3000 -1'表示只解析3000行以后的数据
+#x_select_range='3000 3000'表示只解析3000-3000行的数据
 x_select_range=''
 #####  file_mode
 
@@ -23,7 +37,7 @@ port='9600'
 #流式读取数据时存储的数据长度，单位为点个数
 #注：存储多少并不代表显示多少，存储只是代表存储的数据跨度
 #    真正显示是由后面的图配置中的x_show_range决定的
-data_storage_len='1000'
+data_storage_len='500'
 #####  stream_mode
 
 #======================================================工作模式========================================================
@@ -31,12 +45,12 @@ data_storage_len='1000'
 
 #======================================================图表类型========================================================
 #图表类型目前支持：line[折线图] histogram[直方图]
-plot_type='histogram'
+plot_type='line'
 
 ######## 折线图特有设置 ################
 
 #设置显示的X轴的范围
-#比如 x_show_range='1000,2000' 表示只显示1000-2000个点
+#比如 x_show_range='3000,3000' 表示只显示3000-3000个点
 #这个主要为了以后界面化的时候使用，尤其是X轴设置
 x_show_range=''
 
@@ -54,7 +68,7 @@ xlabel_range=''
 ######## 直方图特有设置 ###############
 
 #直方图直方筒宽度与直方筒间距比例
-width=0.9
+width=0.5
 
 #直方图X坐标按范围划分(区间左闭右开)
 #举两个场景：
@@ -86,7 +100,7 @@ width=0.9
 #      [1-4]   [4-6]   [6-10]
 #如图所示，第二个场景就是直方图高度就是统计这个范围内的数字的数量，比如[1-4]就包括了
 #[1, 1, 2, 2, 3]（左闭右开，所以4不算）五个数，[1-4]对应的直方图的高度就是5
-x_classification=''
+x_classification='0-20,20-40,40-60,60-80,80-101'
 ######## 直方图特有设置 ###############
 
 #======================================================图表类型========================================================
@@ -99,7 +113,7 @@ x_classification=''
 #比如文本为：[INFO] audio_delay:30  [INFO] video_delay:50 这两个key分别在不同行
 #按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
 #NOTE: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可
-select_y_key_multi_line='a,b,c'
+select_y_key_multi_line='current_buffer_size_average,preferred_buffer_size_average,Iat_95_average '
 
 #这个选项是用来筛选Y轴关键词的数据，在日志场景会很有用:
 #比如文本为： [INFO] audio_delay:30,video_delay:40 x_tt 50
@@ -139,7 +153,7 @@ filter_exclude_keywords=''
 #filter_include_keywords差不多的功能，只不过这个会以正则表达式的形式去解析
 #举个例子 filter_include_keywords=media_info.c,表示包含media_info.c的行，在media_info.c中的点
 #在正则表达式里表示任意字母
-#reg_pattern_include='recv media_info i:0|opt_buffer_level_max_num'
+reg_pattern_include='freeze_cycle_2000|ztx_audio_test'
 
 #同上，只不过是不包含
 reg_pattern_exclude=''
@@ -192,7 +206,7 @@ xlabel=''
 #比如 show_xlabel='1 0 1'表示第一幅第三幅图显示X轴坐标，第二幅不显示
 #show_xlabel='all' 表示全部显示
 #注：默认只显示最后一行的图的坐标
-show_xlabel=''
+show_xlabel='all'
 
 #这两个参数表示各个图的排列方式
 #is_raw_arrange为1表示先按行分割，否则按照先按列分割
@@ -230,7 +244,7 @@ show_xlabel=''
 # 数字代表从1到五副图的排列
 is_raw_arrange='1'
 plot_arrange_way=''
-#=====================================================图配置=========================================================
+#====================================================图配置=========================================================
 
 file_path=./example.txt
 if [ $# -gt 0 ];then
@@ -268,7 +282,12 @@ python3 $plotpath "file_path=$file_path"  \
                  "plot_arrange_way=$plot_arrange_way" \
                  "plot_type=$plot_type" \
                  "width=$width" \
-                 "x_classification=$x_classification"
+                 "x_classification=$x_classification" \
+                 "log_level=$log_level" \
+                 "log_filter_include_keywords=$log_filter_include_keywords" \
+                 "log_filter_exclude_keywords=$log_filter_exclude_keywords" \
+                 "log_reg_pattern_include=$log_reg_pattern_include" \
+                 "log_reg_pattern_exclude=$log_reg_pattern_exclude"
 
 
 #注：第一个参数必须是文件路径,除了文件路径跟Y轴数据 其他参数都是可选.

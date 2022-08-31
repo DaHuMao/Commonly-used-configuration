@@ -1,10 +1,11 @@
 import base_plot
 import matplotlib.pyplot as plt
 import plot_tools as plt_tool
+import log_tool
 
 def compress_data(ori_arr,compress_times):
     arr_size=int(len(ori_arr)/compress_times)
-    plt_tools.log_info(arr_size)
+    log_tool.log_info(arr_size)
     arr=[]
     for j in range(0,arr_size):
         sumsum=0.00
@@ -40,7 +41,7 @@ class LinePlot(base_plot.BasePlot):
                 xlabel = GenarateXLabel(self._x_show_range[0], self._x_show_range[1], len(self._xlabel) - 1)
                 dot = max(1, data_y_dim / (len(xlabel) - 1))
                 x2 = range(self._x_show_range[0], self._x_show_range[1] + dot, dot)
-                plt_tools.log_info(x2, xlabel, data_y_dim, dot)
+                log_tool.log_info(x2, xlabel, data_y_dim, dot)
                 plt.xticks(x2, xlabel)
             plt.xlim(self._x_show_range)
 

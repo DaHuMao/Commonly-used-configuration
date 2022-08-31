@@ -22,7 +22,7 @@ class BasePlot:
         data_len = len(data_x)
         for i in range(len(data_y)):
             if data_len != len(data_y[i]):
-                plt_tool.log_error("index of %d: dim(x): %d not eq dim(y): %d" % \
+                log_tool.log_error("index of %d: dim(x): %d not eq dim(y): %d" % \
                         (i, data_len,len(data_y[i])))
                 return False
         return True

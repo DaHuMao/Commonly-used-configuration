@@ -26,9 +26,7 @@ import matplotlib.pyplot as plt
 import copy
 import line_plot
 import histogram_plot
-import plot_tools as plt_tool
-
-
+import log_tool
 
 class PlotData:
     _config_dict = { \
@@ -188,7 +186,7 @@ class PlotData:
         try:
             self._plot_arrange_way = [int(x) for x in self._config_dict['plot_arrange_way']]
         except:
-            plt_tool.log_error("invalid config plot_arrange_way: %s" \
+            log_tool.log_error("invalid config plot_arrange_way: %s" \
                     % str(self._config_dict['plot_arrange_way']))
         if len(self._plot_arrange_way) > 0 and count_plot > sum(self._plot_arrange_way):
             raise Exception( \
@@ -238,7 +236,7 @@ class PlotData:
         for i in range(0, plot_list_len):
             plot_pos = self.get_plot_pos(i + 1)
             if self._is_first:
-                plt_tool.log_info("index:%d, pos is :%s" % (i + 1, str(plot_pos)))
+                log_tool.log_info("index:%d, pos is :%s" % (i + 1, str(plot_pos)))
                 self._is_first = False
             self._plot_list[i].plot(data_x[i], data_y[i], plot_pos[0], plot_pos[1], plot_pos[2])
             plt.legend(loc='upper right')

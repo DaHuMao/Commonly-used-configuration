@@ -1,7 +1,7 @@
 import socket
 import threading
 import time
-import plot_tools as plt_tool
+import log_tool
 
 class SocketReader:
     _config_dict = {
@@ -38,7 +38,7 @@ class SocketReader:
 
     def start_server(self):
         if self._stop is False:
-            plt_tool.log_info('server has running')
+            log_tool.log_info('server has running')
             return
         else:
             self._stop = False
@@ -56,17 +56,18 @@ class SocketReader:
         while self._stop is False:
             try:
                 self._recever_socket,addr = self._listen_socket.accept()
-                plt_tool.log_info("===== client connected: ip:%s port:%s" % (addr[0], addr[1]))
+                log_tool.log_info("===== client connected: ip:%s port:%s" % (addr[0], addr[1]))
                 self._remainder_str = ''
                 if self._receiver_thread == None:
                     self._receiver_thread = threading.Thread(\
                             target = self.receiver_data)
                     self._receiver_thread.start()
             except Exception as e:
-                plt_tool.log_error(e)
+                log_tool.log_error(e)
 
     def get_x_y(self, str_data):
         for line in str_data:
+            log_tool.log_debug(line)
             if self._text_processor.is_valid_line(line) == False:
                 continue
             data = self._text_processor.split_str_to_data(line)
@@ -78,7 +79,7 @@ class SocketReader:
 
     def decode_data(self, recv_str):
         if recv_str == 'exit':
-            plt_tool.log_info('client close')
+            log_tool.log_info('client close')
             self._recever_socket.close()
             self._recever_socket = None
         else:
@@ -99,7 +100,7 @@ class SocketReader:
         while self._stop is False:
             try:
                 if self._recever_socket is None:
-                    plt_tool.log_info("no client")
+                    log_tool.log_info("no client")
                     time.sleep(2)
                     continue
                 data = self._recever_socket.recv(1024)
@@ -107,13 +108,13 @@ class SocketReader:
                 if len(data) > 0:
                     self.decode_data(recv_str)
                 else:
-                    plt_tool.log_info('no data')
+                    log_tool.log_info('no data')
                     time.sleep(2)
             except Exception as e:
                 if self._recever_socket is not None:
                     self._recever_socket.close()
                     self._recever_socket = None
-                plt_tool.log_error(e)
+                log_tool.log_error(e)
     
     def stop(self):
         self._stop = True
@@ -125,7 +126,7 @@ class SocketReader:
             self._listen_thread.join()
         if self._receiver_thread is not None:
             self._receiver_thread.join()
-        plt_tool.log_info('SocketReader has stoped')
+        log_tool.log_info('SocketReader has stoped')
 
     def load_data(self):
         self._rlock.acquire()

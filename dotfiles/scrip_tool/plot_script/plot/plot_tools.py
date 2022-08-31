@@ -1,40 +1,12 @@
-import re
 import time
 import datetime
-
-gLogLevel=0
-gLogMap=["INFO: ","WARNING: ","ERROR: "]
-gColorMap=[32,33,31]
-
-def get_now_time(format_time='%Y-%m-%d %H:%M'):
+def get_now_time(format_time='%Y-%m-%d %H:%M:%S'):
     now_time=datetime.datetime.now()
     return now_time.strftime(format_time)
 
-def GetNowTimeMs():
+def get_now_time_ms():
     t = time.time()
     return int(round(t * 1000))
-
-def mylog(level, value, f=None):
-    if level < gLogLevel:
-        return
-    if level > 2:
-        level = 2
-    str_time='['+get_now_time()+'] '
-    print("\033[0;%d;20m%s\033[0;%d;40m%s\033[0m%s"%(gColorMap[level],\
-            str_time, gColorMap[level], gLogMap[level], value))
-    if f is not None:
-        log_str=str_time + gColorMap[level] + value + "\n"
-        f.write(log_str)
-    return
-
-def log_info(value):
-    mylog(0, value)
-
-def log_warn(value):
-    mylog(1, value)
-
-def log_error(value):
-    mylog(2, value)
 
 def can_to_int(select_raw):
     for ee in select_raw:
@@ -81,41 +53,4 @@ def get_data(data_x, data_y, select_y):
         y_data.append(data_y[start_index : end_index])
         start_index = end_index
     return x_data, y_data
-
-class TextProcessor:
-    _config_dict = {
-            'filter_include_keywords': '', \
-            'filter_exclude_keywords': '', \
-            'reg_pattern_include': '', \
-            'reg_pattern_exclude': '', \
-            'split_pattern_reg': ' ' \
-    }
-
-    def update_config(self, key, value):
-        if key in self._config_dict:
-            self._config_dict[key] = value
-            return True
-        else:
-            return False
-
-    def split_str_to_data(self, line):
-        if len(self._config_dict['split_pattern_reg']) == 1:
-            return line.strip().split(self._config_dict['split_pattern_reg'])
-        else:
-            return re.split(self._config_dict['split_pattern_reg'], line.strip())
-
-    def is_valid_line(self, line):
-        if self._config_dict['filter_include_keywords'] != '' \
-                and line.find(self._config_dict['filter_include_keywords']) == -1:
-            return False
-        if self._config_dict['reg_pattern_include'] != '' \
-                and re.search(self._config_dict['reg_pattern_include'], line) == None:
-            return False
-        if self._config_dict['filter_exclude_keywords'] != '' \
-                and line.find(self._config_dict['filter_exclude_keywords']) != -1:
-            return False
-        if self._config_dict['reg_pattern_exclude'] != '' \
-                and re.search(self._config_dict['reg_pattern_exclude'], line) != None:
-            return False
-        return True
 

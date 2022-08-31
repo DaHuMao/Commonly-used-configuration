@@ -11,7 +11,7 @@
 #include <memory>
 #include <unordered_map>
 namespace plot_plot {
-static std::string gs_ip_address = "172.24.220.219";
+static std::string gs_ip_address = "10.1.46.220";
 static int gs_ip_port = 9600;
 
 void set_ip_address(const char* ip, int port) {
@@ -56,13 +56,13 @@ void SocketForLog::try_connect() {
     inet_pton(AF_INET, ip_address, &t_sockaddr.sin_addr);
     int ret = 0;
     if((ret = ::connect(_socket_fd, (struct sockaddr*)&t_sockaddr, sizeof(struct sockaddr))) < 0 ) {
-        printf("ztx_test connect error %s %d", strerror(errno), ret);
+        printf("ztx_test connect error %s %d\n", strerror(errno), ret);
         close(_socket_fd);
         _socket_fd = -1;
         std::this_thread::sleep_for(std::chrono::milliseconds(1 * 1000));
         return;
     }
-    printf("ztx_test connect sucess");
+    printf("ztx_test connect sucess\n");
 }
 
 void SocketForLog::write(const void *data, size_t size) {
@@ -70,7 +70,8 @@ void SocketForLog::write(const void *data, size_t size) {
         return;
     }
     if(write_n(data, size) < 0) {
-        printf("ztx_test send message error: %s errno : %d", strerror(errno), errno);
+        printf("ztx_test send message error: %s errno : %d\n", strerror(errno), errno);
+        _socket_fd = -1;
     }
 }
 
