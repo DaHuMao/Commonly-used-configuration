@@ -55,6 +55,7 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 alias python="/usr/local/bin/python2"
+alias pip3="/usr/bin/pip3"
 alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
 export HOMEBREW_NO_AUTO_UPDATE=true
 
@@ -64,8 +65,8 @@ export DEPOT_TOOLS_UPDATE=0
 
 #nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export TERM=screen-256color
 
@@ -77,3 +78,14 @@ export TERM=screen-256color
 #source /codes/hobot/ph/arcanist/resources/shell/bash-completion
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+review(){
+branch_name=`git rev-parse --abbrev-ref HEAD`
+if [ -z "$branch_name" ];then
+    echo "! [Branch name missing]"
+    echo "请在git仓库根目录执行"
+    return
+fi
+reviewers="r=wangcb,r=pengyang,r=zhaoguanxun,r=zhufan,r=gaocy01,r=liguang,r=zhangzhebj03"
+push_command="git push origin HEAD:refs/for/"${branch_name}%${reviewers}
+eval $push_command
+}
