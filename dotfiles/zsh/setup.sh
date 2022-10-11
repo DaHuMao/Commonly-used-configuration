@@ -14,6 +14,7 @@ ln -sf "$SCRIPT_DIR/zsh_theme"     ~/.myzsh/zsh_theme
 ln -sf "$SCRIPT_DIR/zsh_fzf_extra" ~/.myzsh/zsh_fzf_extra
 ln -sf "$SCRIPT_DIR/zsh_docker"    ~/.myzsh/zsh_docker
 ln -sf "$SCRIPT_DIR/incr-0.2.zsh"    ~/.myzsh/incr-0.2.zsh
+ln -sf "$SCRIPT_DIR/common.zsh"    ~/.myzsh/common.zsh
 
 mkdir -p ~/.myzsh/zsh_completions
 ln -sf "$SCRIPT_DIR/completions/_ag"  ~/.myzsh/zsh_completions/_ag
@@ -23,7 +24,10 @@ ln -sf "$SCRIPT_DIR/completions/_fzf" ~/.myzsh/zsh_completions/_fzf
 ln -sf "$SCRIPT_DIR/completions/_gi"  ~/.myzsh/zsh_completions/_gi
 ln -sf "$SCRIPT_DIR/completions/_hub" ~/.myzsh/zsh_completions/_hub
 
-ln -sf "$SCRIPT_DIR/zshrc" ~/.zshrc
+
+[ ! -e ~/.zshrc ] && touch ~/.zshrc
+
+cat ./zshrc > ~/.zshrc
 
 [[ "$SHELL" =~ "zsh" ]] || chsh -s "$(command -v zsh)"
 
