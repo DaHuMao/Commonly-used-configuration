@@ -1,5 +1,6 @@
 set nocompatible
 
+source ~/.vim/configs/leaderf.vim
 source ~/.vim/configs/common.vim
 source ~/.vim/configs/keymap.vim
 source ~/.vim/configs/plug.vim

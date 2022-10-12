@@ -13,7 +13,7 @@ set formatoptions+=B
 
 " encoding
 set encoding=utf-8
-set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1,gbk
 set helplang=cn
 "set termencoding=utf-8
 
@@ -46,9 +46,9 @@ set statusline=%<%f\ %h%m%r%=%k[%{(&fenc==\"\")?&enc:&fenc}%{(&bomb?\",BOM\":\"\
 set laststatus=2
 
 " tab
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
 set smarttab
 set expandtab
 set shiftround

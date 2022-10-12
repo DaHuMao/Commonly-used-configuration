@@ -77,7 +77,7 @@ call plug#end()
 
 
 " plugin configs
-"source ~/.vim/configs/plug/language-client.vim
+source ~/.vim/configs/plug/language-client.vim
 source ~/.vim/configs/plug/fzf.vim
 source ~/.vim/configs/plug/airline.vim
 source ~/.vim/configs/plug/devicons.vim

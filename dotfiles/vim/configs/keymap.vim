@@ -44,11 +44,14 @@ nmap <c-p> "+
 
 "leaderf
 noremap <leader>l :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
-noremap <leader>L :Leaderf rg --current-buffer<CR>
+noremap <leader>L :Lines<CR>
 nmap <leader>h :History <CR>
-nmap <leader>r :BTags<CR>
-"nmap <leader>f :execute "Rg "."<C-r><C-w>"<CR>
-nmap <leader>f :Files<CR>
+nmap <leader>t :BTags<CR>
+nmap <leader>F :Files<CR>
+nmap <leader>A :RA<CR>
+nmap <leader>f :Rff<CR>
+nmap <leader>c :Rfc<CR>
+nmap <leader>v :Rfv<CR>
 
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
@@ -57,15 +60,14 @@ nmap <leader>n :NERDTreeToggle<CR>
 
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
-nmap <leader>F :Rg<CR>
-noremap <C-f> :<C-U><C-R>=printf("Leaderf! rg -e %s -g '*.{h,cpp,cc,c,m,mm}' ./", expand("<cword>"))<CR><CR>
+noremap <C-f> :RGCword<CR>
+nmap <C-p> :RG<CR>
+nmap <C-d> :bdelete<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
 "buffer-vim
-nmap <C-n> :bn<CR>
-nmap <C-d> :bdelete<CR>
-nmap <C-t> :badd ~/.vimrc<CR> :buffer ~/.vimrc<CR>
+nmap <C-t> :badd ~/.vim/configs/keymap.vim<CR> :buffer ~/.vim/configs/keymap.vim<CR>
 
 
 "clang-format
