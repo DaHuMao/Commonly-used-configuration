@@ -1,41 +1,4 @@
 #Generic function script
-function traversalFolder(){
-  for element in `ls $1`
-  do  
-    dir_or_file=$1"/"$element
-    if [ -d $dir_or_file ] && [[ $2 != '' ]];then
-      $2 $dir_or_file
-    elif [ -f $dir_or_file ] && [[ $3 != '' ]];then
-      $3 $dir_or_file
-    fi  
-  done
-}
-
-function recursiveTraversalFolder() {
-  for element in `ls $1`
-  do  
-    dir_or_file=$1"/"$element
-    if [ -d $dir_or_file ];then
-      recursiveTraversalFolder $dir_or_file $2
-    elif [ -f $dir_or_file ] && [[ $2 != '' ]];then
-      $2 $dir_or_file
-    fi  
-  done
-  
-}
-
-function TraverseFromGit(){
-    reg=$1
-    cmd=$2
-    echo "cmd: ${cmd} reg: ${reg}"
-    for element in `git status -s | grep -E "${reg}"`
-    do
-        if [ "$element" = 'M' -o "$element" = '??' -o "$element" = 'A' -o "$element" = 'D' ];then
-            continue
-        fi
-        $cmd $element
-    done
-}
 
 #字符替换 
 #example stringSubstitution 1_2_3 '_' '/'
@@ -85,12 +48,51 @@ function substrBackLast(){
     echo ${1##*$2}
 }
 
+#日志打印格式化
 #字体颜色 30:黑 31:红 32:绿 33:黄 34:蓝色 35:紫色 36:深绿 37:白色
 #背景颜色#40:黑 #41:深红 #42:绿 #43:黄色 #44:蓝色 #45:紫色 #46:深绿 #47:白色
 function log_info(){
-    echo "\033[40;32m[INFO] ${1}\033[0m"
+    echo "\033[40;32m[INFO] ${@}\033[0m"
 }
 
 function log_error(){
-    echo "\033[40;31m[ERROR] ${1}\033[0m"
+    echo "\033[40;31m[ERROR] ${@}\033[0m"
+}
+
+function traversalFolder(){
+  for element in `ls $1`
+  do 
+    dir_or_file=$1"/"$element
+    if [ -d $dir_or_file ] && [[ $2 != '' ]];then
+      $2 $dir_or_file
+    elif [ -f $dir_or_file ] && [[ $3 != '' ]];then
+      $3 $dir_or_file
+    fi
+  done
+}
+
+function recursiveTraversalFolder() {
+  for element in `ls $1`
+  do 
+    dir_or_file=$1"/"$element
+    if [ -d $dir_or_file ];then
+      recursiveTraversalFolder $dir_or_file $2
+    elif [ -f $dir_or_file ] && [[ $2 != '' ]];then
+      $2 $dir_or_file
+    fi
+  done
+}
+
+function TraverseFromGit(){
+    cmd=$1
+    filter=$2
+    traversal_cmd="git status -s | $filter"
+    log_info TraverseFromGit traversal_cmd: $traversal_cmd
+    for element in `eval $traversal_cmd`
+    do
+        if [ "$element" = 'M' -o "$element" = '??' -o "$element" = 'A' -o "$element" = 'D' ];then
+            continue
+        fi
+        $cmd $element
+    done
 }
