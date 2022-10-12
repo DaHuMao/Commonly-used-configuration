@@ -62,7 +62,7 @@ nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
 noremap <C-f> :RGCword<CR>
 nmap <C-p> :RG<CR>
-nmap <C-d> :bdelete<CR>
+nmap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
@@ -75,6 +75,6 @@ function! Formatonsave()
   let l:formatdiff = 1
   pyf /usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format.py
 endfunction
-nmap <C-d> :call Formatonsave()<CR>
+"nmap <C-d> :call Formatonsave()<CR>
 
 
