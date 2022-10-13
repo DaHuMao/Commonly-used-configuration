@@ -1,6 +1,4 @@
 noremap ; :
-cnoremap <C-a> <Home>
-cnoremap <C-e> <end>
 
 " use space as map leader
 let mapleader = ","
@@ -58,8 +56,6 @@ nmap <leader>b :Buffers<CR>
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
 
-
-
 nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
 noremap <C-f> :RGCword<CR>
@@ -67,7 +63,6 @@ nmap <C-p> :RG<CR>
 nmap <C-a> :Rac<CR>
 nmap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
-
 
 "buffer-vim
 function Badd_buffer()
