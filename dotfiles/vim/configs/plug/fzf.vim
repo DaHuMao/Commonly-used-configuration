@@ -47,9 +47,17 @@ function! RipgrepFzf(query, fullscreen, file_suffix)
     call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
 endfunction
 
-function! RipgrepFzfCword(fullscreen)
+function! RipgrepFzfCword(fullscreen, file_suffix)
   let str=expand(expand("<cword>"))
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s || true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' -e %s || true"
+  let initial_command = printf(command_fmt, a:file_suffix, str)
+  echo initial_command
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
+endfunction
+
+function! RipgrepFzfCwordAll(fullscreen)
+  let str=expand(expand("<cword>"))
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -e \'%s\' || true"
   let initial_command = printf(command_fmt, str)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -89,15 +97,23 @@ function! RipgrepFzfValDefine(fullscreen)
 endfunction
 
 
-command! -bang -nargs=* RA
+command! -bang -nargs=* Ra
   \ call fzf#vim#grep(
   \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+command! -bang -nargs=* -bang Rac
+  \ call fzf#vim#grep(
+  \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.expand(expand("<cword>")), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+command! -bang -nargs=* RFiles
+  \ call fzf#vim#grep(
+  \   'fd --type f --no-ignore --hidden --follow --exclude .git'.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)
 command! -nargs=* -bang Rfc call RipgrepFzfClassDefine(<bang>0)
 command! -nargs=* -bang Rfv call RipgrepFzfValDefine(<bang>0)
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0, "h,cpp,cc,c,m,mm,java")
-command! -nargs=* -bang RGCword call RipgrepFzfCword(<bang>0)
+command! -nargs=* -bang RGCword call RipgrepFzfCword(<bang>0, "h,cpp,cc,c,m,mm,java")
 command! -nargs=* -bang Rgn call RipgrepFzf(<q-args>, <bang>0, "gn")
 command! -nargs=* -bang Rpy call RipgrepFzf(<q-args>, <bang>0, "py")
 command! -nargs=* -bang Rja call RipgrepFzf(<q-args>, <bang>0, "java")
@@ -124,10 +140,6 @@ endfunction
 
 command! -nargs=* -bang RTT call RipgrepFzfExample(<q-args>, <bang>0)
 
-command! -bang -nargs=* RF
-  \ call fzf#vim#grep(
-  \   'fd  --no-ignore '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview(), <bang>0)
 command! -nargs=* -bang Rl call RipgrepFzfInCurrentBuffer(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir RFF
     \ call fzf#vim#files(<q-args>, {'options': ['--layout=reverse', '--info=inline', '--preview', '~/.vim/plugged/fzf.vim/bin/preview.sh {}']}, <bang>0)

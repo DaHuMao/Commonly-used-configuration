@@ -42,16 +42,18 @@ nmap Y "+y
 nmap P "+p
 nmap <c-p> "+
 
-"leaderf
 noremap <leader>l :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
+
+"fzf-vim
 noremap <leader>L :Lines<CR>
 nmap <leader>h :History <CR>
 nmap <leader>t :BTags<CR>
-nmap <leader>F :Files<CR>
+nmap <leader>F :RFiles<CR>
 nmap <leader>A :RA<CR>
 nmap <leader>f :Rff<CR>
 nmap <leader>c :Rfc<CR>
 nmap <leader>v :Rfv<CR>
+nmap <leader>b :Buffers<CR>
 
 "nerdtre
 nmap <leader>n :NERDTreeToggle<CR>
@@ -62,12 +64,17 @@ nmap <C-b> :q!<CR>
 nmap <C-e> :w<CR>
 noremap <C-f> :RGCword<CR>
 nmap <C-p> :RG<CR>
+nmap <C-a> :Rac<CR>
 nmap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 
 "buffer-vim
-nmap <C-t> :badd ~/.vim/configs/keymap.vim<CR> :buffer ~/.vim/configs/keymap.vim<CR>
+function Badd_buffer()
+  badd ~/.vim/configs/keymap.vim
+  buffer ~/.vim/configs/keymap.vim
+endfunction
+nmap <C-t> :call Badd_buffer()<CR>
 
 
 "clang-format
