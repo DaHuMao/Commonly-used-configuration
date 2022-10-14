@@ -98,7 +98,7 @@ endfunction
 
 function BufferLinesCwords(fullscreen)
   let str=expand(expand("<cword>"))
-  call fzf#vim#lines(str, a:fullscreen)
+  call fzf#vim#buffer_lines(str, a:fullscreen)
 endfunction
 
 command! -bang -nargs=* Ra
@@ -114,7 +114,7 @@ command! -bang -nargs=* RFiles
   \   'fd --type f --no-ignore --hidden --follow --exclude .git'.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
-command! -nargs=* -bang RLines call BufferLinesCwords(<bang>0)
+command! -nargs=* -bang BLinesCword call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)
 command! -nargs=* -bang Rfc call RipgrepFzfClassDefine(<bang>0)
 command! -nargs=* -bang Rfv call RipgrepFzfValDefine(<bang>0)
