@@ -96,6 +96,10 @@ function! RipgrepFzfValDefine(fullscreen)
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
 endfunction
 
+function BufferLinesCwords(fullscreen)
+  let str=expand(expand("<cword>"))
+  call fzf#vim#lines(str, a:fullscreen)
+endfunction
 
 command! -bang -nargs=* Ra
   \ call fzf#vim#grep(
@@ -109,6 +113,8 @@ command! -bang -nargs=* RFiles
   \ call fzf#vim#grep(
   \   'fd --type f --no-ignore --hidden --follow --exclude .git'.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
+
+command! -nargs=* -bang RLines call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)
 command! -nargs=* -bang Rfc call RipgrepFzfClassDefine(<bang>0)
 command! -nargs=* -bang Rfv call RipgrepFzfValDefine(<bang>0)

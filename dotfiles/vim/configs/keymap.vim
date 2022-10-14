@@ -40,9 +40,11 @@ nmap Y "+y
 nmap P "+p
 nmap <c-p> "+
 
-noremap <leader>l :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
+" Leaderf
+noremap <leader>k :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
 
 "fzf-vim
+noremap <leader>l :RLines<CR>
 noremap <leader>L :Lines<CR>
 nmap <leader>h :History <CR>
 nmap <leader>t :BTags<CR>

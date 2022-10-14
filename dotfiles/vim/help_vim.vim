@@ -68,3 +68,10 @@ if exists(':Gbrowse') != 2
   exe 'command! -bar -bang -range=-1 -nargs=* -complete=customlist,fugitive#CompleteObject Gbrowse exe fugitive#BrowseCommand(<line1>, <count>, +"<range>", <bang>0, "<mods>", <q-args>, [<f-args>])'
 endif
 
+
+if get(a:dict, 'name') == 'fd'
+  let a:lines[1]=a:lines[1].':1:1:'
+  echo a:lines[1]
+endif
+
+
