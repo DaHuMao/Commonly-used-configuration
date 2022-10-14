@@ -1,5 +1,5 @@
-source  /usr/local/opt/fzf/shell/completion.zsh
-source  /usr/local/opt/fzf/shell//key-bindings.zsh
+#source  /usr/local/opt/fzf/shell/completion.zsh
+#source  /usr/local/opt/fzf/shell//key-bindings.zsh
 
 # FZF is a general-purpose command-line fuzzy finder.
 # export FZF_COMPLETION_TRIGGER=''

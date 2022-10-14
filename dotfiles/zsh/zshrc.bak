@@ -8,39 +8,16 @@
 # Put this line on top to make keybinds work
 bindkey -e
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source ~/.myzsh/zsh_plug
 source ~/.myzsh/fzf.zsh       
 source ~/.myzsh/zsh_fzf_extra 
-
-source ~/.myzsh/zshenv
-source ~/.myzsh/zsh_misc
-source ~/.myzsh/zsh_aliases
-source ~/.myzsh/zsh_custom
-source ~/.myzsh/incr-0.2.zsh
 source ~/.myzsh/zsh_theme
+source ~/.myzsh/common.zsh
+source ~/.myzsh/incr-0.2.zsh
+#source ~/.myzsh/zsh_misc
+#source ~/.myzsh/zsh_aliases
 
-
-setopt EXTENDED_HISTORY
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
-setopt HIST_SAVE_NO_DUPS
-setopt HIST_BEEP
-setopt inc_append_history
-setopt share_history
-
-(( $+commands[thefuck] )) && source <(thefuck --alias 2>/dev/null)
-(( $+commands[kubectl] )) && source <(kubectl completion zsh)
-(( $+commands[pyenv]   )) && source <(pyenv init -)
-#(( $+commands[fasd] ))    && source <(fasd --init auto)
-#(( $+commands[pip] ))     && source <(pip completion --zsh)  # Too slow!
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-#source ~/.sdkman/bin/sdkman-init.sh 2>/dev/null
-#
-#export CHROMIUM_BUILDTOOLS_PATH=/Users/zhangtongxiao/Desktop/yfd_work/sdk-demo-app-ios/tutor-engine-ios/live_engine/tutor-webrtc/src/buildtools/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
 export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
 export ANDROID_NDK_ROOT=$HOME/GitDownLoad/android-ndk-r21e
@@ -56,12 +33,13 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 alias python="/usr/local/bin/python2"
 alias pip3="/usr/bin/pip3"
-alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
+alias clang-format="/usr/local/bin/clang-format"
 export HOMEBREW_NO_AUTO_UPDATE=true
 
 # depot_toos
 export PATH=$PATH:$HOME/GitDownLoad/depot_tools
 export DEPOT_TOOLS_UPDATE=0
+alias vim=nvim
 
 #nvm
 export NVM_DIR="$HOME/.nvm"
@@ -77,7 +55,6 @@ export TERM=screen-256color
 
 #source /codes/hobot/ph/arcanist/resources/shell/bash-completion
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 review(){
 branch_name=`git rev-parse --abbrev-ref HEAD`
 if [ -z "$branch_name" ];then
