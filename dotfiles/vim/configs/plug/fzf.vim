@@ -80,9 +80,9 @@ function! RipgrepFzfClassDefine(fullscreen)
   let str3="'class "  . expand(expand("<cword>"))  . ' *:' . "'"
   let str4="'struct *"  . expand(expand("<cword>")) . ' *\{' . "'"
   let str5="'struct *"  . expand(expand("<cword>")) . ' *:' . "'"
-  let str5="'using *"  . expand(expand("<cword>")) .  "'"
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s || true"
-  let initial_command = printf(command_fmt, str1, str2, str3, str4, str5)
+  let str6="'using *"  . expand(expand("<cword>")) .  "'"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
+  let initial_command = printf(command_fmt, str1, str2, str3, str4, str5, str6)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
 endfunction
