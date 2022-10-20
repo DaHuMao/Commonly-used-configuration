@@ -41,16 +41,17 @@ endfunction
 
 
 
-function! RipgrepFzf(query, fullscreen, file_suffix)
-    let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' -e %s || true"
-    let initial_command = printf(command_fmt, a:file_suffix, shellescape(a:query))
+function! RipgrepFzf(query, fullscreen, file_suffix, exclude_cmd)
+    let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' %s -e %s || true"
+    let initial_command = printf(command_fmt, a:file_suffix, a:exclude_cmd, shellescape(a:query))
+    echom initial_command
     call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
 endfunction
 
-function! RipgrepFzfCword(fullscreen, file_suffix)
+function! RipgrepFzfCword(fullscreen, file_suffix, exclude_cmd)
   let str=expand(expand("<cword>"))
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' -e %s || true"
-  let initial_command = printf(command_fmt, a:file_suffix, str)
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' %s -e %s || true"
+  let initial_command = printf(command_fmt, a:file_suffix, a:exclude_cmd, str)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
 endfunction
@@ -119,8 +120,8 @@ command! -nargs=* -bang BLinesCword call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)
 command! -nargs=* -bang Rfc call RipgrepFzfClassDefine(<bang>0)
 command! -nargs=* -bang Rfv call RipgrepFzfValDefine(<bang>0)
-command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0, "h,cpp,cc,c,m,mm,java")
-command! -nargs=* -bang RGCword call RipgrepFzfCword(<bang>0, "h,cpp,cc,c,m,mm,java")
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=* -bang RGCword call RipgrepFzfCword(<bang>0, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=* -bang Rgn call RipgrepFzf(<q-args>, <bang>0, "gn")
 command! -nargs=* -bang Rpy call RipgrepFzf(<q-args>, <bang>0, "py")
 command! -nargs=* -bang Rja call RipgrepFzf(<q-args>, <bang>0, "java")
