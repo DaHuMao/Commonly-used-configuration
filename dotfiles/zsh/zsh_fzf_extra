@@ -10,19 +10,18 @@
 wfxr::fzf-file-edit-widget() {
     setopt localoptions pipefail 2> /dev/null
     local files
-    files=$(eval "$FZF_ALT_E_COMMAND" |
-        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS $FZF_ALT_E_OPTS" fzf -m |
+    files=$(fd |
+        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS" fzf -m |
         sed 's/^\s\+.\s//')
     local ret=$?
-
-    [[ $ret -eq 0 ]] && echo $files | xargs sh -c "$EDITOR \$@ </dev/tty" $EDITOR
-
-    zle redisplay
-    typeset -f zle-line-init >/dev/null && zle zle-line-init
+    local l_buffer=$LBUFFER 
+    zle push-line
+    zle get-line
+    LBUFFER="${l_buffer}$files"
     return $ret
 }
 zle     -N    wfxr::fzf-file-edit-widget
-bindkey '\ee' wfxr::fzf-file-edit-widget
+bindkey '^F' wfxr::fzf-file-edit-widget
 
 # CTRL-R - Paste the selected command from history into the command line
 wfxr::fzf-history-widget() {
@@ -43,3 +42,10 @@ wfxr::fzf-history-widget() {
 }
 zle     -N   wfxr::fzf-history-widget
 bindkey '^R' wfxr::fzf-history-widget
+
+wfxr::fzf-move_cursor() {
+  CURSOR=$CURSOR+10
+}
+zle -N wfxr::fzf-move_cursor
+bindkey '^N' wfxr::fzf-move_cursor
+
