@@ -49,7 +49,7 @@ noremap <leader>L :BLines<CR>
 nmap <leader>h :History <CR>
 nmap <leader>t :BTags<CR>
 nmap <leader>F :RFiles<CR>
-nmap <leader>A :RA<CR>
+nmap <leader>A :RG<CR>
 nmap <leader>f :Rff<CR>
 nmap <leader>c :Rfc<CR>
 nmap <leader>v :Rfv<CR>
@@ -67,11 +67,18 @@ nmap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 "buffer-vim
-function Badd_buffer()
+function BaddBufferKeymap()
   badd ~/.vim/configs/keymap.vim
   buffer ~/.vim/configs/keymap.vim
 endfunction
-nmap <C-t> :call Badd_buffer()<CR>
+nmap <C-t> :call BaddBufferKeymap()<CR>
+
+function BaddBufferZshConfig()
+  badd ~/.zshrc
+  buffer ~/.zshrc
+endfunction
+command! -nargs=0 Vsh call BaddBufferZshConfig()
+
 
 
 "clang-format
