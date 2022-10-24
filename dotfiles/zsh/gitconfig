@@ -1,0 +1,18 @@
+[safe]
+	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core
+	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX
+[alias]
+    st = status
+    ci = commit
+    l = log --oneline --decorate -12 --color
+    ll = log --oneline --decorate --color --graph
+    lc = log --graph --color
+    co = checkout
+    br = branch
+    mg = merge --log=9999
+    d = difftool
+[user]
+	name = zhangtongxiaobj
+	email = zhangtongxiaobj@yuanfudao.com
