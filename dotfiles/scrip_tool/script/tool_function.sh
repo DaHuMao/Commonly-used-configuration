@@ -55,8 +55,28 @@ function log_info(){
     echo "\033[40;32m[INFO] ${@}\033[0m"
 }
 
+function log_warn(){
+    echo "\033[40;33m[WARNING] ${@}\033[0m"
+}
+
 function log_error(){
     echo "\033[40;31m[ERROR] ${@}\033[0m"
+}
+
+function log_abort() {
+  if [ $# -gt 0 ];then
+    log_error $@
+  fi
+  exit 1
+}
+
+#判断某个命令是否存在
+function check_cmd() {
+  cmd=$1
+  #hash $cmd &>/dev/null && return 0
+  type $cmd &>/dev/null && log_info "${cmd} is aready installed" && return 0
+  log_info "${cmd} is not install"
+  return 1
 }
 
 function traversalFolder(){
