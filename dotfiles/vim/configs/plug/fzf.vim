@@ -103,18 +103,25 @@ function BufferLinesCwords(fullscreen)
   call fzf#vim#buffer_lines(str, a:fullscreen)
 endfunction
 
+function FindFile(file_source)
+  call fzf#run({'source': a:file_source,
+  \ 'options': ['--layout=reverse', '--info=inline', '--preview', 'cat {}', '--bind', 'ctrl-/:toggle-preview'],
+  \ 'window': {'width': 0.6, 'height': 0.7},
+  \ 'sink': 'e'})
+endfunction
+
 command! -bang -nargs=* Ra
   \ call fzf#vim#grep(
   \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
+
 command! -bang -nargs=* -bang Rac
   \ call fzf#vim#grep(
   \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.expand(expand("<cword>")), 1,
   \   fzf#vim#with_preview(), <bang>0)
-command! -bang -nargs=* RFiles
-  \ call fzf#vim#grep(
-  \   'fd --type f --no-ignore --hidden --follow --exclude .git'.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Rfile
+  \ call FindFile('fd --type f --no-ignore --hidden --follow --exclude "*.o" --exclude .git')
 
 command! -nargs=* -bang BLinesCword call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)
