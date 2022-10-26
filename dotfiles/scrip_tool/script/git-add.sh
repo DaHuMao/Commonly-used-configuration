@@ -57,12 +57,13 @@ function grep_filter() {
   echo `eval cat $grep_param`
 }
 
-cmd=''
+cmd='git_add_cmd'
+func='TraverseFromGit'
+real_e_param="-e '^ M' -e '^ A' -e '^ D' -e '??'"
 e_param=''
 E_param=''
 v_param=''
 ee_param=''
-func=''
 function CombineFirstParam(){
   local flag='|'
   if [ '' = "$first_param" ];then
@@ -115,32 +116,36 @@ do
       E_param=$1
       shift
       ;;
-    --A)
-      e_param="${e_param} -e '\?\?'"
+    --N)
+      e_param="${e_param} -e '??'"
       shift
       ;;
     --M)
       e_param="${e_param} -e '^ M'"
       shift
       ;;
-    --C)
-      e_param="${e_param} -e '^ M' -e '^ A' -e '^D'"
+    --D)
+      e_param="${e_param} -e '^ D'"
       shift
       ;;
-    --D)
-      e_param="${e_param} -e '^D'"
+    --C)
+      e_param="${e_param} -e '^ M' -e '^ A' -e '^ D'"
       shift
       ;;
     *)
       log_error invalid param $1
+      exit 1
       shift
       ;;
   esac
 done
+if [ ! -z $e_param ];then
+  real_e_param=$e_param
+fi
 if [[ -z $func || -z $cmd ]];then
   log_error 'invalid command ======>>>' $func $cmd
 else
-  log_info 'run: ' $func $cmd "grep_filter -e ${e_param} -E ${E_param} -v ${v_param} -ee ${ee_param}" 
+  log_info 'run: ' $func $cmd "grep_filter -e ${real_e_param} -E ${E_param} -v ${v_param} -ee ${ee_param}" 
   $func $cmd "grep_filter -e \"${e_param}\" -E \"${E_param}\" -v \"${v_param}\" -ee \"${ee_param}\"" 
 fi
 
