@@ -66,10 +66,21 @@ nmap <C-a> :Rac<CR>
 nmap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
-"buffer-vim
+"快速打开zsh vim配置文件
 nmap <C-t> :e ~/.vim/configs/keymap.vim<CR>
+command! -nargs=0 Vsh :e ~/.zshrc
 
-command! -nargs=0 Vsh :e ~/.zshrc<CR>
+function CompleteClassCpp(class_name)
+  let cmd_fmt="%s/ \\(\\w*(\\)/ %s::\\1/"
+  let cmd = printf(cmd_fmt, '%s', a:class_name)
+  execute cmd
+  %s/override//
+  %s/;//
+  %s/ *$//
+  %s/)\(.*\)$/)\1 {\r\r}\r/
+endfunction
+
+command! -nargs=1 Cc call CompleteClassCpp(<q-args>)
 
 
 
