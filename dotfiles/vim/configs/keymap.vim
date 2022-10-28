@@ -71,13 +71,17 @@ nmap <C-t> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
 
 function CompleteClassCpp(class_name)
-  let cmd_fmt="%s/ \\(\\w*(\\)/ %s::\\1/"
-  let cmd = printf(cmd_fmt, '%s', a:class_name)
+  let line_num=line('.')
+  let cmd_fmt=",$s/ \\(\\w*(\\)/ %s::\\1/"
+  let cmd = printf(cmd_fmt, a:class_name)
+  echom cmd
   execute cmd
-  %s/override//
-  %s/;//
-  %s/ *$//
-  %s/)\(.*\)$/)\1 {\r\r}\r/
+  execute line_num
+  ,$s/\(override\)\?//
+  execute line_num
+  ,$s/ *;$/;/
+  execute line_num
+  ,$s/)\(.*\);$/)\1 {\r\r}\r/
 endfunction
 
 command! -nargs=1 Cc call CompleteClassCpp(<q-args>)
@@ -85,10 +89,16 @@ command! -nargs=1 Cc call CompleteClassCpp(<q-args>)
 
 
 "clang-format
-function! Formatonsave()
-  let l:formatdiff = 1
-  pyf /usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format.py
+function! Formatonsave(flag)
+  if a:flag == 1
+    let l:lines="all"
+  else
+    let l:formatdiff = 1
+  endif
+  py3f /usr/local/Cellar/clang-format/14.0.6/share/clang/clang-format.py
 endfunction
+command! -nargs=1 Fmt call Formatonsave(<q-args>)
+"autocmd BufWritePre *.h,*.cc,*.cpp call Formatonsave()
 "nmap <C-d> :call Formatonsave()<CR>
 
 
