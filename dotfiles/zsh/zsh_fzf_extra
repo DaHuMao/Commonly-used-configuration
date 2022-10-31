@@ -72,9 +72,28 @@ wfxr::fzf-history-widget() {
 zle     -N   wfxr::fzf-history-widget
 bindkey '^R' wfxr::fzf-history-widget
 
-wfxr::fzf-move_cursor() {
-  CURSOR=$CURSOR+10
+FZF_MOVE_LAST_POS=0
+FZF_MOVE_IS_RIGHT=1
+wfxr::fzf_move_cursor_right() {
+  sor_pos=$(($CURSOR + ${#RBUFFER} / 2))
+  if [ $FZF_MOVE_IS_RIGHT -eq 0 ] && [ $CURSOR -lt $FZF_MOVE_LAST_POS ];then
+    sor_pos=$(($CURSOR / 2 + $FZF_MOVE_LAST_POS / 2))
+  fi
+  FZF_MOVE_LAST_POS=$CURSOR
+  CURSOR=$sor_pos
+  FZF_MOVE_IS_RIGHT=1
 }
-zle -N wfxr::fzf-move_cursor
-bindkey '^N' wfxr::fzf-move_cursor
+zle -N wfxr::fzf_move_cursor_right
+bindkey '^N' wfxr::fzf_move_cursor_right
 
+wfxr::fzf_move_cursor_left() {
+  sor_pos=$(($CURSOR - ${#LBUFFER} / 2))
+  if [ $FZF_MOVE_IS_RIGHT -eq 1 ] && [ $CURSOR -gt $FZF_MOVE_LAST_POS ];then
+    sor_pos=$(($CURSOR / 2 + $FZF_MOVE_LAST_POS / 2))
+  fi
+  FZF_MOVE_LAST_POS=$CURSOR
+  CURSOR=$sor_pos
+  FZF_MOVE_IS_RIGHT=0
+}
+zle -N wfxr::fzf_move_cursor_left
+bindkey '^M' wfxr::fzf_move_cursor_left
