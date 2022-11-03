@@ -23,6 +23,8 @@ cnoremap <C-j> <t_kd>
 cnoremap <C-k> <t_ku>
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
+inoremap <C-a> <Home>
+inoremap <C-e> <End>
 
 " Go to home and end using capitalized directions
 noremap H ^
@@ -46,28 +48,35 @@ noremap <leader>k :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expan
 "fzf-vim
 noremap <leader>l :BLinesCword<CR>
 noremap <leader>L :BLines<CR>
-nmap <leader>h :History <CR>
-nmap <leader>t :BTags<CR>
-nmap <leader>F :Rfile<CR>
-nmap <leader>A :RG<CR>
-nmap <leader>f :Rff<CR>
-nmap <leader>c :Rfc<CR>
-nmap <leader>v :Rfv<CR>
-nmap <leader>b :Buffers<CR>
+noremap <leader>h :History <CR>
+noremap <leader>t :BTags<CR>
+noremap <leader>F :Rfile<CR>
+noremap <leader>A :RG<CR>
+noremap <leader>f :Rff<CR>
+noremap <leader>c :Rfc<CR>
+noremap <leader>v :Rfv<CR>
+noremap <leader>b :Buffers<CR>
 
-"nerdtre
-nmap <leader>n :NERDTreeToggle<CR>
+"windows
+noremap <leader>zz :MaximizerToggle<CR>
+noremap <leader>zl :ResizerRight<CR>
+noremap <leader>zh :ResizerLeft<CR>
+noremap <leader>zk :ResizerUp<CR>
+noremap <leader>zj :ResizerDown<CR>
 
-nmap <C-b> :q!<CR>
-nmap <C-e> :w<CR>
+"nerdtree
+noremap <leader>n :NERDTreeToggle<CR>
+
+noremap <C-b> :q!<CR>
+noremap <C-e> :w<CR>
 noremap <C-f> :RGCword<CR>
-nmap <C-p> :RG<CR>
-nmap <C-a> :Rac<CR>
-nmap <C-d> :Gvdiffsplit<CR>
+noremap <C-p> :RG<CR>
+noremap <C-a> :Rac<CR>
+noremap <C-d> :Gvdiffsplit<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 "快速打开zsh vim配置文件
-nmap <C-t> :e ~/.vim/configs/keymap.vim<CR>
+noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
 
 function CompleteClassCpp(class_name)

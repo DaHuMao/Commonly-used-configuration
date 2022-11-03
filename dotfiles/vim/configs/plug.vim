@@ -3,6 +3,7 @@
 call plug#begin('~/.vim/plugged')
 
 "utils
+Plug 'wuelnerdotexe/human.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'danro/rename.vim'
