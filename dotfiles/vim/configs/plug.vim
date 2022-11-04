@@ -57,6 +57,10 @@ Plug 'fatih/vim-go'
 Plug 'mhinz/vim-signify' 
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
+Plug 'jreybert/vimagit'
+
+"snippets
+Plug 'honza/vim-snippets'
 
 "Plug 'xieyu/vim-codenote'
 "Plug 'xieyu/vim-cd'
