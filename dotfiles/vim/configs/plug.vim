@@ -5,8 +5,8 @@ call plug#begin('~/.vim/plugged')
 "utils
 Plug 'wuelnerdotexe/human.vim'
 Plug 'scrooloose/nerdtree'
-Plug 'MattesGroeger/vim-bookmarks'
-Plug 'danro/rename.vim'
+"Plug 'MattesGroeger/vim-bookmarks'
+"Plug 'danro/rename.vim'
 
 Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
@@ -15,9 +15,9 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'junegunn/vim-easy-align'
 "Plug 'easymotion/vim-easymotion'
-Plug 'rizzatti/dash.vim'
+"Plug 'rizzatti/dash.vim'
 
-Plug 'rust-lang/rust.vim'
+"Plug 'rust-lang/rust.vim'
 
 "markdwn preview
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
