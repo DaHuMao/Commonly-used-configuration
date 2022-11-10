@@ -42,7 +42,7 @@ endfunction
 
 
 function! RipgrepFzf(query, fullscreen, file_suffix, exclude_cmd)
-    let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' %s -e %s || true"
+    let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -g '*.{%s}' %s -e %s || true"
     let initial_command = printf(command_fmt, a:file_suffix, a:exclude_cmd, shellescape(a:query))
     echom initial_command
     call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -50,7 +50,7 @@ endfunction
 
 function! RipgrepFzfCword(fullscreen, file_suffix, exclude_cmd)
   let str=expand(expand("<cword>"))
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{%s}' %s -e %s || true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -g '*.{%s}' %s -e %s || true"
   let initial_command = printf(command_fmt, a:file_suffix, a:exclude_cmd, str)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -58,7 +58,7 @@ endfunction
 
 function! RipgrepFzfCwordAll(fullscreen)
   let str=expand(expand("<cword>"))
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -e \'%s\' || true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -e \'%s\' || true"
   let initial_command = printf(command_fmt, str)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -69,7 +69,7 @@ function! RipgrepFzfFunction(fullscreen)
   let str2="'" . '\w *' . expand(expand("<cword>")) . '\(.*\).*;' . "'"
   let str3="'" . '\w *' . expand(expand("<cword>")) . '\(.*\) *\{' . "'"
   let str4="'" . '\w *' . expand(expand("<cword>")) . '\(' . "'"
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s || true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s || true"
   let initial_command = printf(command_fmt, str1, str2, str3, str4)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -82,7 +82,7 @@ function! RipgrepFzfClassDefine(fullscreen)
   let str4="'struct *"  . expand(expand("<cword>")) . ' *\{' . "'"
   let str5="'struct *"  . expand(expand("<cword>")) . ' *:' . "'"
   let str6="'using *"  . expand(expand("<cword>")) .  "'"
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
   let initial_command = printf(command_fmt, str1, str2, str3, str4, str5, str6)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -92,7 +92,7 @@ function! RipgrepFzfValDefine(fullscreen)
   let str1="'" . '\w *' . expand(expand("<cword>")) . ' *;' . "'"
   let str2="'" . '\w *' . expand(expand("<cword>")) . ' *=' . "'"
   let str3="'" . '\w *' . expand(expand("<cword>")) . ' .*;' . "'"
-  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s|| true"
+  let command_fmt = "rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s|| true"
   let initial_command = printf(command_fmt, str1, str2, str3)
   echo initial_command
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
@@ -112,16 +112,16 @@ endfunction
 
 command! -bang -nargs=* Ra
   \ call fzf#vim#grep(
-  \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   'rg --column --no-ignore-vcs --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=* -bang Rac
   \ call fzf#vim#grep(
-  \   'rg --column --no-ignore --line-number --no-heading --color=always --smart-case -- '.expand(expand("<cword>")), 1,
+  \   'rg --column --no-ignore-vcs --line-number --no-heading --color=always --smart-case -- '.expand(expand("<cword>")), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
 command! -bang -nargs=* Rfile
-  \ call FindFile('fd --type f --no-ignore --hidden --follow --exclude "*.o" --exclude .git')
+  \ call FindFile('fd --type f --no-ignore-vcs --hidden --follow --exclude "*.o" --exclude .git')
 
 command! -nargs=* -bang BLinesCword call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)

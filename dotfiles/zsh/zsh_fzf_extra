@@ -1,11 +1,11 @@
 #!/usr/bin/env zsh
 [[ $- != *i* ]] && return
 _fzf_compgen_path() {
-  fd --type f --no-ignore --hidden --follow --exclude "*.o" --exclude .git --base-directory $1
+  fd --type f  --no-ignore-vcs --hidden --follow --exclude --exclude .git --base-directory $1
 }
 
 _fzf_compgen_dir() {
-  fd --type d --no-ignore --hidden --follow  --exclude .git --base-directory $1
+  fd --type d  --no-ignore-vcs --hidden --follow  --exclude .git --base-directory $1
 }
 
 # ALT-E - Edit selected file
@@ -96,4 +96,4 @@ wfxr::fzf_move_cursor_left() {
   FZF_MOVE_IS_RIGHT=0
 }
 zle -N wfxr::fzf_move_cursor_left
-bindkey '^M' wfxr::fzf_move_cursor_left
+bindkey '^B' wfxr::fzf_move_cursor_left
