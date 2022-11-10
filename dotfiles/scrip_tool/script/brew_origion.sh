@@ -41,7 +41,9 @@ case $select_origion in
   esac
 
 brew_url="${pre_fix}_origion"
-brew_core_url='${pre_fix}_brew_core'
+brew_url=${!brew_url}
+brew_core_url="${pre_fix}_brew_core"
+brew_core_url=${!brew_core_url}
 
 cd "$(brew --repo)"
 log_info `pwd` 'git remote set-url origin' $brew_url
@@ -52,7 +54,7 @@ log_info `pwd` 'git remote set-url origin' $brew_core_url
 git remote set-url origin $brew_core_url
 
 log_info "brew update..."
-brew update
+brew update || log_abort 'faild brew update' 
 log_info 'brew upgrade...'
 brew upgrade
 
