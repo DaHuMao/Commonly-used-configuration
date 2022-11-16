@@ -43,7 +43,7 @@ function grep_filter() {
       -ee)
         shift
         if [ ! -z "${1}" ];then
-          grep_param="${grep_param} | grep -e ${1}"
+          grep_param="${grep_param} | grep -e '${1}'"
         fi
         shift
         ;;
