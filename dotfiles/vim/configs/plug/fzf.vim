@@ -104,10 +104,11 @@ function BufferLinesCwords(fullscreen)
 endfunction
 
 function FindFile(file_source)
-  call fzf#run({'source': a:file_source,
-  \ 'options': ['--layout=reverse', '--info=inline', '--preview', 'cat {}', '--bind', 'ctrl-/:toggle-preview'],
-  \ 'window': {'width': 0.6, 'height': 0.7},
-  \ 'sink': 'e'})
+  call fzf#run(fzf#wrap(a:file_source, fzf#vim#with_preview(), 0))
+  "call fzf#run({'source': a:file_source,
+  "\ 'options': ['--layout=reverse', '--info=inline', '--preview', 'bat --color "auto" {}', '--bind', 'ctrl-/:toggle-preview'],
+  "\ 'window': {'width': 0.8, 'height': 0.8},
+  "\ 'sink': 'e'})
 endfunction
 
 command! -bang -nargs=* Ra
