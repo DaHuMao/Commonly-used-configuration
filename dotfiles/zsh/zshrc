@@ -29,6 +29,12 @@ alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-form
 export PATH=$PATH:$HOME/GitDownLoad/depot_tools
 export DEPOT_TOOLS_UPDATE=0
 
+export NVM_DIR="$HOME/.nvm"
+if [ -d $NVM_DIR ];then
+  [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+fi
+
 review(){
 branch_name=`git rev-parse --abbrev-ref HEAD`
 if [ -z "$branch_name" ];then

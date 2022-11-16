@@ -103,12 +103,25 @@ function BufferLinesCwords(fullscreen)
   call fzf#vim#buffer_lines(str, a:fullscreen)
 endfunction
 
-function FindFile(file_source)
-  call fzf#run(fzf#wrap(a:file_source, fzf#vim#with_preview(), 0))
-  "call fzf#run({'source': a:file_source,
-  "\ 'options': ['--layout=reverse', '--info=inline', '--preview', 'bat --color "auto" {}', '--bind', 'ctrl-/:toggle-preview'],
-  "\ 'window': {'width': 0.8, 'height': 0.8},
-  "\ 'sink': 'e'})
+function Fzf_wrap(source)
+  call fzf#run({'source': a:source,
+  \ 'options': ['--layout=reverse', '--info=inline', '--preview', 'bat --style=numbers --color=always --theme=TwoDark {}', '--bind', 'ctrl-/:toggle-preview'],
+  \ 'window': {'width': 0.8, 'height': 0.8},
+  \ 'sink': 'e'})
+endfunction
+
+function FindFile(file_path)
+  let s:command_fmt='fd --type f --no-ignore-vcs --hidden --follow --exclude "*.o" --exclude .git . %s'
+  call Fzf_wrap(printf(s:command_fmt, a:file_path))
+endfunction
+
+function FindWordInCurBuffer()
+  let s:str=expand(expand("<cword>"))
+  let s:cur_file=bufname("%")
+  let s:command_fmt="rg --column --line-number --color=auto --smart-case -- %s %s"
+  let s:source=printf(s:command_fmt, s:str, s:cur_file)
+  echom s:source
+  call fzf#vim#grep(s:source, 1, fzf#vim#with_preview(), 0)
 endfunction
 
 command! -bang -nargs=* Ra
@@ -116,13 +129,16 @@ command! -bang -nargs=* Ra
   \   'rg --column --no-ignore-vcs --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
-command! -bang -nargs=* -bang Rac
+command! -bang -nargs=0 -bang Rac
   \ call fzf#vim#grep(
   \   'rg --column --no-ignore-vcs --line-number --no-heading --color=always --smart-case -- '.expand(expand("<cword>")), 1,
   \   fzf#vim#with_preview(), <bang>0)
 
-command! -bang -nargs=* Rfile
-  \ call FindFile('fd --type f --no-ignore-vcs --hidden --follow --exclude "*.o" --exclude .git')
+command! -bang -nargs=0 DefaultFindFile
+      \ call fzf#run(fzf#wrap('', fzf#vim#with_preview(), 0))
+
+command! -bang -nargs=1 Rfile
+      \ call FindFile(<q-args>)
 
 command! -nargs=* -bang BLinesCword call BufferLinesCwords(<bang>0)
 command! -nargs=* -bang Rff call RipgrepFzfFunction(<bang>0)

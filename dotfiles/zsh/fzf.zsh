@@ -9,8 +9,9 @@ FZF_FILE_HIGHLIGHTER='cat'
 (( $+commands[rougify]   )) && FZF_FILE_HIGHLIGHTER='rougify'
 (( $+commands[coderay]   )) && FZF_FILE_HIGHLIGHTER='coderay'
 (( $+commands[highlight] )) && FZF_FILE_HIGHLIGHTER='highlight -lO ansi'
-(( $+commands[bat]       )) && FZF_FILE_HIGHLIGHTER='bat --color=always'
+type bat &>/dev/null && FZF_FILE_HIGHLIGHTER='bat --color=always --theme=TwoDark'
 export FZF_FILE_HIGHLIGHTER
+echo $FZF_FILE_HIGHLIGHTER
 
 (( $+commands[iconful] )) && FZF_PATH_LOC='2..' || FZF_PATH_LOC=''
 export FZF_PATH_LOC
@@ -29,14 +30,16 @@ FZF_DEFAULT_OPTS="
 --bind alt-p:preview-up,alt-n:preview-down
 --bind ctrl-u:half-page-up
 --bind ctrl-d:half-page-down
---bind alt-a:select-all,ctrl-r:toggle-all
---bind ctrl-s:toggle-sort
+--bind ctrl-s:select-all,ctrl-r:toggle-all
 --bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap
 --bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort\"
 --bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
+--preview \"${FZF_FILE_HIGHLIGHTER} {}\"
 --preview-window right:50%:hidden
 "
+echo $FZF_DEFAULT_OPTS
+#--preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
+#--bind ctrl-s:toggle-sort
 export FZF_DEFAULT_OPTS
 
 # FZF: Ctrl - T
