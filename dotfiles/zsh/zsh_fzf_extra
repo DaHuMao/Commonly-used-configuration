@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 [[ $- != *i* ]] && return
 _fzf_compgen_path() {
-  fd --type f  --no-ignore-vcs --hidden --follow --exclude --exclude .git --base-directory $1
+  fd --type f  --no-ignore-vcs --hidden --follow --exclude .git --base-directory $1
 }
 
 _fzf_compgen_dir() {
