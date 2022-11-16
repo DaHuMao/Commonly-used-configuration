@@ -31,7 +31,7 @@ FZF_DEFAULT_OPTS="
 --bind ctrl-d:half-page-down
 --bind alt-a:select-all,ctrl-r:toggle-all
 --bind ctrl-s:toggle-sort
---bind ?:toggle-preview,alt-w:toggle-preview-wrap
+--bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap
 --bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort\"
 --bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
 --preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
