@@ -50,7 +50,7 @@ noremap <leader>l :BLinesCword<CR>
 noremap <leader>L :BLines<CR>
 noremap <leader>h :History <CR>
 noremap <leader>t :BTags<CR>
-noremap <leader>F :Rfile<CR>
+noremap <leader>F :Rfile ./<CR>
 noremap <leader>A :RG<CR>
 noremap <leader>f :Rff<CR>
 noremap <leader>c :Rfc<CR>
@@ -78,6 +78,7 @@ noremap <C-d> :Gvdiffsplit<CR>
 "快速打开zsh vim配置文件
 noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
+command! -nargs=0 Vsc :source ~/.vimrc
 
 function CompleteClassCpp(class_name)
   let line_num=line('.')
