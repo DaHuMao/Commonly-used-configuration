@@ -1,5 +1,3 @@
-noremap ; :
-
 " use space as map leader
 let mapleader = ","
 let g:mapleader = ","
@@ -42,12 +40,10 @@ nmap Y "+y
 nmap P "+p
 nmap <c-p> "+
 
-" Leaderf
-noremap <leader>k :<C-U><C-R>=printf("Leaderf rg --current-buffer -e %s ", expand("<cword>"))<CR><CR>
 
 "fzf-vim
-noremap <leader>l :BLinesCword<CR>
-noremap <leader>L :BLines<CR>
+noremap <leader>l :Rbufferc<CR>
+noremap <leader>L :Rbuffer<CR>
 noremap <leader>h :History <CR>
 noremap <leader>t :BTags<CR>
 noremap <leader>F :Rfile ./<CR>
@@ -105,10 +101,24 @@ function! Formatonsave(flag)
   else
     let l:formatdiff = 1
   endif
-  py3f /usr/local/Cellar/clang-format/14.0.6/share/clang/clang-format.py
+  py3f /usr/local/Cellar/clang-format/15.0.4/share/clang/clang-format.py
 endfunction
 command! -nargs=1 Fmt call Formatonsave(<q-args>)
 "autocmd BufWritePre *.h,*.cc,*.cpp call Formatonsave()
 "nmap <C-d> :call Formatonsave()<CR>
+
+nnoremap <leader>g :set operatorfunc=GrepOperator<cr>g@
+vnoremap <leader>g :<c-u>call GrepOperator(visualmode())<cr>
+
+function! GrepOperator(type)
+    if a:type ==# 'v'
+        normal! `<v`>y
+    elseif a:type ==# 'char'
+        normal! `[v`]y
+    else
+        return
+    endif
+    echom shellescape(@@)
+endfunction
 
 
