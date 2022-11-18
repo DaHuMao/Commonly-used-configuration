@@ -11,7 +11,6 @@ FZF_FILE_HIGHLIGHTER='cat'
 (( $+commands[highlight] )) && FZF_FILE_HIGHLIGHTER='highlight -lO ansi'
 type bat &>/dev/null && FZF_FILE_HIGHLIGHTER='bat --color=always --theme=TwoDark'
 export FZF_FILE_HIGHLIGHTER
-echo $FZF_FILE_HIGHLIGHTER
 
 (( $+commands[iconful] )) && FZF_PATH_LOC='2..' || FZF_PATH_LOC=''
 export FZF_PATH_LOC
@@ -37,7 +36,6 @@ FZF_DEFAULT_OPTS="
 --preview \"${FZF_FILE_HIGHLIGHTER} {}\"
 --preview-window right:50%:hidden
 "
-echo $FZF_DEFAULT_OPTS
 #--preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
 #--bind ctrl-s:toggle-sort
 export FZF_DEFAULT_OPTS
