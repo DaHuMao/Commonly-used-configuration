@@ -115,7 +115,7 @@ function TraverseFromGit(){
     log_info TraverseFromGit traversal_cmd: $traversal_cmd
     for element in `eval $traversal_cmd`
     do
-        if [ "$element" = 'M' -o "$element" = '??' -o "$element" = 'A' -o "$element" = 'D' ];then
+        if [ "$element" = 'M' -o "$element" = '??' -o "$element" = 'A' -o "$element" = 'D' -o "$element" = 'MM' ];then
             continue
         fi
         $cmd $element

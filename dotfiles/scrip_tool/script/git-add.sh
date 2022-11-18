@@ -116,12 +116,20 @@ do
       E_param=$1
       shift
       ;;
-    --N)
-      e_param="${e_param} -e '??'"
+    --Q)
+      e_param="${e_param} -e '^??'"
+      shift
+      ;;
+    --A)
+      e_param="${e_param} -e '^ A'"
       shift
       ;;
     --M)
       e_param="${e_param} -e '^ M'"
+      shift
+      ;;
+    --MM)
+      e_param="${e_param} -e '^MM'"
       shift
       ;;
     --D)
@@ -129,7 +137,7 @@ do
       shift
       ;;
     --C)
-      e_param="${e_param} -e '^ M' -e '^ A' -e '^ D'"
+      e_param="${e_param} -e '^ M' -e '^ A' -e '^ D' -e '^MM'"
       shift
       ;;
     *)
