@@ -41,6 +41,12 @@ check_and_install 'htop'
 check_and_install 'bat'
 check_and_install 'nvim'
 check_and_install 'fzf'
+check_and_install 'tree'
+check_and_install 'tldr'
+check_and_install 'duf'
+check_and_install 'exa'
+check_and_install 'ncdu'
+check_and_install 'HTTPie'
 
 check_and_install_nvm_node
 echo ' ' #空一行
