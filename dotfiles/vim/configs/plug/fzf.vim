@@ -43,15 +43,27 @@ function! Fzf_dev()
 endfunction
 
 
-function! RipgrepFzf(query, fullscreen, file_suffix, exclude_cmd)
+function! RipgrepFzf(query, file_suffix, exclude_cmd)
     let s:command_fmt = g:RG_DEFAULT_CONFIG."-g '*.{%s}' %s -e %s || true"
     let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, shellescape(a:query))
     echom s:initial_command
-    call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
+    call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfAll(str)
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . ' -e ' . a:str . ' || true'
+function! RipgrepFzfAll(...)
+  let s:command_fmt = g:RG_DEFAULT_CONFIG
+  if a:0 > 0
+    let s:command_fmt .= ' -e ' . a:1 . ' '
+  else
+    let s:command_fmt .= " -e  '' "
+  endif
+  if a:0 > 1
+    let s:command_fmt .= " -g '*.{" . a:2 . "}' "
+  endif
+  if a:0 > 2
+    let s:command_fmt .= a:3
+  endif
+  let s:command_fmt .= ' || true '
   echom s:command_fmt
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(), 0)
 endfunction
@@ -68,7 +80,7 @@ function! RipgrepFzfFunction()
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfClassDefine(fullscreen)
+function! RipgrepFzfClassDefine()
   let s:cword=expand('<cword>')
   let s:str1="'#define *" . s:cword . "'"
   let s:str2="'class *"  . s:cword . ' *\{' . "'"
@@ -79,10 +91,10 @@ function! RipgrepFzfClassDefine(fullscreen)
   let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6)
   echom s:initial_command
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
+  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfValDefine(fullscreen)
+function! RipgrepFzfValDefine()
   let s:cword=expand('<cword>')
   let s:str1="'" . '\w *' . s:cword . ' *;' . "'"
   let s:str2="'" . '\w *' . s:cword . ' *=' . "'"
@@ -90,7 +102,7 @@ function! RipgrepFzfValDefine(fullscreen)
   let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s|| true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3)
   echom s:initial_command
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), a:fullscreen)
+  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
 function Fzf_wrap(source, str_type)
@@ -121,27 +133,24 @@ function FindWordInCurBuffer(str)
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-command! -bang -nargs=* Ra call RipgrepFzfAll(<q-args>)
-
-command! -bang -nargs=0 -bang Rac call RipgrepFzfAll(expand('<cword>'))
-
-command! -bang -nargs=1 Rfile call FindFile(<q-args>)
-
-command! -nargs=0  Rbufferc call FindWordInCurBuffer(expand('<cword>'))
-command! -nargs=0  Rbuffer call FindWordInCurBuffer('.')
-command! -nargs=0  Rff call RipgrepFzfFunction()
-command! -nargs=0  Rfc call RipgrepFzfClassDefine()
-command! -nargs=0  Rfv call RipgrepFzfValDefine()
-command! -nargs=*  RG call RipgrepFzf(<q-args>, <bang>0, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
-command! -nargs=0  RGCword call RipgrepFzf(expand('<cword>'), <bang>0, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
-command! -nargs=*  Rgn call RipgrepFzf(<q-args>, <bang>0, "gn,gni", "")
-command! -nargs=0  Rgnc call RipgrepFzf(expand('<cword>'), <bang>0, "gn,gni", "")
-command! -nargs=*  Rpy call RipgrepFzf(<q-args>, <bang>0, "py", "")
-command! -nargs=0  Rpyc call RipgrepFzf(expand('<cword>'), <bang>0, "py", "")
-command! -nargs=*  Rja call RipgrepFzf(<q-args>, <bang>0, "java", "")
-command! -nargs=0  Rjac call RipgrepFzf(expand('<cword>'), <bang>0, "java", "")
-command! -nargs=*  Rsh call RipgrepFzf(<q-args>, <bang>0, "sh,bash,zsh", "")
-command! -nargs=0  Rshc call RipgrepFzf(expand('<cword>'), <bang>0, "sh", "")
+command! -nargs=* Ra call RipgrepFzfAll(<f-args>)
+command! -nargs=0 Rac call RipgrepFzfAll(expand('<cword>', <f-args>))
+command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
+command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
+command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
+command! -nargs=0 Rff call RipgrepFzfFunction()
+command! -nargs=0 Rfc call RipgrepFzfClassDefine()
+command! -nargs=0 Rfv call RipgrepFzfValDefine()
+command! -nargs=1 RG call RipgrepFzf("", "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=0 Rgn call RipgrepFzf("", "gn,gni", "")
+command! -nargs=0 Rgnc call RipgrepFzf(expand('<cword>'), "gn,gni", "")
+command! -nargs=0 Rpy call RipgrepFzf("", "py", "")
+command! -nargs=0 Rpyc call RipgrepFzf(expand('<cword>'), "py", "")
+command! -nargs=0 Rja call RipgrepFzf("", "java", "")
+command! -nargs=0 Rjac call RipgrepFzf(expand('<cword>'), "java", "")
+command! -nargs=0 Rsh call RipgrepFzf("", "sh,bash,zsh", "")
+command! -nargs=0 Rshc call RipgrepFzf(expand('<cword>'), "sh", "")
 
 
 
