@@ -44,26 +44,30 @@ endfunction
 
 
 function! RipgrepFzf(query, file_suffix, exclude_cmd)
-    let s:command_fmt = g:RG_DEFAULT_CONFIG."-g '*.{%s}' %s -e %s || true"
-    let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, shellescape(a:query))
-    echom s:initial_command
-    call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
+  let s:str = "''"
+  if strlen(a:query) > 0
+    let s:str = a:query
+  endif
+  let s:command_fmt = g:RG_DEFAULT_CONFIG."-g '*.{%s}' %s -e %s || true"
+  let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, s:str)
+  echom s:initial_command
+  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
 function! RipgrepFzfAll(...)
   let s:command_fmt = g:RG_DEFAULT_CONFIG
   if a:0 > 0
-    let s:command_fmt .= ' -e ' . a:1 . ' '
+    let s:command_fmt .= ' -e ' . a:1
   else
-    let s:command_fmt .= " -e  '' "
+    let s:command_fmt .= " -e  ''"
   endif
   if a:0 > 1
-    let s:command_fmt .= " -g '*.{" . a:2 . "}' "
+    let s:command_fmt .= " -g '*.{" . a:2 . "}'"
   endif
   if a:0 > 2
-    let s:command_fmt .= a:3
+    let s:command_fmt .= ' ' . a:3
   endif
-  let s:command_fmt .= ' || true '
+  let s:command_fmt .= ' || true'
   echom s:command_fmt
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(), 0)
 endfunction
@@ -74,7 +78,7 @@ function! RipgrepFzfFunction()
   let s:str2="'" . '\w *' . s:cword . '\(.*\).*;' . "'"
   let s:str3="'" . '\w *' . s:cword . '\(.*\) *\{' . "'"
   let s:str4="'" . '\w *' . s:cword . '\(' . "'"
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s || true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e %s -e %s -e %s -e %s || true"
   let s:initial_command = printf(command_fmt, str1, str2, str3, str4)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
@@ -88,7 +92,7 @@ function! RipgrepFzfClassDefine()
   let s:str4="'struct *"  . s:cword . ' *\{' . "'"
   let s:str5="'struct *"  . s:cword . ' *:' . "'"
   let s:str6="'using *"  . s:cword .  "'"
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
@@ -141,15 +145,15 @@ command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
 command! -nargs=0 Rff call RipgrepFzfFunction()
 command! -nargs=0 Rfc call RipgrepFzfClassDefine()
 command! -nargs=0 Rfv call RipgrepFzfValDefine()
-command! -nargs=1 RG call RipgrepFzf("", "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=? RG call RipgrepFzf(<q-args>, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
-command! -nargs=0 Rgn call RipgrepFzf("", "gn,gni", "")
+command! -nargs=? Rgn call RipgrepFzf(<q-args>, "gn,gni", "")
 command! -nargs=0 Rgnc call RipgrepFzf(expand('<cword>'), "gn,gni", "")
-command! -nargs=0 Rpy call RipgrepFzf("", "py", "")
+command! -nargs=? Rpy call RipgrepFzf(<q-args>, "py", "")
 command! -nargs=0 Rpyc call RipgrepFzf(expand('<cword>'), "py", "")
-command! -nargs=0 Rja call RipgrepFzf("", "java", "")
+command! -nargs=? Rja call RipgrepFzf(<q-args>, "java", "")
 command! -nargs=0 Rjac call RipgrepFzf(expand('<cword>'), "java", "")
-command! -nargs=0 Rsh call RipgrepFzf("", "sh,bash,zsh", "")
+command! -nargs=? Rsh call RipgrepFzf(<q-args>, "sh,bash,zsh", "")
 command! -nargs=0 Rshc call RipgrepFzf(expand('<cword>'), "sh", "")
 
 
