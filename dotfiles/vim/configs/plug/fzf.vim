@@ -72,38 +72,32 @@ function! RipgrepFzfAll(...)
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfFunction()
-  let s:cword=expand('<cword>')
-  let s:str1="'::"  . s:cword . '\(' . "'"
-  let s:str2="'" . '\w *' . s:cword . '\(.*\).*;' . "'"
-  let s:str3="'" . '\w *' . s:cword . '\(.*\) *\{' . "'"
-  let s:str4="'" . '\w *' . s:cword . '\(' . "'"
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e %s -e %s -e %s -e %s || true"
-  let s:initial_command = printf(command_fmt, str1, str2, str3, str4)
+function! RipgrepFzfFunction(func_name)
+  let s:str='^ *[a-zA-Z0-9_]+  *' . a:func_name . '\('
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s\" || true"
+  let s:initial_command = printf(s:command_fmt, s:str)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfClassDefine()
-  let s:cword=expand('<cword>')
-  let s:str1="'#define *" . s:cword . "'"
-  let s:str2="'class *"  . s:cword . ' *\{' . "'"
-  let s:str3="'class "  . s:cword  . ' *:' . "'"
-  let s:str4="'struct *"  . s:cword . ' *\{' . "'"
-  let s:str5="'struct *"  . s:cword . ' *:' . "'"
-  let s:str6="'using *"  . s:cword .  "'"
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e %s -e %s -e %s -e %s -e %s -e %s || true"
-  let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6)
+function! RipgrepFzfClassDefine(class_name)
+  let s:str1="#define *" . a:class_name
+  let s:str2="using *"  . a:class_name
+  let s:str3="class *"  . a:class_name
+  let s:str4="struct *"  . a:class_name
+  let s:gstr1="'class *"  . a:class_name . ' *;'
+  let s:gstr2="'struct *"  . a:class_name . ' *;'
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
+  let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:gstr1, s:gstr2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
 
-function! RipgrepFzfValDefine()
-  let s:cword=expand('<cword>')
-  let s:str1="'" . '\w *' . s:cword . ' *;' . "'"
-  let s:str2="'" . '\w *' . s:cword . ' *=' . "'"
-  let s:str3="'" . '\w *' . s:cword . ' .*;' . "'"
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e %s -e %s -e %s|| true"
+function! RipgrepFzfValDefine(val_name)
+  let s:str1='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' *;'
+  let s:str2='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' *='
+  let s:str3='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' .*;'
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e \"%s|%s|%s\"|| true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
@@ -142,9 +136,12 @@ command! -nargs=0 Rac call RipgrepFzfAll(expand('<cword>', <f-args>))
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
-command! -nargs=0 Rff call RipgrepFzfFunction()
-command! -nargs=0 Rfc call RipgrepFzfClassDefine()
-command! -nargs=0 Rfv call RipgrepFzfValDefine()
+command! -nargs=1 Rf call RipgrepFzfFunction(<q-args>)
+command! -nargs=0 Rfc call RipgrepFzfFunction(expand('<cword>'))
+command! -nargs=1 Rc call RipgrepFzfClassDefine(<q-args>)
+command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'))
+command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>)
+command! -nargs=0 Rvc call RipgrepFzfValDefine(expand('<cword>'))
 command! -nargs=? RG call RipgrepFzf(<q-args>, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=? Rgn call RipgrepFzf(<q-args>, "gn,gni", "")

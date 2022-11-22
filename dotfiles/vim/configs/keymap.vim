@@ -48,9 +48,9 @@ noremap <leader>h :History <CR>
 noremap <leader>t :BTags<CR>
 noremap <leader>F :Rfile ./<CR>
 noremap <leader>A :RG<CR>
-noremap <leader>f :Rff<CR>
-noremap <leader>c :Rfc<CR>
-noremap <leader>v :Rfv<CR>
+noremap <leader>f :Rfc<CR>
+noremap <leader>c :Rcc<CR>
+noremap <leader>v :Rvc<CR>
 noremap <leader>b :Buffers<CR>
 
 "windows
