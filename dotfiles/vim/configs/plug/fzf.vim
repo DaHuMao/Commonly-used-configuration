@@ -73,9 +73,10 @@ function! RipgrepFzfAll(...)
 endfunction
 
 function! RipgrepFzfFunction(func_name)
-  let s:str='^ *[a-zA-Z0-9_]+  *' . a:func_name . '\('
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s\" || true"
-  let s:initial_command = printf(s:command_fmt, s:str)
+  let s:str1='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:func_name . '\('
+  let s:str2='^ *' . a:func_name . '\('
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s\" || true"
+  let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(), 0)
 endfunction
