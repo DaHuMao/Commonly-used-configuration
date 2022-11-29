@@ -19,26 +19,31 @@ export FZF_PATH_LOC
 (( $+commands[ag]   )) && FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g "" 2>/dev/null'
 (( $+commands[fd]   )) && FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git 2>/dev/null'
 export FZF_DEFAULT_COMMAND
-FZF_DEFAULT_OPTS="
---border
---height 80%
---extended
---ansi
---reverse
---cycle
---bind alt-p:preview-up,alt-n:preview-down
---bind ctrl-u:half-page-up
---bind ctrl-d:half-page-down
---bind ctrl-s:select-all,ctrl-r:toggle-all
---bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap
---bind \"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort\"
---bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---preview \"${FZF_FILE_HIGHLIGHTER} {}\"
---preview-window right:50%:hidden
-"
+
+FZF_DEFAULT_COMMON_OPTS=(
+  --border
+  --height 80%
+  --extended
+  --ansi
+  --reverse
+  --cycle
+  --multi
+  --bind ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down
+  --bind ctrl-u:half-page-up
+  --bind ctrl-d:half-page-down
+  --bind ctrl-p:select-all,ctrl-r:toggle-all
+  --bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap
+  --bind "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort"
+  --bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
+  --preview-window right:50%:hidden
+)
+FZF_DEFAULT_PREVIEW_TOOL=(--preview "${FZF_FILE_HIGHLIGHTER} {}")
+FZF_DEFAULT_OPTS=($FZF_DEFAULT_COMMON_OPTS $FZF_DEFAULT_PREVIEW_TOOL)
+export FZF_DEFAULT_COMMON_OPTS
+export FZF_DEFAULT_PREVIEW_TOOL
+export FZF_DEFAULT_OPTS
 #--preview \"($FZF_FILE_HIGHLIGHTER {} || $FZF_DIR_HIGHLIGHTER {}) 2>/dev/null | head -200\"
 #--bind ctrl-s:toggle-sort
-export FZF_DEFAULT_OPTS
 
 # FZF: Ctrl - T
 FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

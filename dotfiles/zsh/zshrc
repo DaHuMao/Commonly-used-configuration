@@ -1,6 +1,7 @@
 # Put this line on top to make keybinds work
 bindkey -e
 
+[ -e ~/.fzf.zsh ] && source ~/.fzf.zsh
 source ~/.myzsh/zsh_plug
 source ~/.myzsh/fzf.zsh       
 source ~/.myzsh/zsh_fzf_extra 
@@ -23,6 +24,7 @@ export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 alias python="/usr/local/bin/python2"
 alias pip3="/usr/bin/pip3"
+alias vim=nvim
 alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
 
 # depot_toos

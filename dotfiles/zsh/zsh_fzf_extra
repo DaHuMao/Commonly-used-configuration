@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+. ~/.myzsh/tool_function.zsh
 [[ $- != *i* ]] && return
 _fzf_compgen_path() {
   fd --type f  --no-ignore-vcs --hidden --follow --exclude .git --base-directory $1
@@ -8,66 +9,114 @@ _fzf_compgen_dir() {
   fd --type d  --no-ignore-vcs --hidden --follow  --exclude .git --base-directory $1
 }
 
-# ALT-E - Edit selected file
-wfxr::fzf-file-edit-widget() {
-  local tokens cmd prefix matches lbuf d_cmds
-  setopt localoptions noshwordsplit noksh_arrays noposixbuiltins
-
-  # http://zsh.sourceforge.net/FAQ/zshfaq03.html
-  # http://zsh.sourceforge.net/Doc/Release/Expansion.html#Parameter-Expansion-Flags
-  tokens=(${(z)LBUFFER})
-  if [ ${#tokens} -lt 1 ]; then
-    zle ${fzf_default_completion:-expand-or-complete}
-    return
-  fi
-
-  cmd=$(__fzf_extract_command "$LBUFFER")
-
-  [ ${LBUFFER[-1]} = ' ' ] && tokens+=("")
-
-  # When the trigger starts with ';', it becomes a separate token
-  if [[ ${LBUFFER} = *"${tokens[-2]}${tokens[-1]}" ]]; then
-    tokens[-2]="${tokens[-2]}${tokens[-1]}"
-    tokens=(${tokens[0,-2]})
-  fi
-
-  lbuf=$LBUFFER
-
-  # Trigger sequence given
-  d_cmds=(${=FZF_COMPLETION_DIR_COMMANDS:-cd pushd rmdir})
-
-  prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
-  [ -n "${tokens[-1]}" ] && lbuf=${lbuf:0:-${#tokens[-1]}}
-
-  if eval "type _fzf_complete_${cmd} > /dev/null"; then
-    prefix="$prefix" eval _fzf_complete_${cmd} ${(q)lbuf}
-    zle reset-prompt
-  elif [ ${d_cmds[(i)$cmd]} -le ${#d_cmds} ]; then
-    _fzf_dir_completion "$prefix" "$lbuf"
-  else
-    _fzf_path_completion "$prefix" "$lbuf"
-  fi
-  # Fall back to default completion
+_git_status() {
+  local params=$1
+  if [[ -z $params ]] {
+    git status -s
+  } else {
+    eval "git status -s | ${params}"
+  }
 }
-zle     -N    wfxr::fzf-file-edit-widget
-bindkey '^F' wfxr::fzf-file-edit-widget
+
+_git_log() {
+  git lg
+}
+
+_select_git_edit() {
+  local str_arr=(${=1})
+  local mod=$2
+  local remainder=$3
+  local ret_arr=()
+  for i ({1..$#str_arr}) {
+    if (( $i % $mod == $remainder )) {
+      ret_arr+=($str_arr[$i])
+    }
+  }
+  echo $ret_arr 
+}
+
+#CTRL_F
+wfxr::fzf-edit-selected-widget() {
+  local tokens lbuf opt selected params cmd fzf_opt preview_tool base_path cmd_params
+  params='-'${LBUFFER##*-}
+  if {is_special_opt $params} {
+    lbuf=${LBUFFER%-*}
+    lbuf=${lbuf/% }
+  } else {
+    params=''
+    lbuf=$LBUFFER
+  }
+  if {is_dir_param $params} {
+    cmd=_fzf_compgen_dir
+  } else {
+    cmd=_fzf_compgen_path
+  }
+  tokens=(${=lbuf})
+  fzf_opt=($FZF_DEFAULT_COMMON_OPTS)
+  preview_tool=($FZF_DEFAULT_PREVIEW_TOOL)
+  cmd_params='./'
+  local index=0
+  if (($#tokens > 0)) {
+    local head_cmd=$tokens[1]
+    if { eval "type _fzf_complete_$head_cmd > /dev/null" } {
+      local prefix
+      prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
+      [ -n "${tokens[-1]}" ] && lbuf=${lbuf:0:-${#tokens[-1]}}
+      prefix="$prefix" eval _fzf_complete_${tokens[1]} ${(q)lbuf}
+      zle reset-prompt
+      return 0
+    } elif [[ $head_cmd == 'git' ]] {
+      cmd=_git_status
+      if {is_git_param $params} {
+        cmd_params=$(git_file_filter $params)
+      } else {
+        cmd_params=''
+      }
+      index=2
+      if (( $#tokens > 1 )) {
+        if [[ $tokens[2] == 'lg' ]] || [[ $tokens[2] == 'reset' ]] {
+          cmd=_git_log
+          index=1
+        } elif [[ $tokens[2] == 'diff' ]] {
+          cmd_params='grep -E "^ M|^MM"'
+        }
+      }
+      preview_tool=(--preview "$HOME/.myzsh/git-edit.zsh $index {}")
+    } else {
+      if [[ $head_cmd == 'cd' ]] {
+        cmd=_fzf_compgen_dir
+      }
+      local dir=${tokens[-1]/#\~/$HOME}
+      if [[ -d $dir ]] { 
+        cmd_params=$dir
+      }
+    }
+  }
+  fzf_opt+=($fzf_opt $preview_tool)
+  selected=$($cmd $cmd_params | fzf $fzf_opt)
+  if (( $index == 0)) {
+    LBUFFER=$lbuf$selected
+  } else {
+    local mod=2
+    LBUFFER=$lbuf' '$(_select_git_edit $selected $mod $(($index % $mod)))
+  }
+  zle reset-prompt
+}
+zle     -N    wfxr::fzf-edit-selected-widget
+bindkey '^F' wfxr::fzf-edit-selected-widget
 
 # CTRL-R - Paste the selected command from history into the command line
 wfxr::fzf-history-widget() {
     local selected num
     setopt localoptions noglobsubst noposixbuiltins pipefail 2> /dev/null
-    selected=( $(fc -rl 1 | sort -uk2,1000 | sort -nr |
-        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} $FZF_DEFAULT_OPTS -n2..,.. --tiebreak=index --bind=ctrl-r:toggle-sort $FZF_CTRL_R_OPTS --query=${(qqq)LBUFFER} +m" $(__fzfcmd)) )
+    selected=$(fc -rl 1 | sort -uk2,1000 | sort -nr | fzf $FZF_DEFAULT_OPTS  --query=$LBUFFER)
     local ret=$?
-    if [ -n "$selected" ]; then
-        num=$selected[1]
-        if [ -n "$num" ]; then
-            zle vi-fetch-history -n $num
-        fi
-    fi
-    zle redisplay
-    typeset -f zle-line-init >/dev/null && zle zle-line-init
-    return $ret
+    if (( $ret == 0 )) {
+      local arr=(${=selected})
+      LBUFFER=$arr[2,-1]
+    }
+    zle reset-prompt
+    return ret
 }
 zle     -N   wfxr::fzf-history-widget
 bindkey '^R' wfxr::fzf-history-widget

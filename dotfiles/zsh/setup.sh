@@ -15,6 +15,9 @@ ln -sf "$SCRIPT_DIR/zsh_fzf_extra" ~/.myzsh/zsh_fzf_extra
 ln -sf "$SCRIPT_DIR/zsh_docker"    ~/.myzsh/zsh_docker
 ln -sf "$SCRIPT_DIR/incr-0.2.zsh"    ~/.myzsh/incr-0.2.zsh
 ln -sf "$SCRIPT_DIR/common.zsh"    ~/.myzsh/common.zsh
+ln -sf "$SCRIPT_DIR/tool_function.zsh"    ~/.myzsh/tool_function.zsh
+ln -sf "$SCRIPT_DIR/git-edit.zsh"    ~/.myzsh/git-edit.zsh
+chmod 777 ~/.myzsh/git-edit.zsh
 
 mkdir -p ~/.myzsh/zsh_completions
 ln -sf "$SCRIPT_DIR/completions/_ag"  ~/.myzsh/zsh_completions/_ag
