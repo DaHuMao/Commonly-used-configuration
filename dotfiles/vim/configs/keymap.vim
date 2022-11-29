@@ -83,9 +83,7 @@ function CompleteClassCpp(class_name)
   echom cmd
   execute cmd
   execute line_num
-  ,$s/\(override\)\?//
-  execute line_num
-  ,$s/ *;$/;/
+  ,$s/ *\(override\)\? *;$/;/
   execute line_num
   ,$s/)\(.*\);$/)\1 {\r\r}\r/
 endfunction
