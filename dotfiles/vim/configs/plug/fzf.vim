@@ -7,8 +7,8 @@ if executable('rg')
 endif
 
 let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case  --max-columns 250 --max-filesize 200K "
-let g:FZF_DEFAULT_OPTS=['--layout=reverse', '--info=inline', '--preview', 'bat --color=always --theme=TwoDark {}', '--bind', 'ctrl-/:toggle-preview']
-let s:Spec = {'options': g:RG_DEFAULT_CONFIG}
+let g:FZF_DEFAULT_OPTS=['--layout=reverse', '--info=inline', '--preview', 'bat --color=always --theme=TwoDark {}', '--bind', 'ctrl-/:toggle-preview', '--bind', 'ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down', '--bind', "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort"]
+let s:Spec = {'options': g:FZF_DEFAULT_OPTS }
 
 " Files + devicons
 function! Fzf_dev()
@@ -88,10 +88,11 @@ function! RipgrepFzfClassDefine(class_name)
   let s:str3="class *"  . a:class_name . ' '
   let s:str4="struct *"  . a:class_name . ' '
   let s:str5="enum *"  . a:class_name . ' '
-  let s:gstr1="'class *"  . a:class_name . ' *;'
-  let s:gstr2="'struct *"  . a:class_name . ' *;'
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
-  let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:gstr1, s:gstr2)
+  let s:str6="typedef .* " . a:class_name . ' *;'
+  let s:gstr1="class *"  . a:class_name . ' *;'
+  let s:gstr2="struct *"  . a:class_name . ' *;'
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
+  let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6, s:gstr1, s:gstr2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
