@@ -49,6 +49,7 @@ noremap <leader>t :BTags<CR>
 noremap <leader>F :Rfile ./<CR>
 noremap <leader>A :RG<CR>
 noremap <leader>f :Rfc<CR>
+noremap <leader>i :Ric<CR>
 noremap <leader>c :Rcc<CR>
 noremap <leader>v :Rvc<CR>
 noremap <leader>b :Buffers<CR>

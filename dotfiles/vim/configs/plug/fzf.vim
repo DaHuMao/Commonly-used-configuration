@@ -107,6 +107,15 @@ function! RipgrepFzfValDefine(val_name)
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
+function! RipgrepFzfFunctionRef(func_name)
+  let s:str1=' *[a-zA-Z0-9_]+::' . a:func_name . '\('
+  let s:str2='^ *[a-zA-Z0-9_]+  *' . a:func_name . '.*\{'
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{cpp,cc,c}' -e \"%s|%s\" || true"
+  let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
+  echom s:initial_command
+  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+endfunction
+
 function Fzf_wrap(source, str_type)
   function! s:edit_file(eledict)
     echom a:eledict
@@ -142,6 +151,8 @@ command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
 command! -nargs=1 Rf call RipgrepFzfFunction(<q-args>)
 command! -nargs=0 Rfc call RipgrepFzfFunction(expand('<cword>'))
+command! -nargs=1 Ri call RipgrepFzfFunctionRef(<q-args>)
+command! -nargs=0 Ric call RipgrepFzfFunctionRef(expand('<cword>'))
 command! -nargs=1 Rc call RipgrepFzfClassDefine(<q-args>)
 command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'))
 command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>)
