@@ -6,7 +6,10 @@
 [alias]
     st = status
     ci = commit
-    l = log --oneline --decorate -12 --color
+    rehd = reset --hard
+    resf = reset --soft
+    cno = commit --amend --no-edit
+    lg = log --oneline --decorate -12 --color
     ll = log --oneline --decorate --color --graph
     lc = log --graph --color
     co = checkout

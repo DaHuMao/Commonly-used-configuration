@@ -26,6 +26,11 @@ _select_git_edit() {
   local str_arr=(${=1})
   local mod=$2
   local remainder=$3
+  local is_multi_line=$4
+  if (( $is_multi_line == 0 )) {
+    echo $str_arr[$remainder]
+    return
+  }
   local ret_arr=()
   for i ({1..$#str_arr}) {
     if (( $i % $mod == $remainder )) {
@@ -56,6 +61,7 @@ wfxr::fzf-edit-selected-widget() {
   preview_tool=($FZF_DEFAULT_PREVIEW_TOOL)
   cmd_params='./'
   local index=0
+  local is_multi_line=1
   if (($#tokens > 0)) {
     local head_cmd=$tokens[1]
     if { eval "type _fzf_complete_$head_cmd > /dev/null" } {
@@ -74,9 +80,10 @@ wfxr::fzf-edit-selected-widget() {
       }
       index=2
       if (( $#tokens > 1 )) {
-        if [[ $tokens[2] == 'lg' ]] || [[ $tokens[2] == 'reset' ]] {
+        if [[ $tokens[2] == 'lg' ]] || [[ $tokens[2] == 'resf' ]] || [[ $tokens[2] == 'rehd' ]] {
           cmd=_git_log
           index=1
+          is_multi_line=0
         } elif [[ $tokens[2] == 'diff' ]] {
           cmd_params='grep -E "^ M|^MM"'
         }
@@ -94,11 +101,11 @@ wfxr::fzf-edit-selected-widget() {
   }
   fzf_opt+=($fzf_opt $preview_tool)
   selected=$($cmd $cmd_params | fzf $fzf_opt)
-  if (( $index == 0)) {
+  if (( $index == 0 )) || [[ -z $selected ]] {
     LBUFFER=$lbuf$selected
   } else {
     local mod=2
-    LBUFFER=$lbuf' '$(_select_git_edit $selected $mod $(($index % $mod)))
+    LBUFFER=$lbuf' '$(_select_git_edit $selected $mod $(($index % $mod)) $is_multi_line)
   }
   zle reset-prompt
 }

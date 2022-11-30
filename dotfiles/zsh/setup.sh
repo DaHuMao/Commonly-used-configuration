@@ -27,6 +27,7 @@ ln -sf "$SCRIPT_DIR/completions/_fzf" ~/.myzsh/zsh_completions/_fzf
 ln -sf "$SCRIPT_DIR/completions/_gi"  ~/.myzsh/zsh_completions/_gi
 ln -sf "$SCRIPT_DIR/completions/_hub" ~/.myzsh/zsh_completions/_hub
 
+ln -sf "$SCRIPT_DIR/gitconfig"    ~/.gitconfig
 
 [ ! -e ~/.zshrc ] && touch ~/.zshrc
 
