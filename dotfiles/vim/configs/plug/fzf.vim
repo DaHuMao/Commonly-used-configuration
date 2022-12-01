@@ -6,7 +6,7 @@ if executable('rg')
   command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" --ignore-file tags'.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
 endif
 
-let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always --no-ignore-vcs --smart-case  --max-columns 250 --max-filesize 200K "
+let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 200K "
 let g:FZF_DEFAULT_OPTS=['--layout=reverse', '--info=inline', '--preview', 'bat --color=always --theme=TwoDark {}', '--bind', 'ctrl-/:toggle-preview', '--bind', 'ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down', '--bind', "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort"]
 let s:Spec = {'options': g:FZF_DEFAULT_OPTS }
 
@@ -45,11 +45,11 @@ endfunction
 
 
 function! RipgrepFzf(query, file_suffix, exclude_cmd)
-  let s:str = "''"
+  let s:str = "--smart-case -e ''"
   if strlen(a:query) > 0
     let s:str = a:query
   endif
-  let s:command_fmt = g:RG_DEFAULT_CONFIG."-g '*.{%s}' %s -e %s || true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG." -g '*.{%s}' %s %s || true"
   let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, s:str)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
@@ -60,7 +60,7 @@ function! RipgrepFzfAll(...)
   if a:0 > 0
     let s:command_fmt .= ' -e ' . a:1
   else
-    let s:command_fmt .= " -e  ''"
+    let s:command_fmt .= " --smart-case -e  ''"
   endif
   if a:0 > 1
     let s:command_fmt .= " -g '*.{" . a:2 . "}'"
@@ -157,8 +157,8 @@ command! -nargs=1 Rc call RipgrepFzfClassDefine(<q-args>)
 command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'))
 command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>)
 command! -nargs=0 Rvc call RipgrepFzfValDefine(expand('<cword>'))
-command! -nargs=? RG call RipgrepFzf(<q-args>, "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
-command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=? RG call RipgrepFzf(<q-args>, "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=? Rgn call RipgrepFzf(<q-args>, "gn,gni", "")
 command! -nargs=0 Rgnc call RipgrepFzf(expand('<cword>'), "gn,gni", "")
 command! -nargs=? Rpy call RipgrepFzf(<q-args>, "py", "")
