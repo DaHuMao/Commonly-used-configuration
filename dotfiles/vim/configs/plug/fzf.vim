@@ -47,7 +47,7 @@ endfunction
 function! RipgrepFzf(query, file_suffix, exclude_cmd)
   let s:str = "--smart-case -e ''"
   if strlen(a:query) > 0
-    let s:str = a:query
+    let s:str = "'" . a:query . "'"
   endif
   let s:command_fmt = g:RG_DEFAULT_CONFIG." -g '*.{%s}' %s %s || true"
   let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, s:str)
