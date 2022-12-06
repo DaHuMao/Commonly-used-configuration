@@ -80,7 +80,7 @@ wfxr::fzf-edit-selected-widget() {
       }
       index=2
       if (( $#tokens > 1 )) {
-        if [[ $tokens[2] == 'lg' ]] || [[ $tokens[2] == 'resf' ]] || [[ $tokens[2] == 'rehd' ]] {
+        if [[ $tokens[2] == 'lg' || $tokens[2] == 'resf' || $tokens[2] == 'rehd' ]] {
           cmd=_git_log
           index=1
           is_multi_line=0
@@ -90,7 +90,8 @@ wfxr::fzf-edit-selected-widget() {
       }
       preview_tool=(--preview "$HOME/.myzsh/git-edit.zsh $index {}")
     } else {
-      if [[ $head_cmd == 'cd' ]] {
+      setopt EXTENDED_GLOB
+      if [[ $head_cmd == 'cd' || $head_cmd == 'mkdir' || $head_cmd == 'touch' || $LBUFFER == ' '#cp' '#'-r'* ]] {
         cmd=_fzf_compgen_dir
       }
       local dir=${tokens[-1]/#\~/$HOME}
