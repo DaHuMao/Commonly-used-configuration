@@ -7,3 +7,6 @@ source ~/.vim/configs/plug.vim
 source ~/.vim/configs/utils.vim
 source ~/.vim/configs/ycm.vim
 source ~/.vim/configs/leaderf.vim
+
+source ~/.vim/lua/init.lua
+

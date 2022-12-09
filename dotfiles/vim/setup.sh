@@ -14,6 +14,7 @@ ln -sf "$SCRIPT_DIR/projects.vim" ~/.vim/projects.vim
 ln -sf "$SCRIPT_DIR/coc-settings.json" ~/.vim/coc-settings.json
 ln -sf "$SCRIPT_DIR/settings.json" ~/.vim/settings.json
 
+ln -sf "$SCRIPT_DIR/lua" ~/.config/nvim/lua
 # Install plugins managed by vim-plug
 # `tty &>/dev/null` is to make sure the script is run from a tty(ie, not ssh)
 if hash nvim &>/dev/null ; then
@@ -23,8 +24,6 @@ fi
 
 # nvim
 #if hash nvim &>/dev/null ; then
-    ln -snf ~/.vim   ~/.config/nvim
-    ln -sf  ~/.vimrc ~/.config/nvim/init.vim
     hash pip2 &>/dev/null && pip2 install --upgrade neovim
     hash pip3 &>/dev/null && pip3 install --upgrade neovim
     hash gem  &>/dev/null && gem install neovim
