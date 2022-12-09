@@ -1,5 +1,6 @@
 import time
 import datetime
+import log_tool
 def get_now_time(format_time='%Y-%m-%d %H:%M:%S'):
     now_time=datetime.datetime.now()
     return now_time.strftime(format_time)
@@ -33,7 +34,7 @@ def select_data(select_index, data, return_data):
         try:
             return_data[i].append(float(data[index]))
         except:
-            log_error("in %s\n, index: %d value: %s is invalid" % \
+            log_tool.log_error("in %s\n, index: %d value: %s is invalid" % \
                     (str(data), index, data[index]))
             raise Exception("can not  convert  %s to float" % (data[index]))
 
