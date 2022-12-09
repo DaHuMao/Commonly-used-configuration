@@ -3,6 +3,7 @@
 	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
+	editor = nvim
 [alias]
     st = status
     ci = commit
