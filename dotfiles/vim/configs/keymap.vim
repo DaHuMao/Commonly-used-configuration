@@ -32,6 +32,8 @@ cnoremap <C-e> <End>
 " Go to home and end using capitalized directions
 noremap H ^
 noremap L $
+noremap J <PageDown>zz
+noremap K <PageUp>zz
 
 "Keep search pattern at the center of the screen."
 nnoremap <silent> n nzz
