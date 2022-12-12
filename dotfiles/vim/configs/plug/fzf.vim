@@ -74,16 +74,24 @@ function! RipgrepFzfAll(...)
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-function! RipgrepFzfFunction(func_name)
+function! RipgrepFzfFunction(func_name, enable_smart_case)
+  let s:smart_case = ''
+  if a:enable_smart_case > 0
+    let s:smart_case = ' --smart-case '
+  endif
   let s:str1='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:func_name . '\('
   let s:str2='^ *' . a:func_name . '\('
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s\" || true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-function! RipgrepFzfClassDefine(class_name)
+function! RipgrepFzfClassDefine(class_name, enable_smart_case)
+  let s:smart_case = ''
+  if a:enable_smart_case > 0
+    let s:smart_case = ' --smart-case '
+  endif
   let s:str1="#define *" . a:class_name
   let s:str2="using *"  . a:class_name . ' *='
   let s:str3="class *"  . a:class_name . ' '
@@ -92,26 +100,34 @@ function! RipgrepFzfClassDefine(class_name)
   let s:str6="typedef .* " . a:class_name . ' *;'
   let s:gstr1="class *"  . a:class_name . ' *;'
   let s:gstr2="struct *"  . a:class_name . ' *;'
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h}' -e \"%s|%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
+  let s:command_fmt = g:RG_DEFAULT_CONFIG  . s:smart_case . " -g '*.{h}' -e \"%s|%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6, s:gstr1, s:gstr2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-function! RipgrepFzfValDefine(val_name)
+function! RipgrepFzfValDefine(val_name, enable_smart_case)
+  let s:smart_case = ''
+  if a:enable_smart_case > 0
+    let s:smart_case = ' --smart-case '
+  endif
   let s:str1='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' *;'
   let s:str2='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' *='
   let s:str3='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' .*;'
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{h,cpp,cc,c,m,mm,java}' -e \"%s|%s|%s\"|| true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h,cpp,cc,c,m,mm,java}' -e \"%s|%s|%s\"|| true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-function! RipgrepFzfFunctionRef(func_name)
+function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
+  let s:smart_case = ''
+  if a:enable_smart_case > 0
+    let s:smart_case = ' --smart-case '
+  endif
   let s:str1=' *[a-zA-Z0-9_]+::' . a:func_name . '\('
   let s:str2='^ *[a-zA-Z0-9_]+  *' . a:func_name . '.*\{'
-  let s:command_fmt = g:RG_DEFAULT_CONFIG . " -g '*.{cpp,cc,c}' -e \"%s|%s\" || true"
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{cpp,cc,c}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
   echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
@@ -150,14 +166,14 @@ command! -nargs=0 Rac call RipgrepFzfAll(expand('<cword>', <f-args>))
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
-command! -nargs=1 Rf call RipgrepFzfFunction(<q-args>)
-command! -nargs=0 Rfc call RipgrepFzfFunction(expand('<cword>'))
-command! -nargs=1 Ri call RipgrepFzfFunctionRef(<q-args>)
-command! -nargs=0 Ric call RipgrepFzfFunctionRef(expand('<cword>'))
-command! -nargs=1 Rc call RipgrepFzfClassDefine(<q-args>)
-command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'))
-command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>)
-command! -nargs=0 Rvc call RipgrepFzfValDefine(expand('<cword>'))
+command! -nargs=1 Rf call RipgrepFzfFunction(<q-args>, 1)
+command! -nargs=0 Rfc call RipgrepFzfFunction(expand('<cword>'), 0)
+command! -nargs=1 Ri call RipgrepFzfFunctionRef(<q-args>, 1)
+command! -nargs=0 Ric call RipgrepFzfFunctionRef(expand('<cword>'), 0)
+command! -nargs=1 Rc call RipgrepFzfClassDefine(<q-args>, 1)
+command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'), 0)
+command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>, 1)
+command! -nargs=0 Rvc call RipgrepFzfValDefine(expand('<cword>'), 0)
 command! -nargs=? RG call RipgrepFzf(<q-args>, "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=? Rgn call RipgrepFzf(<q-args>, "gn,gni", "")
