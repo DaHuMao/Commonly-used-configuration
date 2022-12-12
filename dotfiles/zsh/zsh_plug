@@ -1,10 +1,4 @@
 #!/usr/bin/env zsh
-#=============================================================================
-#       Author: Wenxuan Zhang
-#        Email: wenxuangm@gmail.com
-#     HomePage: wenxuan.info
-#=============================================================================
-
 # Plugin manager
 export ZPLUG_BIN=~/bin
 export ZPLUG_THREADS=32
@@ -14,9 +8,6 @@ ZPLUG_INIT=~/.zplug/init.zsh
 source "$ZPLUG_INIT"
 
 zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-# No need to load it when in ssh session
-[ "$SSH_CLIENT" ] || zplug "plugins/web-search",    from:oh-my-zsh, hook-load:"unalias map &>/dev/null"
-[ "$SSH_CLIENT" ] || zplug 'wfxr/fzf-chrome-marks', as:command,     use:'b'
 
 # Git alias. See: https://github.com/robbyrussell/oh-my-zsh/wiki/Plugin:git
 zplug "plugins/git", from:oh-my-zsh
@@ -24,25 +15,12 @@ zplug "plugins/git", from:oh-my-zsh
 zplug "plugins/git-extras", from:oh-my-zsh
 zplug "plugins/extract", from:oh-my-zsh
 zplug "plugins/zsh-history", from:oh-my-zsh
-#zplug "plugins/cp", from:oh-my-zsh
-(( $+commands[mvn]        )) && zplug "plugins/mvn",        from:oh-my-zsh, lazy:yes
-(( $+commands[cargo]      )) && zplug "plugins/cargo",      from:oh-my-zsh, lazy:yes
-(( $+commands[docker]     )) && zplug "plugins/docker",     from:oh-my-zsh, lazy:yes
-(( $+commands[tmuxinator] )) && zplug "plugins/tmuxinator", from:oh-my-zsh, lazy:yes
-(( $+commands[gem]        )) && zplug "plugins/gem",        from:oh-my-zsh, lazy:yes
-(( $+commands[lein]       )) && zplug 'plugins/lein',       from:oh-my-zsh, lazy:yes
-(( $+commands[odpscmd]    )) && zplug 'wfxr/odps-fzf'
-zplug "plugins/colored-man-pages", from:oh-my-zsh
-zplug "plugins/sudo", from:oh-my-zsh
 
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(forward-word forward-char)
 ZSH_AUTOSUGGEST_ACCEPT_WIDGETS=(end-of-line)
-
-zplug "morhetz/gruvbox", use:"gruvbox_256palette.sh"
-zplug "felixonmars/ydcv", as:command, use:"src/ydcv.py", rename-to:"ydcv"
 
 ################################################################################
 # Themes
@@ -53,22 +31,12 @@ zplug 'so-fancy/diff-so-fancy', \
     as:command, use:diff-so-fancy, \
     hook-build:'git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"'
 
-zplug 'b4b4r07/zplug-doctor', lazy:yes
-
-zplug 'wfxr/zplug-rm', lazy:yes
-zplug 'wfxr/zplug-cd', lazy:yes
-zplug 'wfxr/iconful', as:command, use:'(iconful).sh', rename-to:'$1'
-zplug "wfxr/formarks"
+#zplug "wfxr/formarks"
 zplug 'wfxr/forgit', defer:1
 FORGIT_FZF_DEFAULT_OPTS="
 --height '80%'
 "
-zplug "wfxr/emoji-cli", as:plugin
-zplug "wfxr/emoji-cli", as:command, use:'emojify|fuzzy-emoji'
-EMOJI_CLI_KEYBIND='^[m'
 zplug 'wfxr/pbcopy', as:command, use:'(*).sh', rename-to:'$1'
-zplug 'wfxr/epoch-cli', as:plugin
-
 
 # jq is a lightweight and flexible command-line JSON processor.
 (( $+commands[jq] )) || zplug "stedolan/jq", as:command, from:gh-r, rename-to:jq

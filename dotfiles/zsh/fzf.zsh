@@ -28,6 +28,9 @@ FZF_DEFAULT_COMMON_OPTS=(
   --reverse
   --cycle
   --multi
+  --color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796
+  --color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6
+  --color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796
   --bind ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down
   --bind ctrl-u:half-page-up
   --bind ctrl-d:half-page-down
@@ -35,7 +38,7 @@ FZF_DEFAULT_COMMON_OPTS=(
   --bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap
   --bind "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort"
   --bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
-  --preview-window right:50%:hidden
+  --preview-window right:50%
 )
 FZF_DEFAULT_PREVIEW_TOOL=(--preview "${FZF_FILE_HIGHLIGHTER} {}")
 FZF_DEFAULT_OPTS=($FZF_DEFAULT_COMMON_OPTS $FZF_DEFAULT_PREVIEW_TOOL)
