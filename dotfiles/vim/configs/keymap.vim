@@ -76,7 +76,12 @@ noremap <C-e> :w<CR>
 noremap <C-f> :RGCword<CR>
 noremap <C-p> :RG<CR>
 noremap <C-a> :Rac<CR>
-noremap <C-d> :Gvdiffsplit<CR>
+
+" terminal
+let g:floaterm_width = 0.8
+let g:floaterm_height = 0.8
+tnoremap <A-/> <C-\><C-n>:FloatermToggle base_float_term<CR>
+nnoremap <A-/> :FloatermToggle base_float_term<CR>
 "noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 "C++

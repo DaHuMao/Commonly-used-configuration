@@ -29,6 +29,9 @@ Plug 'sainnhe/vim-color-forest-night'
 
 Plug 'Yggdroot/LeaderF'
 
+" terminal
+Plug 'voldikss/vim-floaterm'
+
 set conceallevel=2
 
 call plug#end()

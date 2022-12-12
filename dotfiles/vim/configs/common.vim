@@ -4,6 +4,7 @@ filetype on
 filetype indent on
 filetype plugin on
 filetype plugin indent on
+set termguicolors
 
 set autoread
 set ffs=unix,dos,mac
