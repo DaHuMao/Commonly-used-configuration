@@ -4,7 +4,5 @@ if not status_ok then
 	return
 end
 
-require "plug_config.lsp.settings.lua"
-require "plug_config.lsp.settings.cmp"
-require "plug_config.lsp.settings.python"
+require "plug_config.lsp.settings"
 require'lspconfig'.clangd.setup{}
