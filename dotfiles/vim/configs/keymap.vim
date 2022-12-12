@@ -92,7 +92,8 @@ noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
 command! -nargs=0 Vsc :source ~/.vimrc
 
-
+"autocmd
+autocmd BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 
 
 

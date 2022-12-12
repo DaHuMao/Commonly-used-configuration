@@ -46,7 +46,7 @@ function! FindMatchCppFile() abort
     if s:tar_file ==# ''
       throw 'can not find ' . s:tar_file_prefix . '.' . join(s:suffix_name_list)
     endif
-  elseif index(s:suffix_name_list, s:suffix_name) != -1 
+  elseif index(s:suffix_name_list, s:suffix_name) != -1
     let s:tar_file = s:tar_file_prefix . '.h'
   else
     throw 'unsupport suffix_name: ' . s:suffix_name
