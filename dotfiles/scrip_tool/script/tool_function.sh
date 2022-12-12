@@ -1,6 +1,6 @@
 #Generic function script
 
-#字符替换 
+#字符替换
 #example stringSubstitution 1_2_3 '_' '/'
 #输出 1/2/3
 function stringSubstitution(){
@@ -50,7 +50,7 @@ function substrBackLast(){
 
 #时间获取
 function TimeStampMs() {
-  echo $((`date '+%s'`*1000+`date '+%N'`/1000000))
+  echo $(($(date +%s%N)/1000000))
 }
 
 #日志打印格式化
@@ -86,7 +86,7 @@ function check_cmd() {
 
 function traversalFolder(){
   for element in `ls $1`
-  do 
+  do
     dir_or_file=$1"/"$element
     if [ -d $dir_or_file ] && [[ $2 != '' ]];then
       $2 $dir_or_file
@@ -98,7 +98,7 @@ function traversalFolder(){
 
 function recursiveTraversalFolder() {
   for element in `ls $1`
-  do 
+  do
     dir_or_file=$1"/"$element
     if [ -d $dir_or_file ];then
       recursiveTraversalFolder $dir_or_file $2
@@ -120,4 +120,13 @@ function TraverseFromGit(){
         fi
         $cmd $element
     done
+}
+
+function SourceSh() {
+  local cmd=$1
+  local time_tmp1=$(TimeStampMs)
+  eval "source ${cmd}"
+  local time_tmp2=$(TimeStampMs)
+  local time_gap=$((time_tmp2 - time_tmp1))
+  log_info "source ${cmd}, it takes ${time_gap} ms"
 }

@@ -17,6 +17,7 @@ ln -sf "$SCRIPT_DIR/incr-0.2.zsh"    ~/.myzsh/incr-0.2.zsh
 ln -sf "$SCRIPT_DIR/common.zsh"    ~/.myzsh/common.zsh
 ln -sf "$SCRIPT_DIR/tool_function.zsh"    ~/.myzsh/tool_function.zsh
 ln -sf "$SCRIPT_DIR/git-edit.zsh"    ~/.myzsh/git-edit.zsh
+ln -sf "$SCRIPT_DIR/load_nvm.sh"    ~/.myzsh/load_nvm.sh
 chmod 777 ~/.myzsh/git-edit.zsh
 
 mkdir -p ~/.myzsh/zsh_completions

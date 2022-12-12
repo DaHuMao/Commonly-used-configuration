@@ -30,7 +30,7 @@ function git_file_filter() {
       (?)
         log_abort "error param ${arg}"
     }
-  } 
+  }
   [ ! -z $e_param ] && e_param='grep '$e_param
   echo $e_param
 }
@@ -39,7 +39,7 @@ function is_param() {
   local param=$1
   local opt=(${=2})
   local param_arr=()
-  ((($#param < 2)) || [[ $param[1] != '-' ]]) && return  1 
+  ((($#param < 2)) || [[ $param[1] != '-' ]]) && return  1
   for i ({2..$#param}) {
     local ele=$param[i]
     if ((! $opt[(I)$ele])) {

@@ -1,13 +1,22 @@
 # Put this line on top to make keybinds work
 bindkey -e
+alias python="/usr/local/bin/python2"
+alias pip3="/usr/bin/pip3"
+alias vim=nvim
+alias vi=nvim
+alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
+alias cat='bat --color=always --theme=TwoDark'
+alias fdf='fd --type f --no-ignore-vcs --hidden --follow --exclude .o --exclude .git'
+alias fdd='fd --type d --no-ignore-vcs --hidden --follow --exclude .o --exclude .git'
+alias date='/usr/local/opt/coreutils/libexec/gnubin/date'
 
+. ~/bin/tool_function.sh
 [ -e ~/.fzf.zsh ] && source ~/.fzf.zsh
-source ~/.myzsh/zsh_plug
-source ~/.myzsh/fzf.zsh       
-source ~/.myzsh/zsh_fzf_extra 
-source ~/.myzsh/zsh_theme
-source ~/.myzsh/common.zsh
-
+SourceSh ~/.myzsh/zsh_plug
+SourceSh ~/.myzsh/fzf.zsh
+SourceSh ~/.myzsh/zsh_fzf_extra
+SourceSh ~/.myzsh/zsh_theme
+SourceSh ~/.myzsh/common.zsh
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
 export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
@@ -18,24 +27,13 @@ export PATH=${PATH}:${ANDROID_SDK_ROOT}/tools/bin
 export PATH=${PATH}:${ANDROID_SDK_ROOT}/emulator
 export PATH=$PATH:$ANDROID_SDK_ROOT/tools
 export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
-
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 export PATH="$PATH:$HOME/Library/Python/3.8/bin"
-alias python="/usr/local/bin/python2"
-alias pip3="/usr/bin/pip3"
-alias vim=nvim
-alias clang-format="/usr/local/Cellar/clang-format/12.0.1/share/clang/clang-format"
 
 # depot_toos
 export PATH=$PATH:$HOME/GitDownLoad/depot_tools
 export DEPOT_TOOLS_UPDATE=0
-
-export NVM_DIR="$HOME/.nvm"
-if [ -d $NVM_DIR ];then
-  [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-fi
 
 review(){
 branch_name=`git rev-parse --abbrev-ref HEAD`

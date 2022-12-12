@@ -12,10 +12,4 @@ setopt HIST_VERIFY                   # Do not execute immediately upon history e
 setopt HIST_BEEP                     # Beep when accessing nonexistent history.
 
 export TERM=screen-256color
-
 export HOMEBREW_NO_AUTO_UPDATE=true
-
-#nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

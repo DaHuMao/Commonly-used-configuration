@@ -20,10 +20,8 @@ function check_and_install_nvm_node() {
     mkdir ~/.nvm
     log_info 'Successed install nvm'
   fi
-  log_info "you can install node. eg: nvm install 13.3.0;nvm use 13.3.0;nvm alias default 13.3.0"
-  #export NVM_DIR="$HOME/.nvm"
-  #[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-  #[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+  log_info "you can install node. eg: source ./zsh/load_nvm.sh nvm install 13.3.0;nvm use 13.3.0;nvm alias default 13.3.0"
+  #source ./zsh/load_nvm.sh
   #log_info 'install node and selecting version of 13.2.0'
   #nvm install 13.2.0 || log_abort "failed to use nvm install node 13.2.0"
   #nvm use 13.2.0
@@ -47,6 +45,7 @@ check_and_install 'duf'
 check_and_install 'exa'
 check_and_install 'ncdu'
 check_and_install 'HTTPie'
+check_and_install 'coreutils'
 
 check_and_install_nvm_node
 echo ' ' #空一行
