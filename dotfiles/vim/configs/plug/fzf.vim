@@ -1,11 +1,3 @@
-"let $FZF_DEFAULT_COMMAND = 'ag --hidden -l -g ""'
-" ripgrep
-if executable('rg')
-  let $FZF_DEFAULT_COMMAND = 'rg --files --hidden  --glob "!.git/*"'
-  set grepprg=rg\ --vimgrep
-  command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" --ignore-file tags'.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
-endif
-
 let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 200K "
 "let g:FZF_COLOR=['--color=preview-bg:#223344,border:#778899,header:#ed8796', '--color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796', '--color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6', '--color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796']
 let g:FZF_DEFAULT_OPTS=['--ansi', '--layout=reverse', '--info=inline', '--bind', 'ctrl-/:toggle-preview', '--bind', 'ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down', '--bind', "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort", '--preview-window', 'right:50%:hidden']
@@ -76,7 +68,7 @@ function! RipgrepFzf(query, file_suffix, exclude_cmd)
   let s:command_fmt = g:RG_DEFAULT_CONFIG." -g '*.{%s}' %s %s || true"
   let s:initial_command = printf(s:command_fmt, a:file_suffix, a:exclude_cmd, s:str)
   echom s:initial_command
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 function! RipgrepFzfAll(...)
@@ -93,7 +85,7 @@ function! RipgrepFzfAll(...)
     let s:command_fmt .= ' ' . a:3
   endif
   let s:command_fmt .= ' || true'
-  call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 function! RipgrepFzfFunction(func_name, enable_smart_case)
@@ -105,7 +97,7 @@ function! RipgrepFzfFunction(func_name, enable_smart_case)
   let s:str2='^ *' . a:func_name . '\('
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 function! RipgrepFzfClassDefine(class_name, enable_smart_case)
@@ -123,7 +115,7 @@ function! RipgrepFzfClassDefine(class_name, enable_smart_case)
   let s:gstr2="struct *"  . a:class_name . ' *;'
   let s:command_fmt = g:RG_DEFAULT_CONFIG  . s:smart_case . " -g '*.{h}' -e \"%s|%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6, s:gstr1, s:gstr2)
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 function! RipgrepFzfValDefine(val_name, enable_smart_case)
@@ -136,7 +128,7 @@ function! RipgrepFzfValDefine(val_name, enable_smart_case)
   let s:str3='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' .*;'
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h,cpp,cc,c,m,mm,java}' -e \"%s|%s|%s\"|| true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3)
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
@@ -148,7 +140,7 @@ function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
   let s:str2='^ *[a-zA-Z0-9_]+  *' . a:func_name . '.*\{'
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{cpp,cc,c}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
-  call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:initial_command, 's:edit_rg_file', '')
 endfunction
 
 
