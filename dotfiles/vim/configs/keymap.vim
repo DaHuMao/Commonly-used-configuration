@@ -24,8 +24,6 @@ nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
 
 " 命令行模式增强，ctrl - a到行首， -e 到行尾
-cnoremap <C-j> <t_kd>
-cnoremap <C-k> <t_ku>
 cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 
@@ -68,24 +66,26 @@ noremap <leader>zh :ResizerLeft<CR>
 noremap <leader>zk :ResizerUp<CR>
 noremap <leader>zj :ResizerDown<CR>
 
+noremap <A-Up> :resize -3<CR>
+noremap <A-Down> :resize +3<CR>
+noremap <A-Left> :vertical resize -5<CR>
+noremap <A-Right> :vertical resize +5<CR>
+
+
 "nerdtree
 noremap <leader>n :NERDTreeToggle<CR>
 
 noremap <C-b> :q!<CR>
 noremap <C-e> :w<CR>
-noremap <C-f> :RGCword<CR>
-noremap <C-p> :RG<CR>
-noremap <C-a> :Rac<CR>
 
 " terminal
 let g:floaterm_width = 0.8
 let g:floaterm_height = 0.8
 tnoremap <A-/> <C-\><C-n>:FloatermToggle base_float_term<CR>
 nnoremap <A-/> :FloatermToggle base_float_term<CR>
-"noremap <C-p> /<C-U><C-R>=printf("%s", expand("<cword>"))<CR><CR>
 
 "C++
-noremap <M-m> :MachC<CR>
+noremap <A-m> :MachC<CR>
 
 "快速打开zsh vim配置文件
 noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
