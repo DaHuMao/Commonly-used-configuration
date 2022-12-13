@@ -18,7 +18,12 @@ ln -sf "$SCRIPT_DIR/common.zsh"    ~/.myzsh/common.zsh
 ln -sf "$SCRIPT_DIR/tool_function.zsh"    ~/.myzsh/tool_function.zsh
 ln -sf "$SCRIPT_DIR/git-edit.zsh"    ~/.myzsh/git-edit.zsh
 ln -sf "$SCRIPT_DIR/load_nvm.sh"    ~/.myzsh/load_nvm.sh
-chmod 777 ~/.myzsh/git-edit.zsh
+ln -sf "$SCRIPT_DIR/bin"    ~/.myzsh/bin
+
+for bin_file in `ls ~/.myzsh/bin`
+do
+  chmod 777 ~/.myzsh/bin/$bin_file
+done
 
 mkdir -p ~/.myzsh/zsh_completions
 ln -sf "$SCRIPT_DIR/completions/_ag"  ~/.myzsh/zsh_completions/_ag

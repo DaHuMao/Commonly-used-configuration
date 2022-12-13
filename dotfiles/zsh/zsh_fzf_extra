@@ -37,7 +37,7 @@ _select_git_edit() {
       ret_arr+=($str_arr[$i])
     }
   }
-  echo $ret_arr 
+  echo $ret_arr
 }
 
 #CTRL_F
@@ -88,14 +88,14 @@ wfxr::fzf-edit-selected-widget() {
           cmd_params='grep -E "^ M|^MM"'
         }
       }
-      preview_tool=(--preview "$HOME/.myzsh/git-edit.zsh $index {}")
+      preview_tool=(--preview "~/.myzsh/bin/git-edit.zsh $index {}")
     } else {
       setopt EXTENDED_GLOB
       if [[ $head_cmd == 'cd' || $head_cmd == 'mkdir' || $head_cmd == 'touch' || $LBUFFER == ' '#cp' '#'-r'* ]] {
         cmd=_fzf_compgen_dir
       }
       local dir=${tokens[-1]/#\~/$HOME}
-      if [[ -d $dir ]] { 
+      if [[ -d $dir ]] {
         cmd_params=$dir
       }
     }
