@@ -8,7 +8,7 @@ endif
 
 let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 200K "
 "let g:FZF_COLOR=['--color=preview-bg:#223344,border:#778899,header:#ed8796', '--color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796', '--color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6', '--color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796']
-let g:FZF_DEFAULT_OPTS=['--layout=reverse', '--info=inline', '--preview', 'bat --color=always --theme=TwoDark {}', '--bind', 'ctrl-/:toggle-preview', '--bind', 'ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down', '--bind', "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort", '--preview-window', 'right:50%:hidden']
+let g:FZF_DEFAULT_OPTS=['--ansi', '--layout=reverse', '--info=inline', '--bind', 'ctrl-/:toggle-preview', '--bind', 'ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down', '--bind', "ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | pbcopy)+abort", '--preview-window', 'right:50%:hidden']
 let s:Spec = {'options': g:FZF_DEFAULT_OPTS }
 
 " Files + devicons
@@ -44,6 +44,29 @@ function! Fzf_dev()
         \ 'down':    '40%' })
 endfunction
 
+function! s:edit_file(file_name)
+  execute 'silent e ' . a:file_name
+endfunction
+
+function! s:edit_rg_file(strr)
+  let s:arr = split(a:strr, ':')
+  echom s:arr
+  execute 'silent e ' . s:arr[0]
+  execute s:arr[1]
+  execute 'normal!' . s:arr[2] . 'l'
+endfunction
+
+function! Fzf_wrap(source, edit_fun_name, preview_script)
+  let s:preview_script_str = '~/.myzsh/bin/rg-edit.zsh {}'
+  if a:preview_script != ''
+    let s:preview_script_str = a:preview_script
+  endif
+  echom s:preview_script_str
+  call fzf#run({'source': a:source,
+        \ 'options': g:FZF_DEFAULT_OPTS + ['--preview', s:preview_script_str],
+        \ 'window': {'width': 0.8, 'height': 0.8},
+  \ 'sink': function(a:edit_fun_name)})
+endfunction
 
 function! RipgrepFzf(query, file_suffix, exclude_cmd)
   let s:str = "--smart-case -e ''"
@@ -128,30 +151,16 @@ function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-function Fzf_wrap(source, str_type)
-  function! s:edit_file(eledict)
-    echom a:eledict
-    execute 'silent e ' . a:eledict
-    "if g_str_type ==! 'file'
-    "elseif a:str_type ==! 'str'
-    "  let g_cur_file = bufname('%')
-    "endif
-  endfunction
-  call fzf#run({'source': a:source,
-  \ 'options': g:FZF_DEFAULT_OPTS,
-  \ 'window': {'width': 0.8, 'height': 0.8},
-  \ 'sink': function('s:edit_file')})
-endfunction
 
 function FindFile(file_path)
   let s:command_fmt='fd --type f --no-ignore-vcs --hidden --follow --exclude .o --exclude .git . ' . a:file_path
-  call Fzf_wrap(s:command_fmt, 'file')
+  call Fzf_wrap(s:command_fmt, 's:edit_file', 'bat --color=always --theme=gruvbox-dark {}')
 endfunction
 
 function FindWordInCurBuffer(str)
   let s:cur_file=bufname("%")
   let s:command_fmt= g:RG_DEFAULT_CONFIG . " --with-filename -- " . a:str . ' ' .s:cur_file
-  call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
+  call Fzf_wrap(s:command_fmt, 's:edit_rg_file', '')
 endfunction
 
 command! -nargs=* Ra call RipgrepFzfAll(<f-args>)
@@ -177,14 +186,3 @@ command! -nargs=? Rja call RipgrepFzf(<q-args>, "java", "")
 command! -nargs=0 Rjac call RipgrepFzf(expand('<cword>'), "java", "")
 command! -nargs=? Rsh call RipgrepFzf(<q-args>, "sh,bash,zsh", "")
 command! -nargs=0 Rshc call RipgrepFzf(expand('<cword>'), "sh", "")
-
-function ZtxTest()
-  let str="ssss"
-  function Test()
-    echom str
-  endfunction
-  call Test()
-endfunction
-
-
-
