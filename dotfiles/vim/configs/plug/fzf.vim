@@ -70,7 +70,6 @@ function! RipgrepFzfAll(...)
     let s:command_fmt .= ' ' . a:3
   endif
   let s:command_fmt .= ' || true'
-  echom s:command_fmt
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -83,7 +82,6 @@ function! RipgrepFzfFunction(func_name, enable_smart_case)
   let s:str2='^ *' . a:func_name . '\('
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
-  echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -102,7 +100,6 @@ function! RipgrepFzfClassDefine(class_name, enable_smart_case)
   let s:gstr2="struct *"  . a:class_name . ' *;'
   let s:command_fmt = g:RG_DEFAULT_CONFIG  . s:smart_case . " -g '*.{h}' -e \"%s|%s|%s|%s|%s|%s\" || true | rg -v \"%s|%s\""
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3, s:str4, s:str5, s:str6, s:gstr1, s:gstr2)
-  echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -116,7 +113,6 @@ function! RipgrepFzfValDefine(val_name, enable_smart_case)
   let s:str3='^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\*?  *' . a:val_name . ' .*;'
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{h,cpp,cc,c,m,mm,java}' -e \"%s|%s|%s\"|| true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2, s:str3)
-  echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -129,7 +125,6 @@ function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
   let s:str2='^ *[a-zA-Z0-9_]+  *' . a:func_name . '.*\{'
   let s:command_fmt = g:RG_DEFAULT_CONFIG . s:smart_case . " -g '*.{cpp,cc,c}' -e \"%s|%s\" || true"
   let s:initial_command = printf(s:command_fmt, s:str1, s:str2)
-  echom s:initial_command
   call fzf#vim#grep(s:initial_command, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -150,14 +145,12 @@ endfunction
 
 function FindFile(file_path)
   let s:command_fmt='fd --type f --no-ignore-vcs --hidden --follow --exclude .o --exclude .git . ' . a:file_path
-  echom s:command_fmt
   call Fzf_wrap(s:command_fmt, 'file')
 endfunction
 
 function FindWordInCurBuffer(str)
   let s:cur_file=bufname("%")
   let s:command_fmt= g:RG_DEFAULT_CONFIG . " --with-filename -- " . a:str . ' ' .s:cur_file
-  echom s:command_fmt
   call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
@@ -184,6 +177,14 @@ command! -nargs=? Rja call RipgrepFzf(<q-args>, "java", "")
 command! -nargs=0 Rjac call RipgrepFzf(expand('<cword>'), "java", "")
 command! -nargs=? Rsh call RipgrepFzf(<q-args>, "sh,bash,zsh", "")
 command! -nargs=0 Rshc call RipgrepFzf(expand('<cword>'), "sh", "")
+
+function ZtxTest()
+  let str="ssss"
+  function Test()
+    echom str
+  endfunction
+  call Test()
+endfunction
 
 
 
