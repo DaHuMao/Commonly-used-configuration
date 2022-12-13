@@ -10,13 +10,6 @@ inoremap <C-w> <ESC>Wa
 inoremap <C-f> <ESC>f
 inoremap <m-f> <ESC>F
 
-"Treat long lines as break lines (useful when moving around in them)
-"se swap之后，同物理行上线直接跳
-nnoremap k gk
-nnoremap gk k
-nnoremap j gj
-nnoremap gj j
-
 " split window jump
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
