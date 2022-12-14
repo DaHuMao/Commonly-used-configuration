@@ -88,7 +88,7 @@ wfxr::fzf-edit-selected-widget() {
           cmd_params='grep -E "^ M|^MM"'
         }
       }
-      preview_tool=(--preview "~/.myzsh/bin/git-edit.zsh $index {}")
+      preview_tool=(--preview "~/.myzsh/bin/git_preview.zsh $index {}")
     } else {
       setopt EXTENDED_GLOB
       if [[ $head_cmd == 'cd' || $head_cmd == 'mkdir' || $head_cmd == 'touch' || $LBUFFER == ' '#cp' '#'-r'* ]] {
