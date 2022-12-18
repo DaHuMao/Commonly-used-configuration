@@ -45,11 +45,18 @@ return packer.startup(function(use)
   use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
 
+  --  replace words
+  use 'windwp/nvim-spectre'
+
   --git
   use "lewis6991/gitsigns.nvim"
   use "kyazdani42/nvim-web-devicons" -- icons
   use 'sindrets/diffview.nvim'
 
+  --dap
+  use "theHamsta/nvim-dap-virtual-text"
+  use {'mfussenegger/nvim-dap'}
+  use "rcarriga/nvim-dap-ui"
 
   -- LSP
   use "neovim/nvim-lspconfig" -- enable LSP
