@@ -17,6 +17,7 @@ SourceSh ~/.myzsh/fzf.zsh
 SourceSh ~/.myzsh/zsh_fzf_extra
 SourceSh ~/.myzsh/zsh_theme
 SourceSh ~/.myzsh/common.zsh
+SourceSh ~/.myzsh/load_nvm.sh
 
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
 export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
