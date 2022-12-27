@@ -38,8 +38,9 @@ function! FindMatchCppFile() abort
   let s:tar_file = ''
   if s:suffix_name ==# 'h'
     for ele in s:suffix_name_list
-      let s:tar_file = s:tar_file_prefix . '.' . ele
-      if filereadable(s:tar_file)
+      let s:tmp_file = s:tar_file_prefix . '.' . ele
+      if filereadable(s:tmp_file)
+        let s:tar_file = s:tmp_file
         break
       endif
     endfor
@@ -48,6 +49,9 @@ function! FindMatchCppFile() abort
     endif
   elseif index(s:suffix_name_list, s:suffix_name) != -1
     let s:tar_file = s:tar_file_prefix . '.h'
+    if filereadable(s:tar_file) == 0
+      throw 'can not find ' . s:tar_file
+    endif
   else
     throw 'unsupport suffix_name: ' . s:suffix_name
   endif
