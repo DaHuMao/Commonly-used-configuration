@@ -89,6 +89,7 @@ function! RipgrepFzfAll(...)
     let s:command_fmt .= ' ' . a:3
   endif
   let s:command_fmt .= ' || true'
+  echom s:command_fmt
   call Fzf_wrap(s:command_fmt, 's:edit_rg_file', '')
 endfunction
 
@@ -161,7 +162,7 @@ function FindWordInCurBuffer(str)
 endfunction
 
 command! -nargs=* Ra call RipgrepFzfAll(<f-args>)
-command! -nargs=0 Rac call RipgrepFzfAll(expand('<cword>', <f-args>))
+command! -nargs=1 Rac call RipgrepFzfAll(expand('<cword>'), <f-args>)
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
@@ -174,7 +175,7 @@ command! -nargs=0 Rcc call RipgrepFzfClassDefine(expand('<cword>'), 0)
 command! -nargs=1 Rv call RipgrepFzfValDefine(<q-args>, 1)
 command! -nargs=0 Rvc call RipgrepFzfValDefine(expand('<cword>'), 0)
 command! -nargs=? RG call RipgrepFzf(<q-args>, "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
-command! -nargs=0 RGCword call RipgrepFzf(expand('<cword>'), "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
+command! -nargs=0 RGc call RipgrepFzf(expand('<cword>'), "h,hpp,cpp,cc,c,m,mm,java", "-g !'*unittest*'")
 command! -nargs=? Rgn call RipgrepFzf(<q-args>, "gn,gni", "")
 command! -nargs=0 Rgnc call RipgrepFzf(expand('<cword>'), "gn,gni", "")
 command! -nargs=? Rpy call RipgrepFzf(<q-args>, "py", "")
