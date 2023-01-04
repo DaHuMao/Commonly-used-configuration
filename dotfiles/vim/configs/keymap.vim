@@ -7,8 +7,11 @@ inoremap <C-a> <Home>
 inoremap <C-e> <End>
 inoremap <C-b> <ESC>Bi
 inoremap <C-w> <ESC>Wa
-inoremap <C-f> <ESC>f
-inoremap <m-f> <ESC>F
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+inoremap <C-h> <Left>
+inoremap <A-'> {}<Left><CR><CR><Up><Tab>
 
 " split window jump
 nnoremap <c-j> <c-w>j

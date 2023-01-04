@@ -162,7 +162,7 @@ function FindWordInCurBuffer(str)
 endfunction
 
 command! -nargs=* Ra call RipgrepFzfAll(<f-args>)
-command! -nargs=1 Rac call RipgrepFzfAll(expand('<cword>'), <f-args>)
+command! -nargs=* Rac call RipgrepFzfAll(expand('<cword>'), <f-args>)
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
