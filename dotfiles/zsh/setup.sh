@@ -19,6 +19,7 @@ ln -sf "$SCRIPT_DIR/tool_function.zsh"    ~/.myzsh/tool_function.zsh
 ln -sf "$SCRIPT_DIR/git-edit.zsh"    ~/.myzsh/git-edit.zsh
 ln -sf "$SCRIPT_DIR/load_nvm.sh"    ~/.myzsh/load_nvm.sh
 ln -sf "$SCRIPT_DIR/bin"    ~/.myzsh/bin
+ln -sf "$SCRIPT_DIR/remind_cmd"    ~/.myzsh/remind_cmd
 
 for bin_file in `ls ~/.myzsh/bin`
 do

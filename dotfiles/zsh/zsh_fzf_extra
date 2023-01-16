@@ -42,6 +42,10 @@ _select_git_edit() {
 
 #CTRL_F
 wfxr::fzf-edit-selected-widget() {
+  if [[ $LBUFFER == "" ]] || [[ $LBUFFER == " "* ]] {
+    cat ~/.myzsh/remind_cmd | fzf $FZF_DEFAULT_COMMON_OPTS
+    return
+  }
   local tokens lbuf opt selected params cmd fzf_opt preview_tool base_path cmd_params
   params='-'${LBUFFER##*-}
   if {is_special_opt $params} {
@@ -97,6 +101,7 @@ wfxr::fzf-edit-selected-widget() {
       local dir=${tokens[-1]/#\~/$HOME}
       if [[ -d $dir ]] {
         cmd_params=$dir
+        preview_tool=(--preview "~/.myzsh/bin/file_dir_preview.zsh ${dir} {}")
       }
     }
   }
