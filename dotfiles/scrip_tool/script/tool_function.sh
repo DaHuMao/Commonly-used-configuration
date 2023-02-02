@@ -122,11 +122,18 @@ function TraverseFromGit(){
     done
 }
 
-function SourceSh() {
+function TestCmdTimeConsuming() {
   local cmd=$1
   local time_tmp1=$(TimeStampMs)
-  eval "source ${cmd}"
+  eval $cmd
   local time_tmp2=$(TimeStampMs)
   local time_gap=$((time_tmp2 - time_tmp1))
-  log_info "source ${cmd}, it takes ${time_gap} ms"
+  log_info "${cmd}, it takes ${time_gap} ms"
 }
+
+function SourceSh() {
+  TestCmdTimeConsuming "source ${1}"
+}
+
+
+

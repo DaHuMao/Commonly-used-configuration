@@ -43,7 +43,8 @@ _select_git_edit() {
 #CTRL_F
 wfxr::fzf-edit-selected-widget() {
   if [[ $LBUFFER == "" ]] || [[ $LBUFFER == " "* ]] {
-    cat ~/.myzsh/remind_cmd | fzf $FZF_DEFAULT_COMMON_OPTS
+    LBUFFER=$(cat ~/.myzsh/remind_cmd | fzf $FZF_DEFAULT_COMMON_OPTS)
+    zle reset-prompt
     return
   }
   local tokens lbuf opt selected params cmd fzf_opt preview_tool base_path cmd_params

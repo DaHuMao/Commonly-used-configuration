@@ -1,0 +1,28 @@
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-14.0.1.jdk/Contents/Home
+export ANDROID_SDK_ROOT=$HOME/Library/Android/sdk
+export ANDROID_NDK_ROOT=$HOME/GitDownLoad/android-ndk-r21e
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/tools
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/platform-tools
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/tools/bin
+export PATH=${PATH}:${ANDROID_SDK_ROOT}/emulator
+export PATH=$PATH:$ANDROID_SDK_ROOT/tools
+export PATH=$PATH:$ANDROID_SDK_ROOT/platform-tools
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+export PATH="$PATH:$HOME/Library/Python/3.8/bin"
+
+# depot_toos
+export PATH=$PATH:$HOME/GitDownLoad/depot_tools
+export DEPOT_TOOLS_UPDATE=0
+
+review(){
+branch_name=`git rev-parse --abbrev-ref HEAD`
+if [ -z "$branch_name" ];then
+    echo "! [Branch name missing]"
+    echo "请在git仓库根目录执行"
+    return
+fi
+reviewers="r=wangcb,r=pengyang,r=zhaoguanxun,r=zhufan,r=gaocy01,r=liguang,r=zhangzhebj03"
+push_command="git push origin HEAD:refs/for/"${branch_name}%${reviewers}
+eval $push_command
+}
