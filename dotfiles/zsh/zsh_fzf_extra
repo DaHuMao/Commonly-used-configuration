@@ -39,7 +39,13 @@ _select_git_edit() {
   }
   echo $ret_arr
 }
-
+#pre-post-example () {
+#        PREDISPLAY="*** You can't edit this bit ***
+#" POSTDISPLAY="
+#*** Nor this bit ***"
+#        #zle recursive-edit
+#        #PREDISPLAY= POSTDISPLAY=
+#}
 #CTRL_F
 wfxr::fzf-edit-selected-widget() {
   if [[ $LBUFFER == "" ]] || [[ $LBUFFER == " "* ]] {
@@ -69,14 +75,15 @@ wfxr::fzf-edit-selected-widget() {
   local is_multi_line=1
   if (($#tokens > 0)) {
     local head_cmd=$tokens[1]
-    if { eval "type _fzf_complete_$head_cmd > /dev/null" } {
-      local prefix
-      prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
-      [ -n "${tokens[-1]}" ] && lbuf=${lbuf:0:-${#tokens[-1]}}
-      prefix="$prefix" eval _fzf_complete_${tokens[1]} ${(q)lbuf}
-      zle reset-prompt
-      return 0
-    } elif [[ $head_cmd == 'git' ]] {
+    #if { eval "type _fzf_complete_$head_cmd > /dev/null" } {
+    #  local prefix
+    #  prefix=${tokens[-1]} || prefix=${tokens[-1]:0:-${#trigger}}
+    #  [ -n "${tokens[-1]}" ] && lbuf=${lbuf:0:-${#tokens[-1]}}
+    #  prefix="$prefix" eval _fzf_complete_${tokens[1]} ${(q)lbuf}
+    #  zle reset-prompt
+    #  return 0
+    #} el
+    if [[ $head_cmd == 'git' ]] {
       cmd=_git_status
       if {is_git_param $params} {
         cmd_params=$(git_file_filter $params)
@@ -100,10 +107,11 @@ wfxr::fzf-edit-selected-widget() {
         cmd=_fzf_compgen_dir
       }
       local dir=${tokens[-1]/#\~/$HOME}
-      if [[ -d $dir ]] {
-        cmd_params=$dir
-        preview_tool=(--preview "~/.myzsh/bin/file_dir_preview.zsh ${dir} {}")
+      if [[ ! -d $dir ]] {
+        dir='.'
       }
+      cmd_params=$dir
+      preview_tool=(--preview "~/.myzsh/bin/file_dir_preview.zsh ${dir} {}")
     }
   }
   fzf_opt+=($fzf_opt $preview_tool)
