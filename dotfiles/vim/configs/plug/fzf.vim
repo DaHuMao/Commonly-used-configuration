@@ -77,16 +77,19 @@ endfunction
 
 function! RipgrepFzfAll(...)
   let s:command_fmt = g:RG_DEFAULT_CONFIG
-  if a:0 > 0
-    let s:command_fmt .= ' -e ' . a:1
+  if a:1 == 0
+    let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 200K'
+  endif
+  if a:0 > 1
+    let s:command_fmt .= ' -e ' . a:2
   else
     let s:command_fmt .= " --smart-case -e  ''"
   endif
-  if a:0 > 1
-    let s:command_fmt .= " -g '*.{" . a:2 . "}'"
-  endif
   if a:0 > 2
-    let s:command_fmt .= ' ' . a:3
+    let s:command_fmt .= " -g '*.{" . a:3 . "}'"
+  endif
+  if a:0 > 3
+    let s:command_fmt .= ' ' . a:4
   endif
   let s:command_fmt .= ' || true'
   echom s:command_fmt
@@ -161,8 +164,10 @@ function FindWordInCurBuffer(str)
   "call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
-command! -nargs=* Ra call RipgrepFzfAll(<f-args>)
-command! -nargs=* Rac call RipgrepFzfAll(expand('<cword>'), <f-args>)
+command! -nargs=* Raa call RipgrepFzfAll(0, <f-args>)
+command! -nargs=* Raac call RipgrepFzfAll(0, expand('<cword>'), <f-args>)
+command! -nargs=* Ra call RipgrepFzfAll(1, <f-args>)
+command! -nargs=* Rac call RipgrepFzfAll(1, expand('<cword>'), <f-args>)
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
