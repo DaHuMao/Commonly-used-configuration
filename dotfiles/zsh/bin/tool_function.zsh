@@ -1,4 +1,4 @@
-. ~/bin/tool_function.sh
+. ~/.myzsh/bin/tool_function.sh
 function git_file_traverse() {
   local filter=$1
   local -A filter_str_table=('M' 1 'MM' 1 '??' 1 'A' 1 'D' 1)

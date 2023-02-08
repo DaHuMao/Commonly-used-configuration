@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-. ~/.myzsh/tool_function.zsh
+. ~/.myzsh/bin/tool_function.zsh
 [[ $- != *i* ]] && return
 _fzf_compgen_path() {
   fd --type f  --no-ignore-vcs --hidden --follow --exclude .git --base-directory $1
