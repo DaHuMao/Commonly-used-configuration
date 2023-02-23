@@ -47,6 +47,11 @@ check_and_install 'ncdu'
 check_and_install 'HTTPie'
 check_and_install 'coreutils'
 
+#nerd-front https://github.com/ryanoasis/nerd-fonts#option-4-homebrew-fonts
+#brew tap homebrew/cask-fonts
+#brew install --cask font-hack-nerd-font
+
+
 check_and_install_nvm_node
 echo ' ' #空一行
 log_info "successed install all-----------------------------"

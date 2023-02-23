@@ -78,7 +78,7 @@ endfunction
 function! RipgrepFzfAll(...)
   let s:command_fmt = g:RG_DEFAULT_CONFIG
   if a:1 == 0
-    let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 200K'
+    let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 250K'
   endif
   if a:0 > 1
     let s:command_fmt .= ' -e ' . a:2
@@ -164,6 +164,11 @@ function FindWordInCurBuffer(str)
   "call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
+function RgcFunction(str)
+  execute 'Rg ' . a:str
+endfunction
+
+command! -nargs=* Rgc call RgcFunction(expand('<cword>'))
 command! -nargs=* Raa call RipgrepFzfAll(0, <f-args>)
 command! -nargs=* Raac call RipgrepFzfAll(0, expand('<cword>'), <f-args>)
 command! -nargs=* Ra call RipgrepFzfAll(1, <f-args>)
