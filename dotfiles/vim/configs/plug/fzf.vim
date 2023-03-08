@@ -162,9 +162,10 @@ function FindFile(file_path)
 endfunction
 
 function FindWordInCurBuffer(str)
-  let s:cur_file=bufname("%")
-  let s:command_fmt= g:RG_DEFAULT_CONFIG . " --no-filename -- " . a:str . ' ' .s:cur_file
-  call Fzf_wrap(s:command_fmt, 's:edit_rg_file', '')
+  let s:cur_file = bufname("%")
+  let s:command_fmt = g:RG_DEFAULT_CONFIG . " --no-filename -- " . a:str . ' ' .s:cur_file
+  let s:preview_script = '~/.myzsh/bin/fzf_rg_preview.zsh {} ' . s:cur_file
+  call Fzf_wrap(s:command_fmt, 's:edit_rg_file', s:preview_script)
   "call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction
 
