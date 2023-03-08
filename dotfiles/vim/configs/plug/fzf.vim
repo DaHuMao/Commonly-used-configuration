@@ -47,10 +47,14 @@ endfunction
 
 function! s:edit_rg_file(strr)
   let s:arr = split(a:strr, ':')
-  echom s:arr
-  execute 'silent e ' . s:arr[0]
-  execute s:arr[1]
-  execute 'normal!' . s:arr[2] . 'l'
+  echom a:strr
+  let s:index = 0
+  if filereadable(s:arr[0]) != 0
+    execute 'silent e ' . s:arr[0]
+    let s:index = 1
+  endif
+  execute s:arr[s:index]
+  execute 'normal!' . '^' . s:arr[s:index + 1] . 'l'
 endfunction
 
 function! Fzf_wrap(source, edit_fun_name, preview_script)
@@ -159,7 +163,7 @@ endfunction
 
 function FindWordInCurBuffer(str)
   let s:cur_file=bufname("%")
-  let s:command_fmt= g:RG_DEFAULT_CONFIG . " --with-filename -- " . a:str . ' ' .s:cur_file
+  let s:command_fmt= g:RG_DEFAULT_CONFIG . " --no-filename -- " . a:str . ' ' .s:cur_file
   call Fzf_wrap(s:command_fmt, 's:edit_rg_file', '')
   "call fzf#vim#grep(s:command_fmt, 1, fzf#vim#with_preview(s:Spec), 0)
 endfunction

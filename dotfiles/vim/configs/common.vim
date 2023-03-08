@@ -19,7 +19,7 @@ set helplang=cn
 "set termencoding=utf-8
 
 "代码字数限制线
-set colorcolumn=100
+set colorcolumn=80
 
 set nobackup
 set noswapfile
@@ -66,7 +66,7 @@ set backspace=indent,eol,start
 
 "set clipboard=unnamed
 
-autocmd BufNewFile,BufRead *.vue set ft=javascript syntax=html 
+autocmd BufNewFile,BufRead *.vue set ft=javascript syntax=html
 hi pythonSelf ctermfg=174 guifg=#6094DB cterm=bold gui=bold
 
 
