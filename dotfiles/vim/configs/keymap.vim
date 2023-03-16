@@ -56,11 +56,7 @@ noremap <leader>v :Rvc<CR>
 noremap <leader>b :Buffers<CR>
 
 "windows
-noremap <leader>zz :MaximizerToggle<CR>
-noremap <leader>zl :ResizerRight<CR>
-noremap <leader>zh :ResizerLeft<CR>
-noremap <leader>zk :ResizerUp<CR>
-noremap <leader>zj :ResizerDown<CR>
+noremap <space>zz :call MaxOrMinWindows()<CR>
 
 noremap <A-Up> :resize -3<CR>
 noremap <A-Down> :resize +3<CR>
@@ -75,8 +71,8 @@ noremap <C-b> :q!<CR>
 noremap <C-e> :w<CR>
 
 " terminal
-let g:floaterm_width = 0.8
-let g:floaterm_height = 0.8
+let g:floaterm_width = 0.9
+let g:floaterm_height = 0.9
 tnoremap <A-/> <C-\><C-n>:FloatermToggle base_float_term<CR>
 nnoremap <A-/> :FloatermToggle base_float_term<CR>
 
@@ -88,7 +84,7 @@ noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
 command! -nargs=0 Vsc :source ~/.vimrc
 
-"autocmd
+"autocmd Remove the space at the end of the file
 autocmd BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 
 

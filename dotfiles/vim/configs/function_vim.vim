@@ -60,6 +60,24 @@ function! FindMatchCppFile() abort
 endfunction
 command! -nargs=0 MachC call FindMatchCppFile()
 
+let s:cur_win_width = 0
+let s:cur_win_height = 0
+let s:resize_win_flag = 1
+function MaxOrMinWindows()
+  if s:resize_win_flag > 0
+    let s:cur_win_width = winwidth('%')
+    let s:cur_win_height = winheight('%')
+    let s:resize_win_flag = 0
+    execute 'resize ' . 200
+    execute 'vertical resize ' . 200
+    echom s:cur_win_height . ' ' . s:cur_win_width
+  else
+    let s:resize_win_flag = 1
+    execute 'resize ' . s:cur_win_height
+    execute 'vertical resize ' . s:cur_win_width
+  endif
+endfunction
+
 "nnoremap <leader>g :set operatorfunc=GrepOperator<cr>g@
 "vnoremap <leader>g :<c-u>call GrepOperator(visualmode())<cr>
 "
