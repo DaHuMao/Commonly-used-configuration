@@ -46,10 +46,10 @@ local function replace_keymaps()
     noremap = true,
     silent = true
   })
-  keymap('n', '<space>rc', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+  keymap('n', '<space>cr', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
     desc = "Search current word"
   })
-  keymap('v', '<space>rc', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+  keymap('v', '<space>cr', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
     desc = "Search current word"
   })
   keymap('n', '<space>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
