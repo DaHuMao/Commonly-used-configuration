@@ -46,12 +46,13 @@ return packer.startup(function(use)
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
 
   --  replace words
-  use 'windwp/nvim-spectre'
+  use 'nvim-pack/nvim-spectre'
 
   --git
   use "lewis6991/gitsigns.nvim"
   use "kyazdani42/nvim-web-devicons" -- icons
-  use 'sindrets/diffview.nvim'
+  -- Packer
+  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
 
   --dap
   use "theHamsta/nvim-dap-virtual-text"

@@ -39,11 +39,30 @@ local function debug_keymaps()
   keymap("n", "<F8>", "<cmd>lua require'dap'.step_out()<cr>", opts)
   keymap("n", "Z", "<cmd>lua require'dapui'.eval()<cr>", opts)
 end
+
+local function replace_keymaps()
+  keymap('n', '<space>r', '<cmd>lua require("spectre").open()<CR>', {
+    desc = "Open Spectre",
+    noremap = true,
+    silent = true
+  })
+  keymap('n', '<space>rc', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+    desc = "Search current word"
+  })
+  keymap('v', '<space>rc', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+    desc = "Search current word"
+  })
+  keymap('n', '<space>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+    desc = "Search on current file"
+  })
+end
+
 local M = {}
 M.setup = function ()
   lsp_keymaps()
   git_keymaps()
   debug_keymaps()
+  replace_keymaps()
 end
 
 return M
