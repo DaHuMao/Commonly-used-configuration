@@ -27,7 +27,7 @@ Plug 'morhetz/gruvbox'
 Plug 'mhartington/oceanic-next'
 Plug 'sainnhe/vim-color-forest-night'
 
-Plug 'Yggdroot/LeaderF'
+"Plug 'Yggdroot/LeaderF'
 
 " terminal
 Plug 'voldikss/vim-floaterm'
