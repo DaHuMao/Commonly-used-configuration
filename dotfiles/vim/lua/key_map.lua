@@ -18,7 +18,8 @@ local function lsp_keymaps()
   keymap("n", "gp", "<cmd>lua vim.diagnostic.goto_prev()<CR>", opts)
   keymap("n", "gn", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
   keymap("n", "<leader>cd", "<cmd>Lspsaga show_cursor_diagnostics<CR>", opts)
-  keymap("n", "<leader>cd", "<cmd>Lspsaga show_line_diagnostics<CR>", opts)
+  keymap("n", "<leader>cb", "<cmd>Lspsaga show_buf_diagnostics<CR>", opts)
+  keymap("n", "<leader>cl", "<cmd>Lspsaga show_line_diagnostics<CR>", opts)
   keymap({"n", "v"}, "<leader>ca", "<cmd>Lspsaga code_action<CR>", opts)
 end
 

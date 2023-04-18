@@ -77,7 +77,19 @@ return packer.startup(function(use)
   use {'rafamadriz/friendly-snippets'}
   -- lspkind
   use {'onsails/lspkind-nvim'}
-  use {"glepnir/lspsaga.nvim"}
+
+  -- lspsaga
+  use({
+    "glepnir/lspsaga.nvim",
+    opt = true,
+    branch = "main",
+    event = "LspAttach",
+    requires = {
+        {"nvim-tree/nvim-web-devicons"},
+        --Please make sure you install markdown and markdown_inline parser
+        {"nvim-treesitter/nvim-treesitter"}
+    }
+})
 
 
   -- Automatically set up your configuration after cloning packer.nvim
