@@ -24,6 +24,7 @@ local function lsp_keymaps()
 end
 
 local function git_keymaps()
+  -- DiffviewOpen [git rev] [options] [ -- {paths...}] eg: DiffviewOpen HEAD~2 -- lua/diffview plugin
   keymap("n", "<leader>gf", "<cmd>DiffviewFileHistory %<CR>", opts)
 end
 
