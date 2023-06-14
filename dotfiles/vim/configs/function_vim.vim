@@ -1,16 +1,25 @@
-function! CompleteClassCpp(class_name)
-  let line_num=line('.')
-  let cmd_fmt=",$s/ \\(\\w*(\\)/ %s::\\1/"
-  let cmd = printf(cmd_fmt, a:class_name)
-  echom cmd
-  execute cmd
-  execute line_num
-  ,$s/ *\(override\)\? *;$/;/
-  execute line_num
-  ,$s/)\(.*\);$/)\1 {\r\r}\r/
+function! CompleteClassCpp(class_name, line_count = 0)
+  let s:line_num=line('.')
+  let s:end_line='$'
+  echom a:line_count
+  if a:line_count > 0
+    let s:end_line = s:line_num + a:line_count
+  endif
+  let s:cmd_fmt=",%ss/ \\(\\w*(\\)/ %s::\\1/"
+  let s:cmd = printf(s:cmd_fmt, s:end_line, a:class_name)
+  echom s:cmd
+  execute s:cmd
+  execute s:line_num
+  let s:cmd_fmt=',%ss/ *\(override\)\? *;$/;/'
+  let s:cmd = printf(s:cmd_fmt, s:end_line)
+  execute s:cmd
+  execute s:line_num
+  let s:cmd_fmt = ',%ss/)\(.*\);$/)\1 {\r\r}\r/'
+  let s:cmd = printf(s:cmd_fmt, s:end_line)
+  execute s:cmd
 endfunction
 
-command! -nargs=1 Cc call CompleteClassCpp(<q-args>)
+command! -nargs=* Cc call CompleteClassCpp(<f-args>)
 
 "clang-format
 function! Formatonsave(flag)
@@ -19,7 +28,7 @@ function! Formatonsave(flag)
   else
     let l:formatdiff = 1
   endif
-  py3f /usr/local/Cellar/clang-format/15.0.4/share/clang/clang-format.py
+  py3f /usr/local/Cellar/clang-format/16.0.1/share/clang/clang-format.py
 endfunction
 command! -nargs=1 Fmt call Formatonsave(<q-args>)
 "autocmd BufWritePre *.h,*.cc,*.cpp call Formatonsave()
