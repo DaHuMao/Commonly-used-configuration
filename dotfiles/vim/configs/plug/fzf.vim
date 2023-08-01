@@ -80,20 +80,24 @@ function! RipgrepFzf(query, file_suffix, exclude_cmd)
 endfunction
 
 function! RipgrepFzfAll(...)
+  echo 'args:' a:000
   let s:command_fmt = g:RG_DEFAULT_CONFIG
   if a:1 == 0
     let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 250K'
   endif
   if a:0 > 1
-    let s:command_fmt .= ' -e ' . a:2
+    let s:command_fmt .= ' -e ' . "'" . a:2 . "'"
   else
     let s:command_fmt .= " --smart-case -e  ''"
   endif
-  if a:0 > 2
+  if a:0 > 2 && a:3 != '0'
     let s:command_fmt .= " -g '*.{" . a:3 . "}'"
   endif
-  if a:0 > 3
-    let s:command_fmt .= ' ' . a:4
+  if a:0 > 3 && a:4 != '0'
+    let s:command_fmt .= " -g  '!*.{" . a:4 . "}'"
+  endif
+  if a:0 > 4
+    let s:command_fmt .= ' ' . a:5
   endif
   let s:command_fmt .= ' || true'
   echom s:command_fmt
@@ -156,8 +160,12 @@ function! RipgrepFzfFunctionRef(func_name, enable_smart_case)
 endfunction
 
 
-function FindFile(file_path)
-  let s:command_fmt='fd --type f --no-ignore-vcs --hidden --follow --exclude .o --exclude .git . ' . a:file_path
+function FindFile(file_path, is_all)
+  let s:command_fmt='fd --type f --no-ignore-vcs --hidden --follow --exclude .o --exclude .git '
+  if a:is_all > 0
+    let s:command_fmt = s:command_fmt . '--no-ignore'
+  endif
+  let s:command_fmt = s:command_fmt . ' . ' . a:file_path
   call Fzf_wrap(s:command_fmt, 's:edit_file', 'bat --color=always --theme=gruvbox-dark {}')
 endfunction
 
@@ -176,9 +184,10 @@ endfunction
 command! -nargs=* Rgc call RgcFunction(expand('<cword>'))
 command! -nargs=* Raa call RipgrepFzfAll(0, <f-args>)
 command! -nargs=* Raac call RipgrepFzfAll(0, expand('<cword>'), <f-args>)
-command! -nargs=* Ra call RipgrepFzfAll(1, <f-args>)
+command! -nargs=* -complete=arglist Ra call RipgrepFzfAll(1, <f-args>)
 command! -nargs=* Rac call RipgrepFzfAll(1, expand('<cword>'), <f-args>)
-command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>)
+command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>, 0)
+command! -nargs=1 -complete=dir RfileAll call FindFile(<f-args>, 1)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
 command! -nargs=0 Rbuffer call FindWordInCurBuffer('.')
 command! -nargs=1 Rf call RipgrepFzfFunction(<q-args>, 1)
