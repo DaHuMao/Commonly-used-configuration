@@ -34,7 +34,7 @@ function substrFrontLast(){
     echo ${1%$2*}
 }
 
-#裁剪字符串中某个字符最后一次出现之前的字符串
+#裁剪字符串中某个字符第一次出现之后的字符串
 #example substrBackFirst 1_2_3 '_'
 #output 2_3
 function substrBackFirst(){
@@ -46,6 +46,27 @@ function substrBackFirst(){
 #output 3
 function substrBackLast(){
     echo ${1##*$2}
+}
+
+function getFileDir(){
+  echo ${1%/*}
+}
+
+function getFileName(){
+  echo ${1##*/}
+}
+
+function getFileSuffix(){
+  echo ${1##*.}
+}
+
+function getFileNameWithoutSuffix(){
+  echo ${1%.*}
+}
+
+function getFileNameWithoutSuffixAndPath(){
+  file_name=${1##*/}
+  echo ${file_name%.*}
 }
 
 #时间获取
