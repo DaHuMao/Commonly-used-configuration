@@ -1,6 +1,9 @@
-import sys 
+import os
+import sys
+import time
+import threading
 
-import plot_tools as plt_tool 
+import plot_tools as plt_tool
 import read_file
 import socket_reader
 import plot
@@ -22,6 +25,20 @@ class PlotEngine:
                 'select_y_key': [], \
                 'select_y_key_multi_line': []
                 }
+    _work_mode = ''
+    _is_exit = False
+    _event_listen_thread = None
+    _event_listen_thread_stop = True
+
+    def event_listen(self):
+        log_tool.log_info("_event_listen_thread is listenning....")
+        while self._event_listen_thread_stop is False:
+            if plt_tool.is_esc_pressed():
+                self._is_exit = True
+                self._plot_data.close()
+                log_tool.log_info("ESC pressed, exit....")
+            else:
+                time.sleep(1)
 
     def update_config(self, key, value):
         if key not in self._config_dict:
@@ -30,7 +47,7 @@ class PlotEngine:
             self._config_dict[key] = value
         else:
             self._config_dict[key] = value.strip().split()
-        return True 
+        return True
 
     def init_reader(self):
         select_y_index = []
@@ -59,11 +76,11 @@ class PlotEngine:
                 else:
                     select_y_key = ee
 
-            self._plot_data.update_config('title', select_y_key) 
+            self._plot_data.update_config('title', select_y_key)
             self._plot_data.update_config('legend_name', select_y_key)
 
         self._plot_data.init_plot(plot_count)
-    
+
     def init_self(self, argv):
         for ele in argv:
             flag = ele.split('=')
@@ -71,13 +88,14 @@ class PlotEngine:
                 self.update_config(flag[0], flag[1])
         if len(self._config_dict['select_y_key_multi_line']) != 0:
             self._config_dict['select_y_key'] = self._config_dict['select_y_key_multi_line']
-        work_mode = self._config_dict['work_mode']
-        if work_mode == 'file_mode':
+        self._work_mode = self._config_dict['work_mode']
+        if self._work_mode == 'file_mode':
             self._reader = read_file.TxTFileReader()
-        elif work_mode == 'stream_mode':
-            self._reader = socket_reader.SocketReader() 
+        elif self._work_mode == 'stream_mode':
+            self._reader = socket_reader.SocketReader()
         else:
             Exception('unknow work_mode: %s' % work_mode)
+        self._event_listen_thread = threading.Thread(target = self.event_listen)
 
     def check_if_is_log_config(self, key, val):
         log_key_val = {'log_filter_include_keywords':'filter_include_keywords', \
@@ -112,7 +130,7 @@ class PlotEngine:
         self.init_reader()
         self.init_plot()
         self.init_log_tool()
-    
+
     def get_select_y(self):
         if len(self._config_dict['select_y_key']) == 0:
             return self._config_dict['select_y_raw']
@@ -128,16 +146,27 @@ class PlotEngine:
 
 
     def plot(self):
+        self._event_listen_thread_stop = False
+        self._event_listen_thread.start()
         work_mode = self._config_dict['work_mode']
+        sleep_s = 0.1
         if work_mode == 'file_mode':
-            x_data, y_data = self.get_data()
-            self._plot_data.show_plot(x_data, y_data)
+            sleep_s = 1
         else:
             self._reader.start_server()
-            while True:
-                x_data, y_data = self.get_data()
-                self._plot_data.pause_plot(x_data, y_data, 0.1)
+        while self._is_exit is False:
+            x_data, y_data = self.get_data()
+            self._plot_data.pause_plot(x_data, y_data, sleep_s)
+
+    def exit(self):
+        if self._work_mode == 'stream_mode':
+            self._reader.stop()
+        self._event_listen_thread_stop = True
+        log_tool.log_info("stop _event_listen_thread...")
+        self._event_listen_thread.join()
+        log_tool.log_info("plot engine successed exited...")
 
 plot_engine = PlotEngine()
 plot_engine.init(sys.argv)
 plot_engine.plot()
+plot_engine.exit()

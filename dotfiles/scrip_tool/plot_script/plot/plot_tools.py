@@ -1,5 +1,8 @@
 import time
+import os
+import sys
 import datetime
+
 import log_tool
 def get_now_time(format_time='%Y-%m-%d %H:%M:%S'):
     now_time=datetime.datetime.now()
@@ -54,4 +57,29 @@ def get_data(data_x, data_y, select_y):
         y_data.append(data_y[start_index : end_index])
         start_index = end_index
     return x_data, y_data
+
+
+
+def is_esc_pressed():
+    if os.name == 'nt':
+        # This is for windows OS
+        import msvcrt
+        if msvcrt.kbhit():
+            return msvcrt.getch() == b'\x1b'
+    else:
+        # Unix/Linux system
+        import termios
+        import tty
+        def getch():
+            fd = sys.stdin.fileno()
+            original_attributes = termios.tcgetattr(fd)
+            try:
+                tty.setraw(sys.stdin.fileno())
+                ch = sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, original_attributes)
+            return ch
+
+        return getch() == '\x1b'
+    return False
 

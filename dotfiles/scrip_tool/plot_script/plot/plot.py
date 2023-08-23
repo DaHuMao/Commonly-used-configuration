@@ -47,7 +47,7 @@ class PlotData:
                     'plot_type': None, \
                     'width': '0.9', \
                     'x_classification': []
-                } 
+                }
     _plot_list = []
     _is_raw_arrange='1'
     _plot_arrange_way=[]
@@ -77,7 +77,7 @@ class PlotData:
             return [count_of_plot - i for i in range(self._plot_arrange_way[end_index])]
         else:
             return [tmp_sum - i for i in range(self._plot_arrange_way[end_index])]
-            
+
 
     def col_first_array(self):
         count_of_plot = len(self._plot_list)
@@ -117,7 +117,7 @@ class PlotData:
                 if len(tmp) == 3:
                     plot_list[i].set_xlabel_range(int(tmp[0]), int(tmp[1]), int(tmp[2]))
         return
-    
+
     def init_histogram_plot(self, count_plot):
         width = self._config_dict['width']
         x_classification = self._config_dict['x_classification']
@@ -180,7 +180,7 @@ class PlotData:
     def init_plot(self, count_plot):
         self._is_first = True
         plot_type = self._config_dict['plot_type'][0]
-        
+
         if len(self._config_dict['is_raw_arrange']) > 0:
             self._is_raw_arrange = self._config_dict['is_raw_arrange'][0]
         try:
@@ -201,7 +201,7 @@ class PlotData:
             raise Exception("unknow plot_type: %s" % plot_type)
 
         self.init_base_plot()
-    
+
     def get_plot_pos(self, index):
         plot_list_len = len(self._plot_list)
         if sum(self._plot_arrange_way) < plot_list_len:
@@ -240,7 +240,7 @@ class PlotData:
                 self._is_first = False
             self._plot_list[i].plot(data_x[i], data_y[i], plot_pos[0], plot_pos[1], plot_pos[2])
             plt.legend(loc='upper right')
-   
+
     def show_plot(self, data_x, data_y):
         self.plotplot(data_x, data_y)
         plt.show()
@@ -249,6 +249,9 @@ class PlotData:
         plt.clf()
         self.plotplot(data_x, data_y)
         plt.pause(pause_second)
+
+    def close(self):
+        plt.close()
 
 
 

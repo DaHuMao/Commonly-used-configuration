@@ -1,4 +1,5 @@
 import plot_tools as plt_tool
+import log_tool as log_tool
 
 class TxTFileReader:
     _file_path = ''
@@ -9,14 +10,14 @@ class TxTFileReader:
                 'file_path':'', \
                 'x_select_range':[]
             }
-    
+
     def update_config(self, key, value):
         if  key not in self._config_dict:
             return False
         if isinstance(self._config_dict[key], str):
             self._config_dict[key] = value
         else:
-            self._config_dict[key] = value.strip().split() 
+            self._config_dict[key] = value.strip().split()
         return True
 
     def init(self, text_processor, data_parser_x, data_parser_y):
