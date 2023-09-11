@@ -22,6 +22,10 @@ _git_log() {
   git lg
 }
 
+_git_branch() {
+  git branch -a
+}
+
 _select_git_edit() {
   local str_arr=(${=1})
   local mod=$2
@@ -91,17 +95,23 @@ wfxr::fzf-edit-selected-widget() {
         cmd_params=''
       }
       index=2
+      preview_tool=(--preview "~/.myzsh/bin/git_preview.zsh $index {}")
       if (( $#tokens > 1 )) {
         if [[ $tokens[2] == 'lg' || $tokens[2] == 'resf' || \
-          $tokens[2] == 'rehd' ]] || [[ $tokens[2] == 'rebase' ]] {
+          $tokens[2] == 'rehd' ]] || [[ $tokens[2] == 'rebase' ]] || \
+          [[ $tokens[2] == 'rbi' ]] {
           cmd=_git_log
           index=1
           is_multi_line=0
-        } elif [[ $tokens[2] == 'diff' ]] {
+        } elif [[ $tokens[2] == 'diff' ]] || [[ $tokens[2] == 'co' ]] {
           cmd_params='grep -E "^ M|^MM"'
+        } elif [[ $tokens[2] == 'cob' ]] {
+          cmd=_git_branch
+          index=0
+          preview_tool=''
+          lbuf='git co'
         }
       }
-      preview_tool=(--preview "~/.myzsh/bin/git_preview.zsh $index {}")
     } else {
       setopt EXTENDED_GLOB
       if [[ $head_cmd == 'cd' || $head_cmd == 'mkdir' || $head_cmd == 'touch' || $LBUFFER == ' '#cp' '#'-r'* ]] {

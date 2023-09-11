@@ -11,8 +11,10 @@
     rehd = reset --hard
     resf = reset --soft
     cno = commit --amend --no-edit
+    rbi = rebase -i
+    rbc = rebase --continue
     lg = log --oneline --decorate -12 --color
-    ll = log --oneline --decorate --color --graph
+    ll = log --pretty=format:\"%C(yellow) %h%Cred %ad%Cgreen%d%Creset %s %C(blue)[%an]%Creset\" --date=short
     lc = log --graph --color
     co = checkout
     br = branch
@@ -20,4 +22,4 @@
     d = difftool
 [user]
 	name = zhangtongxiaobj
-	email = zhangtongxiaobj@yuanfudao.com
+	email = zhangtongxiaobj@kanyun.com
