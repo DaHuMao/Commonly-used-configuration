@@ -35,7 +35,6 @@ class PlotEngine:
         while self._event_listen_thread_stop is False:
             if plt_tool.is_esc_pressed():
                 self._is_exit = True
-                self._plot_data.close()
                 log_tool.log_info("ESC pressed, exit....")
             else:
                 time.sleep(1)

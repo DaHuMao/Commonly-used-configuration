@@ -25,6 +25,7 @@ def GenarateXLabel(min_label, max_label, count):
 class LinePlot(base_plot.BasePlot):
     _point_size = 1
     _x_show_range = [0, -1]
+    _show_statistics_info = True
 
     def set_xlabel_range(self, min_label, max_label, label_count):
         if len(self._xlabel) == 0:
@@ -32,7 +33,7 @@ class LinePlot(base_plot.BasePlot):
 
     def set_x_show_range(self, lo, hi):
         self._x_show_range = [lo, hi]
-   
+
     def config_plt(self, data_y_dim):
         self.base_config_plt(data_y_dim)
         if self._x_show_range[1] > self._x_show_range[0]:
@@ -54,12 +55,29 @@ class LinePlot(base_plot.BasePlot):
             data_x = compress_data(self.data_x, self._point_size)
         if self.check_data(data_x, data_y) is False:
             raise Exception("invalid dim(data_x) dim(data_y)")
+        if self._show_statistics_info:
+            for i in range(len(data_y)):
+                sum , max_value, min_value = 0, 0, 99999999999
+                for value in data_y[i]:
+                    sum += value
+                    max_value = max(max_value, value)
+                    min_value = min(min_value, value)
+                count = len(data_y[i])
+                avg = 0
+                if count > 0:
+                    avg = sum * 1.0 / count
+                legend_name = i
+                if len(self._legend_name) > i:
+                    legend_name = self._legend_name[i]
+                log_tool.log_info("{} count: {} avg: {} max: {} min: {}".format(\
+                        legend_name, count, avg, max_value, min_value))
+            self._show_statistics_info = False
         plt.subplot(x_pos, y_pos, index)
         self.config_plt(len(data_y[0]))
         for i in range(len(data_y)):
             if i < len(self._legend_name) and len(self._legend_name[i]) > 0:
                 plt.plot(data_x, data_y[i], label=self._legend_name[i], color=base_plot.color_dict[i])
             else:
-                plt.plot(data_x, data_y[i], color=base_plot.color_dict[i])
+                plt.plot(data_x, data_y[i], color=base_plot.color_dict[i], label='none')
 
-    
+
