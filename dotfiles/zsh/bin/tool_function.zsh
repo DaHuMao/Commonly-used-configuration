@@ -38,13 +38,23 @@ function git_file_filter() {
 function is_param() {
   local param=$1
   local opt=(${=2})
-  local param_arr=()
   ((($#param < 2)) || [[ $param[1] != '-' ]]) && return  1
   for i ({2..$#param}) {
     local ele=$param[i]
     if ((! $opt[(I)$ele])) {
       return 1
     }
+  }
+  return 0
+}
+
+function is_param1() {
+  local param=$1
+  local opt=(${=2})
+  ((($#param < 2)) || [[ $param[1] != '-' ]]) && return  1
+  local ele=${param[2, -1]}
+  if ((! $opt[(I)$ele])) {
+    return 1
   }
   return 0
 }
@@ -57,8 +67,12 @@ function is_dir_param() {
   return $(is_param $1 'd')
 }
 
+function is_deep_file_param() {
+  return $(is_param1 $1 'd1 d2 d3')
+}
+
 function is_special_opt() {
-  (is_git_param $1 || is_dir_param $1) && return 0
+  (is_git_param $1 || is_dir_param $1 || is_deep_file_param $1) && return 0
   return 1
 }
 

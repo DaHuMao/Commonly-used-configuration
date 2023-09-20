@@ -2,11 +2,11 @@
 . ~/.myzsh/bin/tool_function.zsh
 [[ $- != *i* ]] && return
 _fzf_compgen_path() {
-  fd --type f  --no-ignore-vcs --hidden --follow --exclude .git --base-directory $1
+  fd --type f  --no-ignore-vcs --hidden --follow --exclude .git --base-directory ${(z)1}
 }
 
 _fzf_compgen_dir() {
-  fd --type d  --no-ignore-vcs --hidden --follow  --exclude .git --base-directory $1
+  fd --type d  --no-ignore-vcs --hidden --follow  --exclude .git --base-directory ${(z)1}
 }
 
 _git_status() {
@@ -58,9 +58,9 @@ wfxr::fzf-edit-selected-widget() {
     return
   }
   local tokens lbuf opt selected params cmd fzf_opt preview_tool base_path cmd_params
-  params='-'${LBUFFER##*-}
+  params='-'${LBUFFER##*--}
   if {is_special_opt $params} {
-    lbuf=${LBUFFER%-*}
+    lbuf=${LBUFFER%--*}
     lbuf=${lbuf/% }
   } else {
     params=''
@@ -126,6 +126,9 @@ wfxr::fzf-edit-selected-widget() {
     }
   }
   fzf_opt+=($fzf_opt $preview_tool)
+  if { is_deep_file_param $params } {
+    cmd_params="$cmd_params -d ${params[3, -1]}"
+  }
   selected=$($cmd $cmd_params | fzf $fzf_opt)
   if (( $index == 0 )) || [[ -z $selected ]] {
     LBUFFER=$lbuf$selected
