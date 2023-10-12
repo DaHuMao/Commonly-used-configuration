@@ -59,11 +59,13 @@ return packer.startup(function(use)
   use {'mfussenegger/nvim-dap'}
   use "rcarriga/nvim-dap-ui"
 
-  -- LSP
-  use "neovim/nvim-lspconfig" -- enable LSP
   use "nvim-treesitter/nvim-treesitter"
   --use "williamboman/nvim-lsp-installer" -- simple to use language server installer
-  use { "williamboman/mason.nvim" }
+  use {
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
+    "neovim/nvim-lspconfig",
+}
   --cmp
   use "hrsh7th/nvim-cmp" -- The completion plugin
   use "hrsh7th/cmp-buffer" -- buffer completions
