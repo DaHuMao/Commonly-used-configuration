@@ -80,10 +80,13 @@ return packer.startup(function(use)
   -- lspkind
   use {'onsails/lspkind-nvim'}
 
+  -- java
+  use 'mfussenegger/nvim-jdtls'
+
   -- lspsaga
   use({
     "glepnir/lspsaga.nvim",
-    opt = true,
+    opt = false,
     branch = "main",
     event = "LspAttach",
     requires = {
@@ -91,7 +94,8 @@ return packer.startup(function(use)
         --Please make sure you install markdown and markdown_inline parser
         {"nvim-treesitter/nvim-treesitter"}
     }
-})
+  })
+
 
 
   -- Automatically set up your configuration after cloning packer.nvim
