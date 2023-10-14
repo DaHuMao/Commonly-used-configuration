@@ -77,7 +77,6 @@ local ret = require("diffview").setup({
       height = 16,
       win_opts = {}
     },
-  },
   commit_log_panel = {
     win_config = {   -- See ':h diffview-config-win_config'
       win_opts = {},
@@ -213,6 +212,4 @@ local ret = require("diffview").setup({
       { "n", "<esc>", actions.close,  { desc = "Close help menu" } },
     },
   },
-})
-
-vim.notify("loading diffvew ret: " .. ret, vim.log.levels.ERROR)
+}})
