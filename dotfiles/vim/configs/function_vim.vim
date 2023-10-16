@@ -14,12 +14,10 @@ function! CompleteClassCpp(class_name, line_count = 0)
   let s:cmd = printf(s:cmd_fmt, s:end_line)
   execute s:cmd
   execute s:line_num
-  let s:cmd_fmt = ',%ss/)\(.*\);$/)\1 {\r\r}\r/'
+  let s:cmd_fmt = ',%ss/)\(.*\);$/)\1 {\rreturn;\r}\r/'
   let s:cmd = printf(s:cmd_fmt, s:end_line)
   execute s:cmd
 endfunction
-
-command! -nargs=* Cc call CompleteClassCpp(<f-args>)
 
 "clang-format
 function! Formatonsave(flag)
@@ -67,7 +65,6 @@ function! FindMatchCppFile() abort
   echom 'read ' . s:tar_file
   execute 'e ' . s:tar_file
 endfunction
-command! -nargs=0 MachC call FindMatchCppFile()
 
 let s:cur_win_width = 0
 let s:cur_win_height = 0
@@ -86,6 +83,86 @@ function MaxOrMinWindows()
     execute 'vertical resize ' . s:cur_win_width
   endif
 endfunction
+
+
+" make abc_def_hg to AbcDefHg
+function GetClassName(file_name)
+  " Split the string into parts by '_' or '.'
+  let s:parts = split(a:file_name, '_')
+
+  " Capitalize each part
+  for i in range(len(s:parts)) " Exclude the last part (suffix)
+    let s:parts[i] = toupper(s:parts[i][0]) . tolower(s:parts[i][1:])
+  endfor
+
+  " Join the parts into a new string (excluding the last part)
+  return join(s:parts[:-1], '')
+endfunction
+
+function CppWriteHead(start_index)
+  " Step 1: get the relative path with filename
+  let s:filepath = expand('%')
+
+  " Step 2: Split the string into an array using the './' character
+  let s:parts = split(s:filepath, '[./]')
+  if len(s:parts) < 2
+    throw "invalid file_name: " . s:filepath
+  endif
+
+  " Step 3: Create a new string based on the array content
+  let s:newfilepath = ""
+  if len(s:parts) > a:start_index
+    let s:newfilepath = join(s:parts[a:start_index:], '_')
+  else
+    let s:newfilepath = join(s:parts, '_')
+  endif
+
+  " Step 4: Convert the string to uppercase
+  let s:newfilepath = toupper(s:newfilepath) . '_'
+
+  " Step 5: Replace '-' with '_'
+  let s:newfilepath = substitute(s:newfilepath, "-", "_", "g")
+
+
+  " Step 6: Get class_name
+  let s:class_name = GetClassName(s:parts[-2])
+
+  execute "normal i#ifndef " . s:newfilepath . "\<esc>"
+  execute "normal o#define " . s:newfilepath . "\<esc>"
+  execute "normal oclass " . s:class_name . " {\<CR>\<BS> public:"
+  execute "normal o\<esc>Hi  " . s:class_name . "() = default;\<esc>"
+  execute "normal o\<esc>Hi  ~" . s:class_name . "() = default;\<CR>};\<esc>"
+  execute "normal o#endif // " . s:newfilepath . "\<esc>"
+endfunction
+
+function CppWriteCC()
+  let s:filename = expand('%:t')
+  let s:parts = split(s:filename, '\.')
+  if len(s:parts) < 1
+    throw "invalid file_name: " . s:filename
+  endif
+  let s:class_name = GetClassName(s:parts[0])
+  call CompleteClassCpp(s:class_name)
+  call Formatonsave(1)
+endfunction
+
+function! SafeWriteFunc()
+    if &modified
+        silent! Gdiff
+        if &diff == 0
+            set nodiff
+            write
+        else
+            set nodiff
+        endif
+    endif
+endfunction
+
+
+command! -nargs=* Cc call CompleteClassCpp(<f-args>)
+command! -nargs=0 MachC call FindMatchCppFile()
+command! -nargs=1 Cpph call CppWriteHead(<q-args>)
+command! -nargs=0 Cppc call CppWriteCC()
 
 "nnoremap <leader>g :set operatorfunc=GrepOperator<cr>g@
 "vnoremap <leader>g :<c-u>call GrepOperator(visualmode())<cr>
