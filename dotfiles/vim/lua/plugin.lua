@@ -83,18 +83,12 @@ return packer.startup(function(use)
   -- java
   use 'mfussenegger/nvim-jdtls'
 
+  -- copilot
+  use 'github/copilot.vim'
   -- lspsaga
-  use({
-    "glepnir/lspsaga.nvim",
-    opt = false,
-    branch = "main",
-    event = "LspAttach",
-    requires = {
-        {"nvim-tree/nvim-web-devicons"},
-        --Please make sure you install markdown and markdown_inline parser
-        {"nvim-treesitter/nvim-treesitter"}
-    }
-  })
+  use 'nvimdev/lspsaga.nvim'
+
+
 
 
 

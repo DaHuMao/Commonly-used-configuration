@@ -4,13 +4,13 @@ require("lspsaga").setup({
     lines_below = 10,
   },
   scroll_preview = {
-    scroll_down = "<C-f>",
+    scroll_down = "<C-n>",
     scroll_up = "<C-b>",
   },
   request_timeout = 2000,
 
   -- See Customizing Lspsaga's Appearance
-  -- ui = { ... },
+  --ui = { ... },
 
   -- For default options for each command, see below
   finder = {
@@ -38,4 +38,5 @@ require("lspsaga").setup({
       exec = "<CR>",
     },
   },
+  -- etc.
 })
