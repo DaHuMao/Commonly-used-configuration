@@ -17,4 +17,3 @@ if not status_ok then
 end
 
 require "plug_config.lsp.settings"
-require'lspconfig'.clangd.setup{}

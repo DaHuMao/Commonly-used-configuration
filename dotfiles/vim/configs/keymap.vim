@@ -57,6 +57,10 @@ noremap <leader>b :Buffers<CR>
 
 "windows
 noremap <space>zz :call MaxOrMinWindows()<CR>
+noremap <space>zl :call MaxOrMinWindows()<CR><C-w>l
+noremap <space>zh :call MaxOrMinWindows()<CR><C-w>h
+noremap <space>zj :call MaxOrMinWindows()<CR><C-w>j
+noremap <space>zk :call MaxOrMinWindows()<CR><C-w>k
 
 noremap <A-Up> :resize -3<CR>
 noremap <A-Down> :resize +3<CR>
@@ -68,7 +72,7 @@ noremap <A-Right> :vertical resize +5<CR>
 noremap <leader>n :NERDTreeToggle<CR>
 
 noremap <C-b> :q!<CR>
-noremap <C-e> :w<CR>
+noremap <C-e> :call SafeWriteFunc()<CR>
 
 " terminal
 let g:floaterm_width = 0.9
