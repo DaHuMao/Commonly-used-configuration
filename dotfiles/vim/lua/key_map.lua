@@ -8,7 +8,7 @@ local function lsp_keymaps()
   -- 跳转到定义
   keymap("n", "gi", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
   -- 显示注释文档
-  keymap("n", "gh", "<cmd>Lspsaga lsp_finder<CR>", opts)
+  keymap("n", "gh", "<cmd>Lspsaga finder<CR>", opts)
   -- 跳转到实现
   keymap("n", "gm", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
   -- 跳转到引用位置
@@ -47,6 +47,9 @@ local function replace_keymaps()
     desc = "Open Spectre",
     noremap = true,
     silent = true
+  })
+  keymap('n', '<space>R', '<cmd>lua require("spectre.actions").run_replace()<CR>', {
+    desc = "Replace All",
   })
   keymap('n', '<space>cr', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
     desc = "Search current word"
