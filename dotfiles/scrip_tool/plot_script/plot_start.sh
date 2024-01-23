@@ -2,12 +2,12 @@
 
 #======================================================日志设置========================================================
 #日志级别 0:debug 1:info 2:warn 3:error
-log_level=0
+log_level=1
 
 #日志过滤
 #注： 下面四个条件是与的关系
 log_filter_include_keywords=''
-log_filter_exclude_keywords='media_info'
+log_filter_exclude_keywords=''
 #与上面不同的地方在于，这个支持正则
 log_reg_pattern_include=''
 log_reg_pattern_exclude=''
@@ -15,9 +15,9 @@ log_reg_pattern_exclude=''
 
 
 #======================================================工作模式========================================================
-#工作模式有两种，一种是从文件读取数据，一次画一个静态图，一种是从流中动态读取数据，实时画 
+#工作模式有两种，一种是从文件读取数据，一次画一个静态图，一种是从流中动态读取数据，实时画
 #file_mode  or stream_mode
-work_mode='stream_mode'
+work_mode='file_mode'
 
 #####  file_mode
 file_path=''
@@ -31,13 +31,13 @@ x_select_range=''
 
 
 #####  stream_mode
-#ip='127.0.0.1'
-ip='0.0.0.0'
+ip='127.0.0.1'
+#ip='0.0.0.0'
 port='9600'
 #流式读取数据时存储的数据长度，单位为点个数
 #注：存储多少并不代表显示多少，存储只是代表存储的数据跨度
 #    真正显示是由后面的图配置中的x_show_range决定的
-data_storage_len='500'
+data_storage_len='4000'
 #####  stream_mode
 
 #======================================================工作模式========================================================
@@ -60,7 +60,15 @@ point_size=''
 
 #给定数据范围，生成label
 #比如 xlabel_range='0,300,5'表示0-300生成5个间隔，会生成【0 60 120 180 240 300】
-xlabel_range=''
+xlabel_range='4,40,18'
+
+#直方图grid设置
+# 1代表显示x轴 2代表显示y轴 3代表显示x轴y轴 否则为不显示
+grid_show='3'
+#'‐' 实线，'‐‐' 破折线，'‐.' 点划线，':' 虚线。
+grid_linestyle=':'
+grid_color='gray'
+grid_linewidth='0.5'
 
 ######## 折线图特有设置 ################
 
@@ -89,7 +97,7 @@ width=0.5
 #如图所示第一个场景，也就是默认场景会将数组中出现的数字作为横坐标，频率作为高度
 #
 #第二个场景:x_classification='1-4,4-6,6-10', 直方图会是如下：
-# 7|_    5  
+# 7|_    5
 # 6|_  _____
 # 5|_  |   |             3
 # 4|_  |   |     2     _____
@@ -105,7 +113,7 @@ x_classification='0-20,20-40,40-60,60-80,80-101'
 
 #======================================================图表类型========================================================
 
-
+#mos_${index}_${is_new}_${comlexity}_${opus_mode}:
 #==================================================选择X轴Y轴的数据====================================================
 #与下select_y_key面不同的是，下面的选项只针对一行数据，必须有全部的key,也就是说如果某一行数
 #据没有全部的key会报错
@@ -113,8 +121,8 @@ x_classification='0-20,20-40,40-60,60-80,80-101'
 #比如文本为：[INFO] audio_delay:30  [INFO] video_delay:50 这两个key分别在不同行
 #按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
 #NOTE: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可
-select_y_key_multi_line='current_buffer_size_average,preferred_buffer_size_average,Iat_95_average '
-
+select_y_key_multi_line='cpu_bit_6_old_hybrid,cpu_bit_13_old_hybrid,cpu_bit_26_old_hybrid,cpu_bit_40_old_hybrid,cpu_bit_60_old_hybrid cpu_bit_6_old_auto,cpu_bit_13_old_auto,cpu_bit_26_old_auto,cpu_bit_40_old_auto,cpu_bit_60_old_auto cpu_bit_6_old_celt,cpu_bit_13_old_celt,cpu_bit_26_old_celt,cpu_bit_40_old_celt,cpu_bit_60_old_celt
+                         cpu_bit_6_new_hybrid,cpu_bit_13_new_hybrid,cpu_bit_26_new_hybrid,cpu_bit_40_new_hybrid,cpu_bit_60_new_hybrid cpu_bit_6_new_auto,cpu_bit_13_new_auto,cpu_bit_26_new_auto,cpu_bit_40_new_auto,cpu_bit_60_new_auto cpu_bit_6_new_celt,cpu_bit_13_new_celt,cpu_bit_26_new_celt,cpu_bit_40_new_celt,cpu_bit_60_new_celt'
 #这个选项是用来筛选Y轴关键词的数据，在日志场景会很有用:
 #比如文本为： [INFO] audio_delay:30,video_delay:40 x_tt 50
 #select_y_key='audio_delay video_delay',表示提取关键字为audio_delay, video_delay的数据，分别打印两张图
@@ -135,7 +143,7 @@ select_y_key=''
 #按空格跟冒号切割变成（后面会说到）：【INFO】audio_delay 30 video_delay 40, 那么第2列跟第四列就是我们要的数字
 #我们可以设置select_y_raw='2 4'  如果要让两个数据在同一张图： select_y_raw='2,4'
 #NOTE: 这种模式只会在上面两种模式都为空的情况下才会生效，优先级最低
-select_y_raw=''
+select_y_raw='2 5'
 
 #这个跟select_y_raw是差不多的，不过这个是用来设置X轴的数据
 #注：这个选项不填，会自动生成
@@ -153,7 +161,7 @@ filter_exclude_keywords=''
 #filter_include_keywords差不多的功能，只不过这个会以正则表达式的形式去解析
 #举个例子 filter_include_keywords=media_info.c,表示包含media_info.c的行，在media_info.c中的点
 #在正则表达式里表示任意字母
-reg_pattern_include='freeze_cycle_2000|ztx_audio_test'
+reg_pattern_include=''
 
 #同上，只不过是不包含
 reg_pattern_exclude=''
@@ -164,7 +172,7 @@ reg_pattern_exclude=''
 #所以我们要切割成一个个的字符串然后解析，在这个例子中我们看到分隔符需要多种，空格，冒号，逗号
 #可以令 split_pattern_reg='[ :,]+', 这是一个正则表达式，表示按照空格，冒号，逗号分隔，
 #加号表示并且连续的空格或者逗号会被直接剪掉
-#分割完变成：[INFO] audio_delay 30 video_delay 40 jitter 50   
+#分割完变成：[INFO] audio_delay 30 video_delay 40 jitter 50
 #针对这个数组我们无论是用selete_y_key  还是selete_y_raw都很好处理
 #注： 这个选项如果不填，默认按照空格分割
 split_pattern_reg='[ :,]+'
@@ -179,8 +187,8 @@ split_pattern_reg='[ :,]+'
 #此时可以设置title='RTT audio_delay/video_delay',因为是两张图，所以两个标题
 #此时图例：legend_name='RTT audio_delay,video_delay' 第二个图有两个图例，所以有两个值用逗号分开
 #注: 在 select_y_key模式下，这两个选项不生效，因为在select_y_key模式下title legend_name自动等于select_y_key
-title='MEMERY CPU'
-legend_name=''
+title='dsa'
+legend_name='cpu mem'
 
 #设置X轴跟Y轴的单位。比如xtile='time(ms)' ytitle='百分比%'
 xtitle=''
@@ -215,7 +223,7 @@ show_xlabel='all'
 #这个表示以行优先划分，实际上就是plot_arraneg_way的长度，也就是3，
 #然后第一行分割成2份，第二行分割成1份，第三行分割成2份
 #它画出来的图的布局应该是下面的样子
-# |--------------|--------------|   
+# |--------------|--------------|
 # |     1        |       2      |
 # |              |              |
 # |--------------|--------------|
@@ -231,7 +239,7 @@ show_xlabel='all'
 #这个表示以列优先划分，实际上就是plot_arraneg_way的长度，也就是3，
 #然后第一列分割成2份，第二列分割成1份，第三列分割成2份
 #它画出来的图的布局应该是下面的样子
-# |---------|---------|---------|   
+# |---------|---------|---------|
 # |         |         |         |
 # |    1    |         |    4    |
 # |         |         |         |
@@ -243,7 +251,7 @@ show_xlabel='all'
 # |---------|---------|---------|
 # 数字代表从1到五副图的排列
 is_raw_arrange='1'
-plot_arrange_way=''
+plot_arrange_way='3 3'
 #====================================================图配置=========================================================
 
 file_path=./example.txt
@@ -287,7 +295,11 @@ python3 $plotpath "file_path=$file_path"  \
                  "log_filter_include_keywords=$log_filter_include_keywords" \
                  "log_filter_exclude_keywords=$log_filter_exclude_keywords" \
                  "log_reg_pattern_include=$log_reg_pattern_include" \
-                 "log_reg_pattern_exclude=$log_reg_pattern_exclude"
+                 "log_reg_pattern_exclude=$log_reg_pattern_exclude" \
+                 "grid_show=$grid_show" \
+                 "grid_linestyle=$grid_linestyle" \
+                 "grid_color=$grid_color" \
+                 "grid_linewidth=$grid_linewidth" \
 
 
 #注：第一个参数必须是文件路径,除了文件路径跟Y轴数据 其他参数都是可选.

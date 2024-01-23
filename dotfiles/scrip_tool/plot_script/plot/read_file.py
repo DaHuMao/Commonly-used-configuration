@@ -51,7 +51,7 @@ class TxTFileReader:
         if len(self._return_data_y) > 0:
             for i in range(len(self._return_data_y)):
                 log_tool.log_info("index of :%d, select_data length: %d" %\
-                        (i, len(self._return_data_y[0])))
+                        (i, len(self._return_data_y[i])))
 
     def load_data(self):
         return self._return_data_x, self._return_data_y

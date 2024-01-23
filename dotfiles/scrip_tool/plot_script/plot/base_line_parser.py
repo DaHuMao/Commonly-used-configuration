@@ -1,6 +1,4 @@
 class BaseLineParser:
-    _select_data = []
-    _select_raw = []
     def __init__(self, select_raw):
         self._select_raw = select_raw
         self._select_data = [[] for _ in range(0, len(self._select_raw))]

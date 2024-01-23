@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-import plot_tools as plt_tool
-import copy
+import log_tool
 
 color_dict = ['blue', 'red', 'orange', 'yellow', 'green', 'deeppink']
 
@@ -29,7 +28,7 @@ class BasePlot:
 
     def set_xtitle(self, xtitle):
         self._xtitle = xtitle
-   
+
     def set_ytitle(self, ytitle):
         self._ytitle = ytitle
 
@@ -44,7 +43,7 @@ class BasePlot:
 
     def set_point_size(self, point_size):
          self._point_size = point_size
-    
+
     def set_xlabel(self, xlabel):
         self._xlabel = xlabel
 
@@ -56,7 +55,7 @@ class BasePlot:
 
     def set_legend_name(self, legend_name):
         self._legend_name = legend_name
-    
+
     def show_xlabel(self):
         self._show_xlabel = True
 

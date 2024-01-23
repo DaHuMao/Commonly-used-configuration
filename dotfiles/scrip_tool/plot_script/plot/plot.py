@@ -46,7 +46,12 @@ class PlotData:
                     'plot_arrange_way':[], \
                     'plot_type': None, \
                     'width': '0.9', \
-                    'x_classification': []
+                    'x_classification': [], \
+                    'grid_show': '0', \
+                    'grid_color': 'gray', \
+                    'grid_linestyle': ':', \
+                    'grid_linewidth': '0.5', \
+                    'suptitle': None, \
                 }
     _plot_list = []
     _is_raw_arrange='1'
@@ -106,6 +111,8 @@ class PlotData:
         for i in range(1, count_plot):
             plot_list[i] = copy.deepcopy(plot_list[0])
         for i in range(0,count_plot):
+            plot_list[i].set_grid(self._config_dict['grid_show'][0], self._config_dict['grid_color'][0], \
+                    self._config_dict['grid_linestyle'][0], self._config_dict['grid_linewidth'][0])
             if len(point_size) > 0:
                 plot_list[i].set_point_size(int(point_size[0]))
             if len(x_show_range) > 0:

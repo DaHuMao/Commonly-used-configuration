@@ -36,6 +36,7 @@ class PlotEngine:
             if plt_tool.is_esc_pressed():
                 self._is_exit = True
                 log_tool.log_info("ESC pressed, exit....")
+                return
             else:
                 time.sleep(1)
 
@@ -57,6 +58,7 @@ class PlotEngine:
         line_parser_y = None
         if len(self._config_dict['select_y_key_multi_line']) != 0:
             line_parser_y = multi_line_parser.MultiLineParser(select_y_index)
+            line_parser_x = single_line_parser.SingleLineParser(self._config_dict['select_x_raw'])
         else:
             line_parser_x = single_line_parser.SingleLineParser(self._config_dict['select_x_raw'])
             line_parser_y = single_line_parser.SingleLineParser(select_y_index)
@@ -155,7 +157,11 @@ class PlotEngine:
             self._reader.start_server()
         while self._is_exit is False:
             x_data, y_data = self.get_data()
-            self._plot_data.pause_plot(x_data, y_data, sleep_s)
+            try:
+                self._plot_data.pause_plot(x_data, y_data, sleep_s)
+            except Exception as e:
+                log_tool.log_error("cache Exception: " + str(e))
+                break
 
     def exit(self):
         if self._work_mode == 'stream_mode':

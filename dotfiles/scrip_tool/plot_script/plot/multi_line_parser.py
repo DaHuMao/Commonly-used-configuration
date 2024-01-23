@@ -1,10 +1,7 @@
 import base_line_parser
-import plot_tools as plt_tool
 import log_tool
 
 class MultiLineParser(base_line_parser.BaseLineParser):
-    _select_data = []
-    _select_raw = []
     def __init__(self, select_raw):
         base_line_parser.BaseLineParser.__init__(self, select_raw)
 

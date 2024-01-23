@@ -1,6 +1,5 @@
 import base_plot
 import matplotlib.pyplot as plt
-import plot_tools as plt_tool
 import log_tool
 
 def compress_data(ori_arr,compress_times):
@@ -26,6 +25,10 @@ class LinePlot(base_plot.BasePlot):
     _point_size = 1
     _x_show_range = [0, -1]
     _show_statistics_info = True
+    _grid_show: 0
+    _grid_color: 'gray'
+    _grid_linestyle: ':'
+    _grid_linewidth: 0.5
 
     def set_xlabel_range(self, min_label, max_label, label_count):
         if len(self._xlabel) == 0:
@@ -33,6 +36,13 @@ class LinePlot(base_plot.BasePlot):
 
     def set_x_show_range(self, lo, hi):
         self._x_show_range = [lo, hi]
+
+    def set_grid(self, grid_show, grid_color, grid_linestyle, grid_linewidth):
+        self._grid_show = int(grid_show)
+        self._grid_color = grid_color
+        self._grid_linestyle = grid_linestyle
+        self._grid_linewidth = float(grid_linewidth)
+
 
     def config_plt(self, data_y_dim):
         self.base_config_plt(data_y_dim)
@@ -74,6 +84,20 @@ class LinePlot(base_plot.BasePlot):
             self._show_statistics_info = False
         plt.subplot(x_pos, y_pos, index)
         self.config_plt(len(data_y[0]))
+
+        if self._grid_show > 0 and self._grid_show < 4:
+            axs = plt.gca()
+            # 开启次刻度
+            axs.minorticks_on()
+            if self._grid_show & 1 == 1:
+                # X轴只显示主网格线
+                axs.xaxis.grid(True, which='both', color=self._grid_color, \
+                        linestyle=self._grid_linestyle, linewidth=self._grid_linewidth)
+            if self._grid_show & 2 == 2:
+                # Y轴显示全部网格线（主、次网格线）
+                axs.yaxis.grid(True, which='both', color=self._grid_color, \
+                        linestyle=self._grid_linestyle, linewidth=self._grid_linewidth)
+
         for i in range(len(data_y)):
             if i < len(self._legend_name) and len(self._legend_name[i]) > 0:
                 plt.plot(data_x, data_y[i], label=self._legend_name[i], color=base_plot.color_dict[i])

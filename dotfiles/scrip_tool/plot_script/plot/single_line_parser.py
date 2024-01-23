@@ -2,7 +2,6 @@ import base_line_parser
 import plot_tools as plt_tool
 
 class SingleLineParser(base_line_parser.BaseLineParser):
-    _is_first = False
     def __init__(self, select_raw):
         base_line_parser.BaseLineParser.__init__(self, select_raw)
         self._is_first = True
