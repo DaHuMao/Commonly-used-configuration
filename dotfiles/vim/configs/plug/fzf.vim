@@ -1,5 +1,5 @@
 let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always
-      \ --no-ignore-vcs --max-columns 250 --max-filesize 200K "
+      \ --no-ignore-vcs --max-columns 250 --max-filesize 200K -F"
 "let g:FZF_COLOR=['--color=preview-bg:#223344,border:#778899,header:#ed8796', '--color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796', '--color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6', '--color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796']
 let g:FZF_DEFAULT_OPTS=['--ansi', '--layout=reverse', '--info=inline',
                        \'--bind', 'ctrl-/:toggle-preview', '--bind',
@@ -83,7 +83,7 @@ function! RipgrepFzfAll(...)
   echo 'args:' a:000
   let s:command_fmt = g:RG_DEFAULT_CONFIG
   if a:1 == 0
-    let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 250K'
+    let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 250K -F'
   endif
   if a:0 > 1
     let s:command_fmt .= ' -e ' . "'" . a:2 . "'"
