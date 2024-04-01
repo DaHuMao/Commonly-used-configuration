@@ -1,5 +1,5 @@
 let g:RG_DEFAULT_CONFIG="rg --column --line-number --no-heading --color=always
-      \ --no-ignore-vcs --max-columns 250 --max-filesize 200K -F"
+      \ --no-ignore-vcs --max-columns 250 --max-filesize 200K"
 "let g:FZF_COLOR=['--color=preview-bg:#223344,border:#778899,header:#ed8796', '--color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796', '--color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6', '--color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796']
 let g:FZF_DEFAULT_OPTS=['--ansi', '--layout=reverse', '--info=inline',
                        \'--bind', 'ctrl-/:toggle-preview', '--bind',
@@ -81,23 +81,27 @@ endfunction
 
 function! RipgrepFzfAll(...)
   echo 'args:' a:000
+  let s:is_regexp = ' -F '
   let s:command_fmt = g:RG_DEFAULT_CONFIG
   if a:1 == 0
     let s:command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore --max-columns 250 --max-filesize 250K -F'
   endif
-  if a:0 > 1
-    let s:command_fmt .= ' -e ' . "'" . a:2 . "'"
-  else
-    let s:command_fmt .= " --smart-case -e  ''"
+  if a:0 > 1 && a:2 != ''
+    let s:is_regexp = ' -e '
   endif
-  if a:0 > 2 && a:3 != '0'
-    let s:command_fmt .= " -g '*.{" . a:3 . "}'"
+  if a:0 > 2
+    let s:command_fmt .= s:is_regexp . "'" . a:3 . "'"
+  else
+    let s:command_fmt .= " --smart-case " + s:is_regexp + " ''"
   endif
   if a:0 > 3 && a:4 != '0'
-    let s:command_fmt .= " -g  '!*.{" . a:4 . "}'"
+    let s:command_fmt .= " -g '*.{" . a:4 . "}'"
   endif
-  if a:0 > 4
-    let s:command_fmt .= ' ' . a:5
+  if a:0 > 4 && a:5 != '0'
+    let s:command_fmt .= " -g  '!*.{" . a:5 . "}'"
+  endif
+  if a:0 > 6
+    let s:command_fmt .= ' ' . a:6
   endif
   let s:command_fmt .= ' || true'
   echom s:command_fmt
@@ -182,10 +186,10 @@ function RgcFunction(str)
 endfunction
 
 command! -nargs=* Rgc call RgcFunction(expand('<cword>'))
-command! -nargs=* Raa call RipgrepFzfAll(0, <f-args>)
-command! -nargs=* Raac call RipgrepFzfAll(0, expand('<cword>'), <f-args>)
-command! -nargs=* -complete=arglist Ra call RipgrepFzfAll(1, <f-args>)
-command! -nargs=* Rac call RipgrepFzfAll(1, expand('<cword>'), <f-args>)
+command! -nargs=* Raa call RipgrepFzfAll(0, '', <f-args>)
+command! -nargs=* Raac call RipgrepFzfAll(0, '', expand('<cword>'), <f-args>)
+command! -nargs=* -complete=arglist Ra call RipgrepFzfAll(1, '', <f-args>)
+command! -nargs=* Rac call RipgrepFzfAll(1, '', expand('<cword>'), <f-args>)
 command! -nargs=1 -complete=dir Rfile call FindFile(<f-args>, 0)
 command! -nargs=1 -complete=dir RfileAll call FindFile(<f-args>, 1)
 command! -nargs=0 Rbufferc call FindWordInCurBuffer(expand('<cword>'))
