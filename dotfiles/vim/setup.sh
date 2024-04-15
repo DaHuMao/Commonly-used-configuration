@@ -2,7 +2,13 @@
 # get the dir of the current script
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) && cd "$SCRIPT_DIR" || return 1
 TARGET_VIM_DIR=~/.vim/
+if [ ! -d $TARGET_VIM_DIR ]; then
+    mkdir -p $TARGET_VIM_DIR
+fi
 TARGET_NVIM_DIR=~/.config/nvim/
+if [ ! -d $TARGET_NVIM_DIR ]; then
+    mkdir -p $TARGET_NVIM_DIR
+fi
 
 mkdir -p ~/.vim/spell ~/.config
 
