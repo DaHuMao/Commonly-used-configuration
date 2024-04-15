@@ -9,6 +9,10 @@ _fzf_compgen_dir() {
   fd --type d  --no-ignore-vcs --hidden --follow  --exclude .git --base-directory ${(z)1}
 }
 
+_fzf_compgen_all() {
+  fd --no-ignore-vcs --hidden --follow --exclude .git --base-directory ${(z)1}
+}
+
 _git_status() {
   local params=$1
   if [[ -z $params ]] {
@@ -122,11 +126,27 @@ wfxr::fzf-edit-selected-widget() {
         dir='.'
       }
       cmd_params=$dir
+      if [[ "$head_cmd" =~ ^cd[0-9]$ ]]; then
+        # Split the string by the first space
+        second=${lbuf#* }
+
+        # Combine 'cd' with the second part
+        if [[ -n "$second" ]]; then
+          lbuf="cd "
+          echo $second > ~/Desktop/log.log
+        else
+          lbuf="cd"
+        fi
+        cmd=_fzf_compgen_all
+        number=${head_cmd:2}
+        cmd_params="$cmd_params -d $number"
+      fi
       preview_tool=(--preview "~/.myzsh/bin/file_dir_preview.zsh ${dir} {}")
     }
   }
   fzf_opt+=($fzf_opt $preview_tool)
   if { is_deep_file_param $params } {
+    cmd=_fzf_compgen_all
     cmd_params="$cmd_params -d ${params[3, -1]}"
   }
   selected=$($cmd $cmd_params | fzf $fzf_opt)
