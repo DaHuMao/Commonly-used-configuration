@@ -4,10 +4,15 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) && cd "$SCRIPT_DIR" || 
 TARGET_VIM_DIR=~/.vim/
 if [ ! -d $TARGET_VIM_DIR ]; then
     mkdir -p $TARGET_VIM_DIR
+else
+    echo $TARGET_VIM_DIR "already exists"
 fi
 TARGET_NVIM_DIR=~/.config/nvim/
 if [ ! -d $TARGET_NVIM_DIR ]; then
     mkdir -p $TARGET_NVIM_DIR
+else
+    echo $TARGET_NVIM_DIR "already exists"
+fi
 fi
 
 mkdir -p ~/.vim/spell ~/.config
