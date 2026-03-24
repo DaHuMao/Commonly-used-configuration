@@ -1,4 +1,5 @@
-source ~/bin/tool_function.sh
+source ./tool_function.sh
+
 official_origion=https://github.com/Homebrew/brew.git
 official_brew_core=https://github.com/Homebrew/homebrew-core.git
 ts_origion=https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
@@ -54,7 +55,7 @@ log_info `pwd` 'git remote set-url origin' $brew_core_url
 git remote set-url origin $brew_core_url
 
 log_info "brew update..."
-brew update || log_abort 'faild brew update' 
+brew update || log_abort 'faild brew update'
 log_info 'brew upgrade...'
 brew upgrade
 

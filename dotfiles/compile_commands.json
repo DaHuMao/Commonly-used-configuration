@@ -1,0 +1,38 @@
+[
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/define.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/define.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/define.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/define.cc.o"
+},
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/zsh_module/zsh_complete.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/zsh_module/zsh_complete.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/zsh_module/zsh_complete.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/zsh_module/zsh_complete.cc.o"
+},
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/__/zsh_util/function_load.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/zsh_util/function_load.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/zsh_util/function_load.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/__/zsh_util/function_load.cc.o"
+},
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/__/base/local_udp_socket.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/base/local_udp_socket.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/base/local_udp_socket.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/__/base/local_udp_socket.cc.o"
+},
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/__/base/check.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/base/check.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/base/check.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/__/base/check.cc.o"
+},
+{
+  "directory": "/Users/ztx/vim_config/dotfiles/cpp/build/src/zsh_complete",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DCUSTOM_ZSH_HISTORY_FILE=\\\"/Users/ztx/.myzsh/zsh_complete/.cache/history_data.txt\\\" -DMODULE -DUNIX_LIKE_PLATFORM -DZSH_CACHE_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.cache\\\" -DZSH_SOCKET_DIR=\\\"/Users/ztx/.myzsh/zsh_complete/.socket\\\" -Dcustom_zsh_complete_EXPORTS -I/Users/ztx/vim_config/dotfiles/cpp/src -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete/../zsh_module_common -I/Users/ztx/vim_config/dotfiles/cpp/src/zsh_complete -O3 -DNDEBUG -std=c++17 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -fPIC -o CMakeFiles/custom_zsh_complete.dir/__/base/log.cc.o -c /Users/ztx/vim_config/dotfiles/cpp/src/base/log.cc",
+  "file": "/Users/ztx/vim_config/dotfiles/cpp/src/base/log.cc",
+  "output": "src/zsh_complete/CMakeFiles/custom_zsh_complete.dir/__/base/log.cc.o"
+}
+]

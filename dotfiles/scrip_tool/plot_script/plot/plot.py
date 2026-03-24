@@ -27,44 +27,49 @@ import copy
 import line_plot
 import histogram_plot
 import log_tool
+import plot_tools as plt_tool
 
 class PlotData:
-    _config_dict = { \
-                    'xlabel':[], \
-                    'select_y_raw':[], \
-                    'title':[], \
-                    'point_size':[], \
-                    'xtitle':[], \
-                    'ytitle':[], \
-                    'y_show_range':[], \
-                    'x_show_range':[], \
-                    'legend_name':[], \
-                    'xlabel_range':[], \
-                    'show_xlabel':[], \
-                    'y_filter_range':[], \
-                    'is_raw_arrange':'1', \
-                    'plot_arrange_way':[], \
-                    'plot_type': None, \
-                    'width': '0.9', \
-                    'x_classification': [], \
-                    'grid_show': '0', \
-                    'grid_color': 'gray', \
-                    'grid_linestyle': ':', \
-                    'grid_linewidth': '0.5', \
-                    'suptitle': None, \
-                }
-    _plot_list = []
-    _is_raw_arrange='1'
-    _plot_arrange_way=[]
-    _is_first = True
+    def __init__(self):
+        self._config_dict = { \
+                'xlabel':[], \
+                'select_y_raw':[], \
+                'title':[], \
+                'point_size':[], \
+                'xtitle':[], \
+                'ytitle':[], \
+                'y_show_range':[], \
+                'x_show_range':[], \
+                'legend_name':[], \
+                'xlabel_range':[], \
+                'show_xlabel':[], \
+                'y_filter_range':[], \
+                'is_raw_arrange':'1', \
+                'plot_arrange_way':[], \
+                'plot_type': [None], \
+                'width': ['0.9'], \
+                'x_classification': [], \
+                'grid_show': ['0'], \
+                'grid_color': ['gray'], \
+                'grid_linestyle': [':'], \
+                'grid_linewidth': ['0.5'], \
+                'suptitle': None, \
+            }
+        self._plot_list = []
+        self._is_raw_arrange='1'
+        self._plot_arrange_way=[]
+        self._is_first = True
 
+    def update_config(self, argv:dict):
+        plt_tool.update_config_all(self._config_dict, argv)
 
-    def update_config(self, key, value):
-        if key in self._config_dict:
-            self._config_dict[key] = value.strip().split()
-            return True
-        else:
-            return False
+    def set_title(self, title):
+        if (len(self._config_dict['title']) == 0):
+            self._config_dict['title'] = title
+
+    def set_legend_name(self, legend_name):
+        if (len(self._config_dict['legend_name']) == 0):
+            self._config_dict['legend_name'] = legend_name
 
     def raw_first_array(self):
         count_of_plot = len(self._plot_list)

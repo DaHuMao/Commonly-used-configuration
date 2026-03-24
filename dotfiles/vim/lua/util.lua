@@ -62,5 +62,53 @@ M.init = function(file_dir, unload_plugins)
   end
 end
 
+M.get_home_dir = function()
+  local home_dir = os.getenv("HOME")
+  local is_windows = package.config:sub(1,1) == '\\'
+  if is_windows then
+    home_dir = os.getenv("USERPROFILE")
+  end
+  if not home_dir then
+    vim.notify('can not find HOME', vim.log.levels.ERROR)
+    return nil
+  end
+  return home_dir
+end
+
+-- 检查log文件大小，如果超过最大大小则保留最新的部分
+-- @param log_file: log文件路径
+-- @param max_size: 最大大小（字节）
+-- @param keep_size: 保留大小（字节），默认为0
+M.check_log_size = function(log_file, max_size, keep_size)
+  keep_size = keep_size or 0
+
+  local file = io.open(log_file, "r")
+  if not file then
+    return
+  end
+
+  file:seek("end")
+  local file_size = file:tell()
+  file:close()
+
+  if file_size <= max_size then
+    return
+  end
+
+  -- 超过最大大小，需要截断
+  file = io.open(log_file, "r")
+  local content = file:read("*a")
+  file:close()
+
+  -- 计算需要保留的内容
+  local skip_size = file_size - keep_size
+  local keep_content = content:sub(skip_size + 1)
+
+  -- 写回文件
+  file = io.open(log_file, "w")
+  file:write(keep_content)
+  file:close()
+end
+
 return M
 

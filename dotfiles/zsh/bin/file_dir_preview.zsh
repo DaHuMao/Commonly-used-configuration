@@ -1,5 +1,4 @@
 file_or_dir=$1/$2
-echo $file_or_dir
 
 check_file_type_and_size() {
   # Check if file is a text file
@@ -19,13 +18,15 @@ check_file_type_and_size() {
 }
 
 if [ -f $file_or_dir ];then
-  echo $FZF_FILE_HIGHLIGHTER $file_or_dir
   is_text=$(check_file_type_and_size $file_or_dir)
-  if [[ $is_text='0' ]];then
+  if [[ "$is_text" == '0' ]];then
+    echo "more $file_or_dir"
     more -f $file_or_dir
   else
+    echo $FZF_FILE_HIGHLIGHTER $file_or_dir
     $FZF_FILE_HIGHLIGHTER $file_or_dir
   fi
 elif [ -d $file_or_dir ];then
+  echo "tree $file_or_dir"
   tree $file_or_dir
 fi

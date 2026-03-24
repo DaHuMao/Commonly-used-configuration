@@ -1,0 +1,4 @@
+git push --set-upstream origin feature_freeze_delay_test
+git config --add oh-my-zsh.hide-status 1
+git config --global core.autocrlf true
+

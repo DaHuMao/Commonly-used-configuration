@@ -9,4 +9,22 @@ function! s:go_github()
     end
 endfunction
 
-autocmd FileType *vim,*zsh,*bash,*tmux nnoremap <buffer> <silent> <cr> :call <sid>go_github()<cr>
+"autocmd FileType *vim,*zsh,*bash,*tmux nnoremap <buffer> <silent> <cr> :call <sid>go_github()<cr>
+
+function! g:CheckExecutable(bin)
+    if empty(a:bin) || !executable(a:bin)
+        return 0
+    else
+        return 1
+    endif
+endfunction
+
+function! g:CheckFileExists(file)
+    if empty(a:file) || !filereadable(a:file)
+        return 0
+    else
+        return 1
+    endif
+endfunction
+
+

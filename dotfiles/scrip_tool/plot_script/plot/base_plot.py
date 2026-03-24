@@ -1,28 +1,29 @@
 import matplotlib.pyplot as plt
 import log_tool
 
-color_dict = ['blue', 'red', 'orange', 'yellow', 'green', 'deeppink']
+color_dict = ['blue', 'red', 'orange', 'green', 'deeppink', 'cyan', 'purple', 'black', 'yellow', 'brown']
 
 class BasePlot:
-    _xlabel = []
-    _ylabel = []
-    _legend_name = []
-    _title = ''
-    _y_filter_range = [0, -1]
-    _y_show_range = [0, -1]
-    _xtitle = ''
-    _ytitle = ''
-    _title = ''
-    _show_xlabel = False
+    def __init__(self):
+        self._point_size = 1
+        self._xlabel = []
+        self._ylabel = []
+        self._legend_name = []
+        self._title = ''
+        self._y_filter_range = [0, -1]
+        self._y_show_range = [0, -1]
+        self._xtitle = ''
+        self._ytitle = ''
+        self._title = ''
+        self._show_xlabel = False
 
     def check_data(self, data_x, data_y):
         if len(data_y) == 0:
             return False
-        data_len = len(data_x)
         for i in range(len(data_y)):
-            if data_len != len(data_y[i]):
+            if len(data_x[i]) != len(data_y[i]):
                 log_tool.log_error("index of %d: dim(x): %d not eq dim(y): %d" % \
-                        (i, data_len,len(data_y[i])))
+                        (i, len(data_x[i]),len(data_y[i])))
                 return False
         return True
 

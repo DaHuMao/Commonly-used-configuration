@@ -1,4 +1,5 @@
-import plot_tools 
+import plot_tools
+import log_tool
 import matplotlib.pyplot as plt
 import base_plot
 
@@ -18,8 +19,11 @@ def get_histogram_x(x, y_dim, index, width):
     return x_ans
 
 class HistogramPlot(base_plot.BasePlot):
-    _x_classification = []
-    _width = 0.9
+    def __init__(self):
+        super().__init__()
+        self._x_classification = []
+        self._width = 0.9
+
     def set_x_classification(self, x_classification):
         self._x_classification = []
         self._xlabel = []
@@ -31,7 +35,7 @@ class HistogramPlot(base_plot.BasePlot):
                 raise Exception("invalid len(x_classification): %d" % len(tmp))
         self._x_classification.sort()
         for ee in self._x_classification:
-            self._xlabel.append('[%d-%d]' % (ee[0], ee[1]))
+            self._xlabel.append('[%d-%d)' % (ee[0], ee[1]))
 
     def set_width(self, width):
         self._width = width
@@ -54,7 +58,7 @@ class HistogramPlot(base_plot.BasePlot):
                 data_y.append(1)
                 data_x.append(data[i])
         return get_histogram_x(data_x, data_y_dim, index, self._width), data_y
-       
+
     def get_classfi_data(self, data, data_y_dim, index):
         data_y = len(self._x_classification) * [0]
         for ee in data:
@@ -65,7 +69,7 @@ class HistogramPlot(base_plot.BasePlot):
 
     def get_data(self, data, data_y_dim, index):
         if len(data) == 0:
-            plot_tools.log_warn("len(data) is 0");
+            log_tool.log_warn("len(data) is 0");
         data_dim = len(self._x_classification)
         if data_dim == 0:
             return self.get_default_data(data, data_y_dim, index)

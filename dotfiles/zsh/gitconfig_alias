@@ -1,0 +1,22 @@
+[safe]
+	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core
+	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
+[core]
+	pager = diff-so-fancy | less --tabs=4 -RFX
+	editor = nvim
+[alias]
+    st = status
+    ci = commit
+    cim = commit -m
+    rehd = reset --hard
+    resf = reset --soft
+    cno = commit --amend --no-edit
+    rbi = rebase -i
+    rbc = rebase --continue
+    lg = log --oneline --decorate -12 --color
+    ll = log --pretty=format:\"%C(yellow) %h%Cred %ad%Cgreen%d%Creset %s %C(blue)[%an]%Creset\" --date=short
+    lc = log --graph --color
+    co = checkout
+    br = branch
+    mg = merge --log=9999
+    d = difftool

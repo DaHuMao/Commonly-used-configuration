@@ -5,15 +5,15 @@ class LogTool:
     _log_level_name_map = ["DEBUG", "INFO", "WARNING", "ERROR"]
     _log_color = [35, 32, 33, 31]
     _text_filter = None
-    
+
     def set_text_filter(self, text_filter):
         self._text_filter = text_filter
 
     def set_log_level(self, log_level):
         if log_level >= 0 and log_level < len(self._log_level_name_map):
-            self._log_level = log_level 
+            self._log_level = log_level
 
-    def get_log_head(self, level): 
+    def get_log_head(self, level):
         str_time='[' + plt_tool.get_now_time() + '] '
         return "\033[0;%d;20m%s\033[0;%d;40m%s: \033[0m" % (self._log_color[level],\
                 str_time, self._log_color[level], self._log_level_name_map[level])
@@ -62,3 +62,6 @@ def log_warn(*args):
 
 def log_error(*args):
     gLogTool.log(LOG_ERROR_LEVEL, format_args(*args))
+def log_abort(*args):
+    gLogTool.log(LOG_ERROR_LEVEL, format_args(*args))
+    raise Exception("log_abort")

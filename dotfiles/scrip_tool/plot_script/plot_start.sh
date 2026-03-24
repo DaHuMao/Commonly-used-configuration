@@ -60,7 +60,7 @@ point_size=''
 
 #给定数据范围，生成label
 #比如 xlabel_range='0,300,5'表示0-300生成5个间隔，会生成【0 60 120 180 240 300】
-xlabel_range='4,40,18'
+xlabel_range=''
 
 #直方图grid设置
 # 1代表显示x轴 2代表显示y轴 3代表显示x轴y轴 否则为不显示
@@ -108,7 +108,7 @@ width=0.5
 #      [1-4]   [4-6]   [6-10]
 #如图所示，第二个场景就是直方图高度就是统计这个范围内的数字的数量，比如[1-4]就包括了
 #[1, 1, 2, 2, 3]（左闭右开，所以4不算）五个数，[1-4]对应的直方图的高度就是5
-x_classification='0-20,20-40,40-60,60-80,80-101'
+x_classification='1-2,2-3,3-4,4-5,5-6'
 ######## 直方图特有设置 ###############
 
 #======================================================图表类型========================================================
@@ -120,9 +120,9 @@ x_classification='0-20,20-40,40-60,60-80,80-101'
 #这个更加通用，是在所有数据里查找，也就是不限制行，但是不同行不能有重复key，否则会覆盖。
 #比如文本为：[INFO] audio_delay:30  [INFO] video_delay:50 这两个key分别在不同行
 #按照上面的方法是没办法是没办法提取的， 必须使用下面这个关键字
-#NOTE: 这种模式优先级最高，会覆盖其他模式。如果想要其不生效直接置空即可
-select_y_key_multi_line='cpu_bit_6_old_hybrid,cpu_bit_13_old_hybrid,cpu_bit_26_old_hybrid,cpu_bit_40_old_hybrid,cpu_bit_60_old_hybrid cpu_bit_6_old_auto,cpu_bit_13_old_auto,cpu_bit_26_old_auto,cpu_bit_40_old_auto,cpu_bit_60_old_auto cpu_bit_6_old_celt,cpu_bit_13_old_celt,cpu_bit_26_old_celt,cpu_bit_40_old_celt,cpu_bit_60_old_celt
-                         cpu_bit_6_new_hybrid,cpu_bit_13_new_hybrid,cpu_bit_26_new_hybrid,cpu_bit_40_new_hybrid,cpu_bit_60_new_hybrid cpu_bit_6_new_auto,cpu_bit_13_new_auto,cpu_bit_26_new_auto,cpu_bit_40_new_auto,cpu_bit_60_new_auto cpu_bit_6_new_celt,cpu_bit_13_new_celt,cpu_bit_26_new_celt,cpu_bit_40_new_celt,cpu_bit_60_new_celt'
+#NOTE: 这种模式优先级会覆盖select_y_key，如果想要其不生效直接置空即可
+select_y_key_multi_line='soft_bitrate,soft_keyframe_size hard_bitrate,hard_keyframe_size'
+
 #这个选项是用来筛选Y轴关键词的数据，在日志场景会很有用:
 #比如文本为： [INFO] audio_delay:30,video_delay:40 x_tt 50
 #select_y_key='audio_delay video_delay',表示提取关键字为audio_delay, video_delay的数据，分别打印两张图
@@ -175,7 +175,7 @@ reg_pattern_exclude=''
 #分割完变成：[INFO] audio_delay 30 video_delay 40 jitter 50
 #针对这个数组我们无论是用selete_y_key  还是selete_y_raw都很好处理
 #注： 这个选项如果不填，默认按照空格分割
-split_pattern_reg='[ :,]+'
+split_pattern_reg=$'[ :,\"\'.]+'
 #==================================================数据过滤与筛选=====================================================
 
 
@@ -251,7 +251,7 @@ show_xlabel='all'
 # |---------|---------|---------|
 # 数字代表从1到五副图的排列
 is_raw_arrange='1'
-plot_arrange_way='3 3'
+plot_arrange_way=''
 #====================================================图配置=========================================================
 
 file_path=./example.txt
@@ -300,6 +300,8 @@ python3 $plotpath "file_path=$file_path"  \
                  "grid_linestyle=$grid_linestyle" \
                  "grid_color=$grid_color" \
                  "grid_linewidth=$grid_linewidth" \
+                 "select_y_with_yaml_format=$select_y_with_yaml_format" \
+
 
 
 #注：第一个参数必须是文件路径,除了文件路径跟Y轴数据 其他参数都是可选.

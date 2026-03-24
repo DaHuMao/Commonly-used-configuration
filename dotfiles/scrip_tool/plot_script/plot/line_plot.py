@@ -22,13 +22,15 @@ def GenarateXLabel(min_label, max_label, count):
     return label
 
 class LinePlot(base_plot.BasePlot):
-    _point_size = 1
-    _x_show_range = [0, -1]
-    _show_statistics_info = True
-    _grid_show: 0
-    _grid_color: 'gray'
-    _grid_linestyle: ':'
-    _grid_linewidth: 0.5
+    def __init__(self):
+        super(LinePlot, self).__init__()
+        self._xlabel = []
+        self._x_show_range = [0, -1]
+        self._grid_show = 0
+        self._grid_color = 'gray'
+        self._grid_linestyle = ':'
+        self._grid_linewidth = 0.5
+        self._show_statistics_info = True
 
     def set_xlabel_range(self, min_label, max_label, label_count):
         if len(self._xlabel) == 0:
@@ -59,10 +61,12 @@ class LinePlot(base_plot.BasePlot):
     def plot(self, data_x, data_y, x_pos, y_pos, index):
         if len(data_y) == 0:
             raise Exception('invalid data_len: %d' % len(data_y))
+        if len(data_x) != len(data_y):
+            log_tool.log_abort(f"len(data_x): {len(data_x)} != len(data_y): {len(data_y)}")
         if self._point_size > 1:
             for i in range(len(data_y)):
-                data_y[i] = compress_data(self.data_y[i], self._point_size)
-            data_x = compress_data(self.data_x, self._point_size)
+                data_y[i] = compress_data(data_y[i], self._point_size)
+                data_x[i] = compress_data(data_x[i], self._point_size)
         if self.check_data(data_x, data_y) is False:
             raise Exception("invalid dim(data_x) dim(data_y)")
         if self._show_statistics_info:
@@ -76,7 +80,7 @@ class LinePlot(base_plot.BasePlot):
                 avg = 0
                 if count > 0:
                     avg = sum * 1.0 / count
-                legend_name = i
+                legend_name = 'legend_name' + str(i)
                 if len(self._legend_name) > i:
                     legend_name = self._legend_name[i]
                 log_tool.log_info("{} count: {} avg: {} max: {} min: {}".format(\
@@ -100,8 +104,8 @@ class LinePlot(base_plot.BasePlot):
 
         for i in range(len(data_y)):
             if i < len(self._legend_name) and len(self._legend_name[i]) > 0:
-                plt.plot(data_x, data_y[i], label=self._legend_name[i], color=base_plot.color_dict[i])
+                plt.plot(data_x[i], data_y[i], label=self._legend_name[i], color=base_plot.color_dict[i])
             else:
-                plt.plot(data_x, data_y[i], color=base_plot.color_dict[i], label='none')
+                plt.plot(data_x[i], data_y[i], color=base_plot.color_dict[i], label='none')
 
 

@@ -1,0 +1,37 @@
+#ifndef have_zshQszshQucomplete_module
+#define have_zshQszshQucomplete_module
+
+# ifndef IMPORTING_MODULE_zshQszshQucomplete
+#  ifndef MODULE
+#   define boot_ boot_zshQszshQucomplete
+#   define cleanup_ cleanup_zshQszshQucomplete
+#   define features_ features_zshQszshQucomplete
+#   define enables_ enables_zshQszshQucomplete
+#   define setup_ setup_zshQszshQucomplete
+#   define finish_ finish_zshQszshQucomplete
+#  endif /* !MODULE */
+# endif /* !IMPORTING_MODULE_zshQszshQucomplete */
+
+/* Module dependencies */
+# define IMPORTING_MODULE_zshQsmain 1
+# include "zsh.mdh"
+
+# undef mod_import_variable
+# undef mod_import_function
+# if defined(IMPORTING_MODULE_zshQszshQucomplete) &&  defined(MODULE)
+#  define mod_import_variable
+#  define mod_import_function
+# else
+#  define mod_import_function
+#  define mod_import_variable
+# endif /* IMPORTING_MODULE_zshQszshQucomplete && MODULE */
+# include "zsh_complete.epro"
+# undef mod_import_variable
+# define mod_import_variable
+# undef mod_import_variable
+# define mod_import_variable
+# ifndef mod_export
+#  define mod_export
+# endif /* mod_export */
+
+#endif /* !have_zshQszshQucomplete_module */

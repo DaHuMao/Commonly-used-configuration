@@ -1,0 +1,9 @@
+SourceSh $ZSH_CONFIG_DIR/lazy_load.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_zinit.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_aliases.zsh
+SourceSh $ZSH_CONFIG_DIR/fzf.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_fzf_extra.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_define.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_theme.zsh
+SourceSh $ZSH_CONFIG_DIR/common.zsh
+SourceSh ~/.myzsh/custom_config.zsh

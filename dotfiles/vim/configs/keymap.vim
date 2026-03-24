@@ -51,9 +51,10 @@ noremap <leader>f :Rfile ./<CR>
 noremap <leader>A :RG<CR>
 noremap <leader>F :Rfc<CR>
 noremap <leader>i :Ric<CR>
-noremap <leader>c :Rcc<CR>
 noremap <leader>v :Rvc<CR>
-noremap <leader>b :Buffers<CR>
+
+" 映射快捷键，例如<Leader>b，来执行这个函数
+nnoremap <Leader>b :Buffers<CR>
 
 "windows
 noremap <space>zz :call MaxOrMinWindows()<CR>
@@ -67,24 +68,24 @@ noremap <A-Down> :resize +3<CR>
 noremap <A-Left> :vertical resize -5<CR>
 noremap <A-Right> :vertical resize +5<CR>
 
+tnoremap <C-\> <C-\><C-n>
 
 "nerdtree
-noremap <leader>n :NERDTreeToggle<CR>
+noremap <leader>n :NvimTreeOpen<CR>
 
 noremap <C-b> :q!<CR>
 noremap <C-e> :call SafeWriteFunc()<CR>
+" 将 Ctrl-t 映射为进入块可视模式
+if IsWindows()
+  nnoremap <C-t> <C-v>
+endif
 
-" terminal
-let g:floaterm_width = 0.9
-let g:floaterm_height = 0.9
-tnoremap <A-/> <C-\><C-n>:FloatermToggle base_float_term<CR>
-nnoremap <A-/> :FloatermToggle base_float_term<CR>
 
 "C++
 noremap <A-m> :MachC<CR>
 
 "快速打开zsh vim配置文件
-noremap <C-t> :e ~/.vim/configs/keymap.vim<CR>
+noremap <C-z> :e ~/.vim/configs/keymap.vim<CR>
 command! -nargs=0 Vsh :e ~/.zshrc
 command! -nargs=0 Vsc :source ~/.vimrc
 

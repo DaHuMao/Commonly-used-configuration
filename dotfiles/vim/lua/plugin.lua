@@ -1,100 +1,42 @@
-local fn = vim.fn
-
--- Automatically install packer
-local install_path = fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
-if fn.empty(fn.glob(install_path)) > 0 then
-  PACKER_BOOTSTRAP = fn.system {
-    "git",
-    "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
-    install_path,
-  }
-  print "Installing packer close and reopen Neovim..."
-  vim.cmd [[packadd packer.nvim]]
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
-
--- Autocommand that reloads neovim whenever you save the plugins.lua file
-vim.cmd [[
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerSync
-  augroup end
-]]
-
--- Use a protected call so we don't error out on first use
-local status_ok, packer = pcall(require, "packer")
+vim.opt.rtp:prepend(lazypath)
+local status_ok, lazy = pcall(require, "lazy")
 if not status_ok then
+  vim.notify("Failed to load lazy.nvim", vim.log.levels.ERROR)
   return
 end
 
--- Have packer use a popup window
-packer.init {
-  display = {
-    open_fn = function()
-      return require("packer.util").float { border = "rounded" }
-    end,
+-- 渐进式迁移：从自定义目录 lazy_vim_plugin 加载插件配置
+-- 使用 import 参数可以让 lazy.nvim 自动加载指定模块下的所有 .lua 文件
+require("lazy").setup({
+  -- 导入 lazy_vim_plugin 目录下的所有配置文件
+  { import = "lazy_vim_plugin" },
+}, {
+  performance = {
+    reset_packpath = false, -- 不重置 packpath，让 packer 的插件继续可用
   },
-}
-
--- Install your plugins here
-return packer.startup(function(use)
-  -- My plugins here
-  use "wbthomason/packer.nvim" -- Have packer manage itself
-  use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
-  use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
-
-  --  replace words
-  use 'nvim-pack/nvim-spectre'
-
-  --git
-  use "lewis6991/gitsigns.nvim"
-  use "kyazdani42/nvim-web-devicons" -- icons
-  -- Packer
-  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
-
-  --dap
-  use "theHamsta/nvim-dap-virtual-text"
-  use {'mfussenegger/nvim-dap'}
-  use "rcarriga/nvim-dap-ui"
-
-  use "nvim-treesitter/nvim-treesitter"
-  --use "williamboman/nvim-lsp-installer" -- simple to use language server installer
-  use {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
-}
-  --cmp
-  use "hrsh7th/nvim-cmp" -- The completion plugin
-  use "hrsh7th/cmp-buffer" -- buffer completions
-  use "hrsh7th/cmp-path" -- path completions
-  use "hrsh7th/cmp-cmdline" -- cmdline completions
-  use "saadparwaiz1/cmp_luasnip" -- snippet completions
-  use "hrsh7th/cmp-nvim-lsp"
-  use "hrsh7th/cmp-nvim-lua"
-  -- vsnip
-  use {'hrsh7th/vim-vsnip'}
-  use {'rafamadriz/friendly-snippets'}
-  -- lspkind
-  use {'onsails/lspkind-nvim'}
-
-  -- java
-  use 'mfussenegger/nvim-jdtls'
-
-  -- copilot
-  use 'github/copilot.vim'
-  -- lspsaga
-  use 'nvimdev/lspsaga.nvim'
+  -- 不自动检查更新，避免干扰
+  checker = {
+    enabled = false,
+  },
+  -- 不显示变更日志
+  change_detection = {
+    enabled = false,
+  },
+})
 
 
 
-
-
-  -- Automatically set up your configuration after cloning packer.nvim
-  -- Put this at the end after all plugins
-  if PACKER_BOOTSTRAP then
-    require("packer").sync()
-  end
-end)

@@ -1,15 +1,30 @@
 # Put this line on top to make keybinds work
 bindkey -e
-source ~/.myzsh/zsh_aliases
+export MYZSH_DIR=$HOME/.myzsh
+export ZSH_CONFIG_DIR=$MYZSH_DIR/zsh_config
+export ZSH_REAL_DIR=$(dirname $(readlink -f ~/.zshrc))
 
-. ~/bin/tool_function.sh
-[ -e ~/.fzf.zsh ] && source ~/.fzf.zsh
+source $ZSH_CONFIG_DIR/env.sh
+source $ZSH_CONFIG_DIR/tool_function.zsh
+#[ -e ~/.fzf.zsh ] && SourceSh ~/.fzf.zsh
 
-SourceSh ~/.myzsh/zsh_plug
-SourceSh ~/.myzsh/fzf.zsh
-SourceSh ~/.myzsh/zsh_fzf_extra
-SourceSh ~/.myzsh/zsh_theme
-SourceSh ~/.myzsh/common.zsh
-SourceSh ~/.myzsh/load_nvm.sh
-SourceSh ~/.myzsh/zsh_path_config
+local load_zsh_start_time=$(get_current_millisecond)
+# 这三个文件早点加载，避免在其他文件中使用时未定义
+SourceSh $ZSH_CONFIG_DIR/zsh_define.zsh
+SourceSh $ZSH_CONFIG_DIR/tool_function.sh
+SourceSh $ZSH_CONFIG_DIR/common.zsh
 
+SourceSh $ZSH_CONFIG_DIR/zsh_history_config.zsh
+SourceSh $ZSH_CONFIG_DIR/cmd_function.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_zinit.zsh
+SourceSh $ZSH_CONFIG_DIR/lazy_load.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_aliases.zsh
+SourceSh $ZSH_CONFIG_DIR/fzf.zsh
+SourceSh $ZSH_CONFIG_DIR/zsh_fzf_extra.zsh
+SourceSh $ZSH_CONFIG_DIR/vi_mode.zsh
+#zsh_theme 一定要在 vi_mode 之后加载
+#否则有些按键绑定会失效
+SourceSh $ZSH_CONFIG_DIR/zsh_theme.zsh
+SourceSh ~/.myzsh/custom_config.zsh
+
+log_info "zshrc load time: $(( $(get_current_millisecond) - load_zsh_start_time )) ms"

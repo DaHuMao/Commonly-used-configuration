@@ -1,0 +1,6 @@
+#define MODULE_DIR "/Users/ztx/Desktop/workspace/zsh/out/lib/zsh/5.9.0.1-dev"
+#define SITESCRIPT_DIR "/Users/ztx/Desktop/workspace/zsh/out/share/zsh/scripts"
+#define SCRIPT_DIR "/Users/ztx/Desktop/workspace/zsh/out/share/zsh/5.9.0.1-dev/scripts"
+#define SITEFPATH_DIR "/Users/ztx/Desktop/workspace/zsh/out/share/zsh/site-functions"
+#define FIXED_FPATH_DIR "/usr/local/share/zsh/site-functions"
+#define FPATH_DIR "/Users/ztx/Desktop/workspace/zsh/out/share/zsh/5.9.0.1-dev/functions"

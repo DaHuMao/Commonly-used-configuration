@@ -6,26 +6,28 @@ local function lsp_keymaps()
   -- 跳转到声明
   keymap("n", "gd", "<cmd>Lspsaga peek_definition<CR>", opts)
   -- 跳转到定义
-  keymap("n", "gi", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
+  keymap("n", "gi", "<cmd>Lspsaga goto_definition <CR>", opts)
   -- 显示注释文档
-  keymap("n", "gh", "<cmd>Lspsaga finder<CR>", opts)
+  keymap("n", "gj", "<cmd>Lspsaga finder<CR>", opts)
   -- 跳转到实现
   keymap("n", "gm", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  -- 跳转到引用位置
   keymap("n", "gr", "<cmd>Lspsaga rename<CR>", opts)
-  -- 以浮窗形式显示错误
-  keymap("n", "go", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
-  keymap("n", "gp", "<cmd>lua vim.diagnostic.goto_prev()<CR>", opts)
-  keymap("n", "gn", "<cmd>lua vim.diagnostic.goto_next()<CR>", opts)
+  keymap("n", "gp", "<cmd>Lspsaga diagnostic_jump_prev<CR>", opts)
+  keymap("n", "gn", "<cmd>Lspsaga diagnostic_jump_next<CR>", opts)
+  keymap("n", "gf", "<cmd>Lspsaga outline<CR>", opts)
   keymap("n", "<leader>cd", "<cmd>Lspsaga show_cursor_diagnostics<CR>", opts)
   keymap("n", "<leader>cb", "<cmd>Lspsaga show_buf_diagnostics<CR>", opts)
   keymap("n", "<leader>cl", "<cmd>Lspsaga show_line_diagnostics<CR>", opts)
   keymap({"n", "v"}, "<leader>ca", "<cmd>Lspsaga code_action<CR>", opts)
+  -- 以浮窗形式显示错误
+  keymap("n", "go", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 end
 
 local function git_keymaps()
   -- DiffviewOpen [git rev] [options] [ -- {paths...}] eg: DiffviewOpen HEAD~2 -- lua/diffview plugin
   keymap("n", "<leader>gf", "<cmd>DiffviewFileHistory %<CR>", opts)
+  keymap('n', '<leader>gd', '<cmd>DiffviewOpen %<CR>', opts)
+  keymap('n', '<leader>gc', '<cmd>DiffviewClose<CR>', opts)
 end
 
 local function debug_keymaps()
@@ -33,7 +35,7 @@ local function debug_keymaps()
   -- keymap("n", "<leader>dB", "<cmd>lua require'dap'.set_breakpoint(vim.fn.input '[Condition] > ')<cr>", opts)
   -- keymap("n", "<leader>dr", "lua require'dap'.repl.open()<cr>", opts)
   -- keymap("n", "<F9>", "<cmd>lua require'dap'.run_last()<cr>", opts)
-  keymap('n', '<F10>', '<cmd>lua require"plug_config.dap.dap-util".reload_continue()<CR>', opts)
+  keymap('n', '<F10>', '<cmd>lua require"lazy_vim_plugin.dap.dap-util".reload_continue()<CR>', opts)
   keymap("n", "<A-t>", "<cmd>lua require'dap'.terminate()<cr>", opts)
   keymap("n", "<F5>", "<cmd>lua require'dap'.continue()<cr>", opts)
   keymap("n", "<F6>", "<cmd>lua require'dap'.step_over()<cr>", opts)
@@ -62,12 +64,25 @@ local function replace_keymaps()
   })
 end
 
+local function common_keymaps()
+  -- Terminal mode: Ctrl+d to exit terminal and cleanup
+  keymap("t", "<M-d>", function()
+    local job_id = vim.b.terminal_job_id
+    if job_id then
+      -- Send cleanup command to zsh and then exit
+      vim.fn.jobsend(job_id, "handle_nvim_windows_exit" .. "\r")
+    end
+    vim.cmd("close")
+  end, opts)
+end
+
 local M = {}
 M.setup = function ()
   lsp_keymaps()
   git_keymaps()
   debug_keymaps()
   replace_keymaps()
+  common_keymaps()
 end
 
 return M

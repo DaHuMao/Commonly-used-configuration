@@ -1,7 +1,6 @@
 import re
 
 class TextFilter:
-    _config_dict = {}
     def __init__(self):
         self._config_dict = {
                 'filter_include_keywords': '', \

@@ -1,79 +1,35 @@
-#include <sstream>
-#include <string>
-#include <vector>
-#include <mutex>
 #include <functional>
-#include <thread>
-#include <iostream>
-namespace  plot_plot {
-void set_ip_address(const char* ip, int port);
-class DataSrtream final {
+#include <sstream>
+namespace plot_plot {
+void set_ip_address(const char *ip, int port);
+void set_log_callback(std::function<void(const char*)>);
+class LogSink {
 public:
-    DataSrtream(size_t init_size, std::function<void(const void*, size_t)> call_back);
-    ~DataSrtream();
-    bool write(const void* data, size_t size);
-    bool sprintf(const char* format, ...);
-    bool read();
-private:
-    const size_t _size;
-    int8_t* _data = nullptr;
-    size_t _writed_size = 0;
-    ::std::mutex _mutex;
-    bool _can_be_read = false;
-    ::std::function<void(const void*, size_t)> _call_back;
-    static char kSplitCharFlag;
+  static LogSink* get_instance();
+  virtual ~LogSink() = default;
+  virtual void write(const void *data, size_t size) = 0;
 };
 
-class LogClientStream final {
-public:
-    static LogClientStream& get_instance();
-    LogClientStream(std::function<void(const void*, size_t)>);
-    ~LogClientStream();
-    void register_callback(std::function<void(const void* data, size_t size)>);
-    void log(const char* format, ...);
-    void write(const void* data, size_t size);
-private:
-    static void run_thread(void* handle);
-    static size_t kDataStreamVectorMaxSize;
-    static size_t kDataStreamInitSize;
-
-    void run();
-    bool read(); 
-    void resize_vector_and_write(const void* data, size_t size);
-
-    size_t _cur_read_index = 0;
-    size_t _cur_write_index = 0;
-    ::std::function<void(const void*, size_t)> _call_back;
-    ::std::vector<std::unique_ptr<DataSrtream>> _data_stream_vector;
-    bool _is_stop;
-    ::std::thread _thread_t;
-    ::std::mutex _mutex;
-};
-
-enum class LogLevel {
-    kDebug,
-    kInfo,
-    kWarnning,
-    kError
-};
+enum class LogLevel { kDebug, kInfo, kWarnning, kError };
 
 class LogStream {
 public:
-    LogStream(LogLevel log_level, const char* tag, LogClientStream& log_client_stream);
-    ~LogStream() {
-        _stream << '\n';
-        _log_client_stream.write(_stream.str().c_str(), _stream.str().size());
-    }
-    template <class T>
-    LogStream& operator<<(const T& val) {
-        _stream << val;
-        return *this;
-    }
+  LogStream(LogLevel log_level, const char *tag,
+            LogSink* log_client_stream);
+  ~LogStream() {
+    _stream << '\n';
+    _log_client_stream->write(_stream.str().c_str(), _stream.str().size());
+  }
+  template <class T> LogStream &operator<<(const T &val) {
+    _stream << val;
+    return *this;
+  }
+
 private:
-    ::std::ostringstream _stream;
-    LogClientStream& _log_client_stream;
+  ::std::ostringstream _stream;
+  LogSink *_log_client_stream = nullptr;
 };
-} // plot_plot
+} // namespace plot_plot
   //
 #define DISABLE_PLOT_CLIENT 0
 
@@ -82,13 +38,13 @@ private:
 namespace plot_plot {
 class LogStreamNull {
 public:
-  template<class T>
-    LogStreamNull& operator<<(const T& val) { return *this; }
+  template <class T> LogStreamNull &operator<<(const T &val) { return *this; }
 };
-} // plot_plot
+} // namespace plot_plot
 #define PLOT_I(tag) plot_plot::LogStreamNull()
 
 #else
-#define PLOT_I(tag) plot_plot::LogStream(plot_plot::LogLevel::kInfo, tag, plot_plot::LogClientStream::get_instance())
+#define PLOT_I(tag)                                                            \
+  plot_plot::LogStream(plot_plot::LogLevel::kInfo, tag,                        \
+                       plot_plot::LogSink::get_instance())
 #endif
-

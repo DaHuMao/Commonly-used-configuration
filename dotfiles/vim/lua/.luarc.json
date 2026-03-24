@@ -34,6 +34,7 @@
         "/Users/zhangtongxiao/.local/share/nvim/site/pack/packer/start/cmp_luasnip/after",
         "/Users/zhangtongxiao/.vim/plugged/oceanic-next/after",
         "/usr/local/opt/fzf",
-        "${3rd}/luassert/library"
+        "${3rd}/luassert/library",
+        "${3rd}/luv/library"
     ]
 }
