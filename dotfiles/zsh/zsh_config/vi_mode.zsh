@@ -1,6 +1,14 @@
 bindkey -v
 bindkey '^[' vi-cmd-mode
 
+# 光标形状管理 - 确保从 neovim 返回后光标是竖线
+function zle-line-init zle-keymap-select {
+  # 设置竖线光标 (插入模式)
+  printf '\033[5 q'
+}
+zle -N zle-line-init
+zle -N zle-keymap-select
+
 function vi-end-of-line {
   zle end-of-line
 }

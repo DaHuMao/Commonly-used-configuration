@@ -92,12 +92,13 @@ function M.select_compile(opts)
   vim.fn['fzf#run'](vim.fn['fzf#wrap'](fzf_opts))
 end
 
--- 打开 Claude 终端
-function M.open_claude()
+-- 打开窗口并执行命令
+function M.open_window_with_cmd(cmd, size)
   local windows_manager = require('windows_manager')
   M.claude_num = M.claude_num + 1
-  local window_name = 'claude' .. M.claude_num
-  windows_manager.create_window(window_name, 'm', true, 'source $HOME/.myzsh/claude.sh')
+  local window_name = 'window' .. M.claude_num
+  size = size or 'm'
+  windows_manager.create_window(window_name, size, true, cmd)
 end
 
 -- 注册Vim命令
@@ -121,7 +122,14 @@ local function setup_commands()
   end, { nargs = '?' })
 
   vim.api.nvim_create_user_command('ClaudeOpen', function()
-    M.open_claude()
+    M.open_window_with_cmd('source $HOME/.myzsh/claude.sh', 'm')
+  end, {
+    nargs = 0,
+    desc = 'Open a new Claude terminal window',
+  })
+
+  vim.api.nvim_create_user_command('Coco', function()
+    M.open_window_with_cmd('coco', 'm')
   end, {
     nargs = 0,
     desc = 'Open a new Claude terminal window',

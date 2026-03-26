@@ -105,6 +105,8 @@ if [ $build_vim -eq 1 ];then
     pyenv install python3
     check_and_install 'clang'
     check_and_install 'gcc'
+    #安装rust
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
   fi
   check_and_install 'ruby'
   check_and_install 'wget'
