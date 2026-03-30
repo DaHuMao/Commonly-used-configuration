@@ -67,6 +67,7 @@ end
 
 -- Create terminal window
 function M.create_window(name, size_type, is_not_load_zsh_profile, cmd)
+    size_type = size_type or 'l'
     -- If no name provided, use default name
     if not name or name == '' then
         M.state.window_counter = M.state.window_counter + 1
@@ -152,7 +153,7 @@ function M.create_window(name, size_type, is_not_load_zsh_profile, cmd)
         win = win,
         buf = buf,
         name = name,
-        size_type = size_type or 'm',
+        size_type = size_type,
         config = win_config,
     }
 

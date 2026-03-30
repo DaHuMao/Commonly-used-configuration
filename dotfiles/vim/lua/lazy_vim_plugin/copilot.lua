@@ -1,3 +1,9 @@
+-- 如果设置了 DISABLE_COPILOT 环境变量，则不加载 copilot
+if vim.env.DISABLE_COPILOT then
+  vim.notify("copilot.lua is disable", vim.log.levels.INFO)
+  return {}
+end
+
 return {
   {
     "zbirenbaum/copilot.lua",
