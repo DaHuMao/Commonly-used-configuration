@@ -9,6 +9,6 @@ source ~/.vim/configs/function_vim.vim
 source ~/.vim/lua/init.lua
 
 " fzf 一定要在init.lua之后加载,因为init.lua里面配置了fzf
-source ~/.vim/configs/fzf.vim
+" source ~/.vim/configs/fzf.vim
 source ~/.vim/configs/keymap.vim
 
