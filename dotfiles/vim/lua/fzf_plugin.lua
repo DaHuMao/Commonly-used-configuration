@@ -80,7 +80,9 @@ function M.fzf_run(source, sink, opts)
     local buf, win = create_float_window(win_opts)
 
     -- 在终端中运行命令
-    local job_id = vim.fn.termopen(vim.o.shell .. ' -c ' .. vim.fn.shellescape(full_cmd), {
+    -- 注意：不要手动拼接 shell 和 -c，交给 Neovim 根据当前平台和 &shell/&shellcmdflag 处理
+    -- 直接把整条命令字符串交给 termopen，这样在 macOS/Linux 会用 sh -c，在 Windows 会用正确的 shellcmdflag
+    local job_id = vim.fn.termopen(full_cmd, {
         on_exit = function(_, exit_code, _)
             -- 关闭窗口
             vim.schedule(function()
