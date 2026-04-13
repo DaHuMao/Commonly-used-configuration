@@ -11,6 +11,63 @@ function M.edit_file(file_name)
     vim.cmd('silent e ' .. file_name)
 end
 
+-- 编辑 git status -s 结果的函数
+function M.edit_git_file(line)
+    if not line or line == '' then
+        return
+    end
+
+    -- 先按照空白分割整行，拿到状态位
+    -- 示例：
+    --   " M path/to/file"   -> { "M",  "path/to/file" }
+    --   "R  old -> new"     -> { "R",  "old", "->", "new" }
+    local arr = vim.split(vim.trim(line), '%s+', { trimempty = true })
+    local status = arr[1]
+
+    if not status then
+        return
+    end
+
+    -- 删除文件（D 开头）的记录不需要在 fzf 里打开，直接忽略
+    if status:sub(1, 1) == 'D' then
+        return
+    end
+
+    local file_path
+
+    -- 处理重命名的情况：R  old -> new
+    if status:sub(1, 1) == 'R' then
+        -- 按空格拆分后通常是 { "R", "old", "->", "new" }
+        -- 为了兼容路径中可能带空格的情况，这里取 "->" 之后的所有内容再拼回去
+        local arrow_index
+        for i = 2, #arr do
+            if arr[i] == '->' then
+                arrow_index = i
+                break
+            end
+        end
+
+        if arrow_index and arrow_index < #arr then
+            file_path = table.concat(arr, ' ', arrow_index + 1)
+        else
+            -- 兜底：如果没有按预期拆出 "->"，退回到字符串级别再截一次
+            local arrow_pos = line:find('->')
+            if arrow_pos then
+                file_path = vim.trim(line:sub(arrow_pos + 2))
+            end
+        end
+    else
+        -- 普通情况：状态位后面的内容就是文件路径
+        if #arr >= 2 then
+            file_path = table.concat(arr, ' ', 2)
+        end
+    end
+
+    if file_path and file_path ~= '' then
+        M.edit_file(file_path)
+    end
+end
+
 -- 编辑 rg 搜索结果的函数
 function M.edit_rg_file(strr)
     local arr = vim.split(strr, ':')
@@ -355,6 +412,12 @@ function M.setup()
     vim.api.nvim_create_user_command('Rcmc', function()
         local exclude_cmd = '-g "*.cmake" -g "CMakeLists.txt" -g "Makefile"'
         M.RipgrepFzf(vim.fn.expand('<cword>'), "", exclude_cmd)
+    end, {})
+
+
+    -- Rgit: 使用 git status -s 列出文件并打开选中的文件
+    vim.api.nvim_create_user_command('Rgit', function()
+        fzf_plugin.fzf_run('git status -s', M.edit_git_file)
     end, {})
 
 

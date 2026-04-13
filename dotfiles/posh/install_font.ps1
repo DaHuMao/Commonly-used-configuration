@@ -1,8 +1,8 @@
 # Install Nerd Font for Oh My Posh
 # This script provides reusable functions for font installation
 
-# Load font configuration
-. ./font_config.ps1
+# Load font configuration（使用脚本所在目录，避免相对路径问题）
+. "$PSScriptRoot/font_config.ps1"
 $fontConfig = Get-FontConfig
 
 # Function to check if Nerd Font is installed
@@ -62,7 +62,7 @@ function Install-NerdFont {
 
 # Main script logic (only runs when script is executed directly)
 if ($MyInvocation.InvocationName -ne '.') {
-    . myposh/tool.ps1
+    . "$PSScriptRoot/myposh/tool.ps1"
 
     log_info "=== Oh My Posh Nerd Font Installer ==="
     log_info ""
@@ -114,7 +114,7 @@ if ($MyInvocation.InvocationName -ne '.') {
         log_warn "    1. Open Settings (Ctrl+,)"
         log_warn "    2. Select your PowerShell profile"
         log_warn "    3. Go to 'Appearance' tab"
-        log_warn "    4. Set 'Font face' to: $fontName"
+        log_warn "    4. Set 'Font face' to: $($fontConfig.DisplayName)"
         log_warn "    5. Save and restart terminal"
         log_warn ""
         log_warn "  VS Code:"

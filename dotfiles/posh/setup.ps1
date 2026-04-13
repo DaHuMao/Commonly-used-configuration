@@ -6,7 +6,14 @@ if (-not (test-administrator)) {
 }
 
 # Check if PowerShell 7+ is already installed
-$pwshPath = "$env:ProgramFiles\PowerShell\7\pwsh.exe"
+$pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+if ($pwshCmd) {
+    $pwshPath = $pwshCmd.Source
+} else {
+    # 尝试使用默认安装路径
+    $pwshPath = Join-Path $Env:ProgramFiles 'PowerShell\\7\\pwsh.exe'
+}
+
 $needInstall = $false
 
 if (Test-Path $pwshPath) {
@@ -30,6 +37,16 @@ if (Test-Path $pwshPath) {
 if ($needInstall) {
     install_or_update winget
     winget install --id Microsoft.Powershell --source winget --force
+    # 安装后重新检测 pwsh 路径
+    $pwshCmd = Get-Command pwsh -ErrorAction SilentlyContinue
+    if ($pwshCmd) {
+        $pwshPath = $pwshCmd.Source
+    } elseif (Test-Path (Join-Path $Env:ProgramFiles 'PowerShell\\7\\pwsh.exe')) {
+        $pwshPath = Join-Path $Env:ProgramFiles 'PowerShell\\7\\pwsh.exe'
+    } else {
+        log_error "PowerShell 7 安装完成但无法找到 pwsh，可手动检查 PATH 或安装位置。"
+        exit 1
+    }
 }
-
+./setup_font.ps1
 Start-Process $pwshPath -ArgumentList ./config.ps1 -Wait

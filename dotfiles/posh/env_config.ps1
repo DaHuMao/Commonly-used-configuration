@@ -45,23 +45,31 @@ if (-not $env:POSH_THEMES_PATH) {
 $nvmPath = (Get-Command nvm -ErrorAction SilentlyContinue).Source
 if ($nvmPath) {
   $nvmBaseDir = Split-Path -Path $nvmPath -Parent
-  $nodeVersions = Get-ChildItem -Path $nvmBaseDir -Directory | Where-Object { $_.Name -match "^v\d+\.\d+\.\d+$" } | Sort-Object -Property Name -Descending
+  $nodeRoot   = Join-Path -Path $nvmBaseDir -ChildPath "nodejs"
 
-  if (-not $nodeVersions) {
-    log_error "No node versions found in $nvmBaseDir"
-  }
+  if (Test-Path -LiteralPath $nodeRoot) {
+    $nodeDirs = Get-ChildItem -Path $nodeRoot -Directory -ErrorAction SilentlyContinue |
+      Sort-Object -Property { [version]($_.Name.TrimStart('v')) } -Descending
 
-  $highestNodeVersionDir =$nodeVersions[0]
-  $nodeBinPath = Join-Path -Path $highestNodeVersionDir.FullName -ChildPath "node.exe"
-  $node64BinPath = Join-Path -Path $highestNodeVersionDir.FullName -ChildPath "node64.exe"
-  if (Test-Path $nodeBinPath) {
-    $env:VIM_USED_NODE_BIN = $nodeBinPath
-    log_info "find node in $nodeBinPath"
-  } elseif (Test-Path $node64BinPath) {
-    $env:VIM_USED_NODE_BIN = $node64BinPath
-    log_info "find node in $node64BinPath"
+    if ($nodeDirs -and $nodeDirs.Count -gt 0) {
+      $latestNodeDir = $nodeDirs[0]
+      $nodeExePath   = Join-Path -Path $latestNodeDir.FullName -ChildPath "node.exe"
+      $node64ExePath = Join-Path -Path $latestNodeDir.FullName -ChildPath "node64.exe"
+
+      if ($nodeExePath -and (Test-Path -LiteralPath $nodeExePath)) {
+        $env:VIM_USED_NODE_BIN = $nodeExePath
+        log_info "find node in $nodeExePath"
+      } elseif ($node64ExePath -and (Test-Path -LiteralPath $node64ExePath)) {
+        $env:VIM_USED_NODE_BIN = $node64ExePath
+        log_info "find node in $node64ExePath"
+      } else {
+        log_error "node not found in $($latestNodeDir.FullName)"
+      }
+    } else {
+      log_error "no node version directories found in $nodeRoot"
+    }
   } else {
-    log_error "node not found in $nodeBinPath or $node64BinPath"
+    log_error "nodejs directory not found under $nvmBaseDir"
   }
 } else {
   log_error "nvm not found, please install nvm and make sure it is in the system PATH."

@@ -84,11 +84,24 @@ function TimeStampMs() {
   echo $(($(date +%s%N)/1000000))
 }
 
+function power_shell() {
+  if is_windows;then
+    PowerShell.exe -NoProfile -Command "${@}"
+  fi
+}
+
 #判断某个命令是否存在
 function check_cmd() {
   cmd=$1
+  if is_windows;then
+    # 在 Windows 下通过 PowerShell 的 Get-Command 检查命令是否存在
+    # 使用 -Name 和内部单引号，避免通配符等特殊字符影响
+    power_shell "Get-Command -Name '$cmd' -ErrorAction SilentlyContinue" &>/dev/null \
+      && log_info "${cmd} is already installed" && return 0
+  else
   #hash $cmd &>/dev/null && return 0
-  type $cmd &>/dev/null && log_info "${cmd} is already installed" && return 0
+    type $cmd &>/dev/null && log_info "${cmd} is already installed" && return 0
+  fi
   log_info "${cmd} is not install"
   return 1
 }
@@ -131,11 +144,6 @@ function TraverseFromGit(){
     done
 }
 
-function power_shell() {
-  if is_windows;then
-    PowerShell.exe -NoProfile -Command "${@}"
-  fi
-}
 
 function convert_to_win_path() {
   # 检查参数是否为空
