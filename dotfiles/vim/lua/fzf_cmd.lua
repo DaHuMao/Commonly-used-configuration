@@ -1,6 +1,9 @@
 local M = {}
 local fzf_plugin = require('fzf_plugin')
 
+-- 全局搜索目录变量，默认为当前目录
+M.search_dir = vim.fn.getcwd()
+
 -- RG 相关常量配置（放在这里，因为与 fzf 无关）
 M.RG_DEFAULT_CONFIG = "rg --column --line-number --no-heading --color=always --max-columns 250 --max-filesize 500K"
 M.default_preview = 'bat --color=always --theme=gruvbox-dark {1} --highlight-line {2}'
@@ -68,6 +71,32 @@ function M.edit_git_file(line)
     end
 end
 
+-- 编辑缓冲区的函数
+function M.edit_buffer(selected)
+    if not selected or selected == '' then
+        return
+    end
+    -- 从选中内容中提取文件路径（格式为 "编号:路径"）
+    local file_path = selected:match('^%d+:(.*)$')
+    if file_path and file_path ~= '' then
+        vim.cmd('buffer ' .. vim.fn.fnameescape(file_path))
+    end
+end
+
+-- 获取所有缓冲区列表
+function M.get_buffer_list()
+    local buffers = {}
+    for buf = 1, vim.fn.bufnr('$') do
+        if vim.fn.buflisted(buf) == 1 then
+            local name = vim.fn.bufname(buf)
+            if name ~= '' then
+                table.insert(buffers, string.format('%d:%s', buf, name))
+            end
+        end
+    end
+    return buffers
+end
+
 -- 编辑 rg 搜索结果的函数
 function M.edit_rg_file(strr)
     local arr = vim.split(strr, ':')
@@ -107,17 +136,21 @@ function M.RipgrepFzf(query, file_suffix, exclude_cmd)
         str = ' -F -- ' .. query
     end
 
+    -- 在搜索目录下执行命令
+    local search_dir = vim.fn.shellescape(M.search_dir)
     local initial_command
     if file_suffix and file_suffix ~= '' then
         initial_command = string.format(
-            M.RG_DEFAULT_CONFIG .. ' -g "*.{%s}" %s %s',
+            'cd %s && ' .. M.RG_DEFAULT_CONFIG .. ' -g "*.{%s}" %s %s',
+            search_dir,
             file_suffix,
             exclude_cmd or '',
             str
         )
     else
         initial_command = string.format(
-            M.RG_DEFAULT_CONFIG .. ' %s %s',
+            'cd %s && ' .. M.RG_DEFAULT_CONFIG .. ' %s %s',
+            search_dir,
             exclude_cmd or '',
             str
         )
@@ -128,10 +161,11 @@ end
 
 function M.RipgrepFzfAll(...)
     local args = {...}
-    local command_fmt = M.RG_DEFAULT_CONFIG
+    local search_dir = vim.fn.shellescape(M.search_dir)
+    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG
 
     if args[1] == 0 then
-        command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 250K'
+        command_fmt = 'cd ' .. search_dir .. ' && rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 250K'
     end
 
     local is_regexp = ' -F '
@@ -166,9 +200,10 @@ function M.RipgrepFzfFunction(func_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
+    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. func_name .. '\\('
     local str2 = '^ *' .. func_name .. '\\('
-    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s"'
+    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2)
 
     M.fzf_for_rg(initial_command, M.edit_rg_file)
@@ -180,6 +215,7 @@ function M.RipgrepFzfClassDefine(class_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
+    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = "#define *" .. class_name
     local str2 = "using *" .. class_name .. ' *='
     local str3 = "class .*" .. class_name .. ' '
@@ -189,7 +225,7 @@ function M.RipgrepFzfClassDefine(class_name, enable_smart_case)
     local gstr1 = "class .*" .. class_name .. ' *;'
     local gstr2 = "struct .*" .. class_name .. ' *;'
 
-    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s|%s|%s|%s|%s" | rg -v "%s|%s"'
+    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s|%s|%s|%s|%s" | rg -v "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2, str3, str4, str5, str6, gstr1, gstr2)
 
     M.fzf_for_rg(initial_command, M.edit_rg_file)
@@ -201,11 +237,12 @@ function M.RipgrepFzfValDefine(val_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
+    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' *;'
     local str2 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' *='
     local str3 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' .*;'
 
-    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h,cpp,cc,c,m,mm,java}" -e "%s|%s|%s"'
+    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h,cpp,cc,c,m,mm,java}" -e "%s|%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2, str3)
 
     M.fzf_for_rg(initial_command, M.edit_rg_file)
@@ -217,22 +254,24 @@ function M.RipgrepFzfFunctionRef(func_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
+    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = ' *[a-zA-Z0-9_]+::' .. func_name .. '\\('
     local str2 = '^ *[a-zA-Z0-9_]+  *' .. func_name .. '.*\\{'
 
-    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{cpp,cc,c}" -e "%s|%s"'
+    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{cpp,cc,c}" -e "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2)
 
     M.fzf_for_rg(initial_command, M.edit_rg_file)
 end
 
 function M.FindFile(file_path, is_all)
+    local search_dir = M.search_dir
     local path = file_path or '.'
     if path == '' then
         path = '.'
     end
 
-    local command_fmt = 'fd --type f --hidden --follow --exclude .o --exclude .git '
+    local command_fmt = 'cd ' .. vim.fn.shellescape(search_dir) .. ' && fd --type f --hidden --follow --exclude .o --exclude .git '
     if is_all and is_all > 0 then
         command_fmt = command_fmt .. '--no-ignore'
     end
@@ -261,6 +300,29 @@ end
 
 -- 命令注册
 function M.setup()
+    -- ChangDir: 改变搜索目录
+    vim.api.nvim_create_user_command('ChangDir', function(opts)
+        local dir = opts.args
+        if dir == '' then
+            -- 没有参数，使用当前目录
+            M.search_dir = vim.fn.getcwd()
+            vim.notify('搜索目录已设置为: ' .. M.search_dir, vim.log.levels.INFO)
+        else
+            -- 有参数，检查目录有效性
+            local full_dir = vim.fn.fnamemodify(dir, ':p')
+            if vim.fn.isdirectory(full_dir) == 1 then
+                M.search_dir = full_dir
+                vim.notify('搜索目录已设置为: ' .. M.search_dir, vim.log.levels.INFO)
+            else
+                vim.notify('目录无效: ' .. dir, vim.log.levels.ERROR)
+            end
+        end
+    end, {
+        nargs = '?',
+        complete = 'dir',
+        desc = '设置 fzf 搜索的根目录（不带参数则为当前目录）'
+    })
+
     -- 从原 fzf.vim 移植的所有命令
 
     -- Rfile: 查找文件
@@ -417,8 +479,31 @@ function M.setup()
 
     -- Rgit: 使用 git status -s 列出文件并打开选中的文件
     vim.api.nvim_create_user_command('Rgit', function()
-        fzf_plugin.fzf_run('git status -s', M.edit_git_file)
+        -- git status 需要在 search_dir 下执行
+        local cmd = 'cd ' .. vim.fn.shellescape(M.search_dir) .. ' && git status -s'
+        fzf_plugin.fzf_run(cmd, M.edit_git_file)
     end, {})
+
+    -- RBufferList: 列出所有缓冲区并打开选中的
+    vim.api.nvim_create_user_command('RBufferList', function()
+        local buffers = M.get_buffer_list()
+        if #buffers == 0 then
+            vim.notify('没有打开的缓冲区', vim.log.levels.INFO)
+            return
+        end
+        
+        -- 添加 fzf 选项，带预览
+        local fzf_opts = {
+            '--delimiter', ':',
+            '--preview', 'bat --color=always --theme=gruvbox-dark {2}',
+            '--preview-window', 'right:50%,border-left,hidden,wrap',
+        }
+        
+        -- 小一点的窗口
+        local win_opts = { width = 0.7, height = 0.6 }
+        
+        fzf_plugin.fzf_run(buffers, M.edit_buffer, { fzf_opts = fzf_opts, win_opts = win_opts })
+    end, { desc = '列出所有 Neovim 缓冲区并选择打开' })
 
 
 end

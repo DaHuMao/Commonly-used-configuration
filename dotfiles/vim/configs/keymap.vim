@@ -46,7 +46,6 @@ nmap <c-p> "+
 noremap <leader>l :Rbufferc<CR>
 noremap <leader>L :Rbuffer<CR>
 noremap <leader>h :History <CR>
-noremap <leader>t :BTags<CR>
 noremap <leader>f :Rfile ./<CR>
 noremap <leader>A :RG<CR>
 noremap <leader>F :Rfc<CR>
@@ -54,7 +53,7 @@ noremap <leader>i :Ric<CR>
 noremap <leader>v :Rvc<CR>
 
 " 映射快捷键，例如<Leader>b，来执行这个函数
-nnoremap <Leader>b :Buffers<CR>
+nnoremap <Leader>b :RBufferList<CR>
 
 "windows
 noremap <space>zz :call MaxOrMinWindows()<CR>
