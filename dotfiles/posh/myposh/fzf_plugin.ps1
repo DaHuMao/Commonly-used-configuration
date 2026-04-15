@@ -197,11 +197,48 @@ function fzf_common_selected {
                 $tokens = $tokens[0..($tokens.Length - 2)]
             }
 
-            $dir =$tokens[-1].Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
-              if (Test-Path -Path $dir -PathType Container) {
-                $baseDir = $dir
-                  $tokens = $tokens[0..($tokens.Length - 2)]
+            $hitDepthRule = $false
+            # 新规则（按“末位字符”判断深度）：
+            # 把最后一个 token 拆成两段：
+            # - head = 第 1 个字符到倒数第 2 个字符（可能为空；为空时强制为 `.`）
+            # - tail = 最后 1 个字符
+            # 若 tail 是数字且 head 是目录：命中规则 -> 在该目录下做 `fd --max-depth <tail>` 深度搜索。
+            # 例：`xx xxx A/B1` -> head=A/B, tail=1 -> 在 `A/B` 下 `fd --max-depth 1 ...`
+            # 例：`xx xxx 1`    -> head=.,  tail=1 -> 在当前目录 `fd --max-depth 1 ...`
+            if ($tokens.Length -gt 0) {
+              $lastToken = $tokens[-1]
+              if (-not [string]::IsNullOrEmpty($lastToken)) {
+                $tail = $lastToken.Substring($lastToken.Length - 1, 1)
+                $head = if ($lastToken.Length -gt 1) { $lastToken.Substring(0, $lastToken.Length - 1) } else { "" }
+                if ([string]::IsNullOrEmpty($head)) { $head = "." }
+                $head = $head.Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
+
+                if ($tail -match "^\d$") {
+                  if (Test-Path -Path $head -PathType Container) {
+                    $cmdParams += " --max-depth $tail"
+                    $baseDir = $head
+                    $dir = $baseDir
+                    $hitDepthRule = $true
+                    # 目录/深度信息已经编码在 lastToken 里，把它从命令前缀移除
+                    $tokens = if ($tokens.Length -gt 1) { $tokens[0..($tokens.Length - 2)] } else { @() }
+                  }
+                }
               }
+            }
+
+            if (-not $hitDepthRule) {
+              # 原逻辑：若最后一个 token 是目录，则把它当作 baseDir，并从 tokens 中移除。
+              # 注意：这里要先判断长度，避免 tokens 为空时报错。
+              if ($tokens.Length -gt 0) {
+                $dir = $tokens[-1].Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
+                if (Test-Path -Path $dir -PathType Container) {
+                  $baseDir = $dir
+                  $tokens = if ($tokens.Length -gt 1) { $tokens[0..($tokens.Length - 2)] } else { @() }
+                }
+              } else {
+                $dir = "."
+              }
+            }
             $cmdParams += " --base-directory $baseDir"
               $lbuf = ($tokens -join ' ')
               $previewTool = "pwsh -NoProfile $HOME/.myposh/bin/file_dir_preview.ps1 $dir {}"
@@ -226,4 +263,3 @@ function fzf_common_selected {
     }
 
 }
-
