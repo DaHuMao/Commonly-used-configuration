@@ -27,7 +27,7 @@ set magic
 
 set relativenumber
 set number
-set nowrap
+set wrap
 
 set showmatch
 set foldenable

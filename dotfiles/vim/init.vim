@@ -2,8 +2,6 @@ set nocompatible
 
 source ~/.vim/env.vim
 source ~/.vim/configs/common.vim
-source ~/.vim/configs/utils.vim
-source ~/.vim/configs/ycm.vim
 source ~/.vim/configs/function_vim.vim
 
 source ~/.vim/lua/init.lua
