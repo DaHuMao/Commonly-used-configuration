@@ -45,6 +45,12 @@ end
 -- opts: 额外选项 { fzf_opts = {}, win_opts = {} }
 function M.fzf_run(source, sink, opts)
     opts = opts or {}
+
+    if vim.fn.executable('fzf') == 0 then
+        vim.notify('FZF is not installed or not available', vim.log.levels.ERROR)
+        return nil
+    end
+
     local fzf_opts = opts.fzf_opts or {}
     local win_opts = opts.win_opts or M.default_windows
 
@@ -112,6 +118,8 @@ function M.fzf_run(source, sink, opts)
 
     -- 自动进入插入模式
     vim.cmd('startinsert')
+
+    return win
 end
 
 return M

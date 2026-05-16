@@ -5,13 +5,14 @@ local fzf_plugin = require('fzf_plugin')
 M.search_dir = vim.fn.getcwd()
 
 -- RG 相关常量配置（放在这里，因为与 fzf 无关）
-M.RG_DEFAULT_CONFIG = "rg --column --line-number --no-heading --color=always --max-columns 250 --max-filesize 500K"
+M.RG_DEFAULT_CONFIG = "rg --column --line-number --no-heading --color=always --max-columns 250"
 M.default_preview = 'bat --color=always --theme=gruvbox-dark {1} --highlight-line {2}'
 
 -- 编辑文件的函数
 function M.edit_file(file_name)
-    vim.notify('edit file: ' .. file_name, vim.log.levels.INFO)
-    vim.cmd('silent e ' .. file_name)
+    local file_full_name = M.search_dir .. '/' .. file_name
+    vim.notify('edit file: ' .. file_full_name, vim.log.levels.INFO)
+    vim.cmd('silent e ' .. file_full_name)
 end
 
 -- 编辑 git status -s 结果的函数
@@ -285,6 +286,7 @@ function M.FindWordInCurBuffer(str)
     if vim.fn.has('win32') == 1 then
         cur_file = cur_file:gsub('\\', '/')
     end
+    cur_file = '"' .. cur_file .. '"'
 
     local command_fmt = M.RG_DEFAULT_CONFIG .. " --no-filename -- " .. str .. ' ' .. cur_file
     local preview_script_str = 'bat --color=always --theme=gruvbox-dark ' .. cur_file .. ' --highlight-line {1}'
@@ -412,14 +414,14 @@ function M.setup()
 
     -- RG: 在指定文件类型中搜索，排除 unittest
     vim.api.nvim_create_user_command('RG', function(opts)
-        local file_suffix = 'h,hpp,cpp,cc,c,m,mm,java,ets'
+        local file_suffix = 'h,hpp,cpp,cc,c,m,mm,java,ets,ts,kt'
         local exclude_cmd = '-g !"*unittest*" '
         M.RipgrepFzf(opts.args, file_suffix, exclude_cmd)
     end, { nargs = '?', complete = 'dir' })
 
     -- RGc: 在指定文件类型中搜索当前单词，排除 unittest
     vim.api.nvim_create_user_command('RGc', function()
-        local file_suffix = 'h,hpp,cpp,cc,c,m,mm,java,ets'
+        local file_suffix = 'h,hpp,cpp,cc,c,m,mm,java,ets,ts'
         local exclude_cmd = '-g !"*unittest*" '
         M.RipgrepFzf(vim.fn.expand('<cword>'), file_suffix, exclude_cmd)
     end, {})
@@ -491,17 +493,17 @@ function M.setup()
             vim.notify('没有打开的缓冲区', vim.log.levels.INFO)
             return
         end
-        
+
         -- 添加 fzf 选项，带预览
         local fzf_opts = {
             '--delimiter', ':',
             '--preview', 'bat --color=always --theme=gruvbox-dark {2}',
             '--preview-window', 'right:50%,border-left,hidden,wrap',
         }
-        
+
         -- 小一点的窗口
         local win_opts = { width = 0.7, height = 0.6 }
-        
+
         fzf_plugin.fzf_run(buffers, M.edit_buffer, { fzf_opts = fzf_opts, win_opts = win_opts })
     end, { desc = '列出所有 Neovim 缓冲区并选择打开' })
 

@@ -100,6 +100,7 @@ git_log_prefix_function_map=(
   "rebase" _git_log
   "rbi" _git_log
   "revert" _git_log
+  "show" _git_log
 )
 
 wfxr::fzf-edit-selected-widget() {

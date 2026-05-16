@@ -1,4 +1,5 @@
 local M = {}
+local fzf_plugin = require('fzf_plugin')
 
 -- Window operation step size (as fraction of screen size)
 M.RESIZE_STEP = 0.05    -- Step size for resizing window (5% of screen)
@@ -303,12 +304,6 @@ function M.show_or_exit_windows(action)
         end
     end
 
-    -- Check if FZF is available
-    if vim.fn.exists('*fzf#run') == 0 then
-        vim.notify('FZF is not installed or not available', vim.log.levels.ERROR)
-        return
-    end
-
     -- Get all window names with location info
     local window_list = {}
 
@@ -340,6 +335,7 @@ function M.show_or_exit_windows(action)
         prompt_msg = 'Delete Window> '
     else  -- default to 'show'
         action_func = function(name)
+            M.hide_window()
             M.show_window_by_name(name)
             M.state.fzf_window = nil
             M.state.fzf_action = nil
@@ -347,10 +343,15 @@ function M.show_or_exit_windows(action)
         prompt_msg = 'Select Window> '
     end
 
-    -- FZF options with sink_replace to capture the FZF window
     local fzf_opts = {
-        source = window_list,
-        sink = function(selected)
+        '--prompt', prompt_msg,
+        '--height', '40%',
+        '--layout', 'reverse',
+        '--border',
+        '--info', 'inline',
+    }
+
+    local fzf_window = fzf_plugin.fzf_run(window_list, function(selected)
             if selected then
                 -- Extract window name (remove location tag)
                 local name = selected:match('(.*)%s+%[')
@@ -358,38 +359,21 @@ function M.show_or_exit_windows(action)
                     action_func(name)
                 end
             end
-        end,
-        options = {
-            '--prompt', prompt_msg,
-            '--height', '40%',
-            '--layout', 'reverse',
-            '--border',
-            '--info', 'inline',
-        },
-        window = {
+        end, {
+        fzf_opts = fzf_opts,
+        win_opts = {
             width = 0.6,
             height = 0.5,
-            border = 'rounded',
         },
-    }
+    })
 
-    -- Run FZF and capture the window
-    local fzf_result = vim.fn['fzf#run'](vim.fn['fzf#wrap'](fzf_opts))
+    if not fzf_window then
+        return
+    end
 
     -- Store FZF window info for toggle functionality
-    -- Try to find the FZF window in current windows
-    vim.schedule(function()
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-            local buf = vim.api.nvim_win_get_buf(win)
-            local buf_name = vim.api.nvim_buf_get_name(buf)
-            -- FZF creates a buffer with name starting with fzf
-            if buf_name:match('fzf') then
-                M.state.fzf_window = win
-                M.state.fzf_action = action
-                break
-            end
-        end
-    end)
+    M.state.fzf_window = fzf_window
+    M.state.fzf_action = action
 end
 
 -- Delete window by name

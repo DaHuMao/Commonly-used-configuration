@@ -1,8 +1,7 @@
 
 local M = {}
 
--- Claude window counter
-M.claude_num = 0
+M.name_num = 0
 
 -- 驼峰转下划线（支持自定义分隔符）
 function M.camel_to_snake(str, separator)
@@ -93,10 +92,13 @@ function M.select_compile(opts)
 end
 
 -- 打开窗口并执行命令
-function M.open_window_with_cmd(cmd, size)
+function M.open_window_with_cmd(cmd, size, window_name)
   local windows_manager = require('windows_manager')
-  M.claude_num = M.claude_num + 1
-  local window_name = 'window' .. M.claude_num
+  if window_name == nil then
+    window_name = 'window'
+  end
+  M.name_num = M.name_num + 1
+  window_name = window_name .. M.name_num
   size = size or 'm'
   windows_manager.create_window(window_name, size, true, cmd)
 end
@@ -121,17 +123,19 @@ local function setup_commands()
     M.select_compile(opts)
   end, { nargs = '?' })
 
-  vim.api.nvim_create_user_command('ClaudeOpen', function()
-    M.open_window_with_cmd('source $HOME/.myzsh/claude.sh', 'm')
+  vim.api.nvim_create_user_command('ClaudeOpen', function(opts)
+    local window_name = 'claude_' .. opts.args
+    M.open_window_with_cmd('source $HOME/.myzsh/claude.sh', 'm', window_name)
   end, {
-    nargs = 0,
+    nargs = '?',
     desc = 'Open a new Claude terminal window',
   })
 
-  vim.api.nvim_create_user_command('Coco', function()
-    M.open_window_with_cmd('coco', 'm')
+  vim.api.nvim_create_user_command('Coco', function(opts)
+    local window_name =   'coco_' .. opts.args
+    M.open_window_with_cmd('coco', 'm', window_name)
   end, {
-    nargs = 0,
+    nargs = '?',
     desc = 'Open a new Claude terminal window',
   })
 end
@@ -142,4 +146,3 @@ function M.setup()
 end
 
 return M
-
