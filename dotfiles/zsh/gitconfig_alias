@@ -2,8 +2,22 @@
 	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core
 	directory = /usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask
 [core]
-	pager = diff-so-fancy | less --tabs=4 -RFX
+	pager = delta
 	editor = nvim
+[delta]
+	side-by-side = true
+	line-numbers = true
+	navigate = true
+	dark = true
+	syntax-theme = Monokai Extended Bright
+	plus-style = syntax bold "#003f00"
+	plus-emph-style = syntax bold "#005f00"
+	minus-style = syntax bold "#4a0000"
+	minus-emph-style = syntax bold "#7a0000"
+	line-numbers-plus-style = bold "#80ff80"
+	line-numbers-minus-style = bold "#ff8080"
+[interactive]
+	diffFilter = delta --color-only
 [alias]
     st = status
     ci = commit

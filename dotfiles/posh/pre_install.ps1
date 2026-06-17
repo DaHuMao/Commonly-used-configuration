@@ -10,6 +10,7 @@ install_or_update fd
 install_or_update bat
 install_or_update fzf
 install_or_update perl
+install_or_update git-delta delta
 install_or_update diff-so-fancy
 
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force

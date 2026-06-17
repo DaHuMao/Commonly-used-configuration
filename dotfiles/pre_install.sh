@@ -57,9 +57,10 @@ fi
 
 
 function check_and_install() {
-  bin_file=$1
-  log_info "check_and_install ${bin_file} ....."
-  check_cmd ${bin_file} || (install_exe $bin_file && log_info "Successed install ${bin_file}") || log_abort "failed install $bin_file"
+  package_name=$1
+  cmd_name=${2:-$1}
+  log_info "check_and_install ${package_name} ....."
+  check_cmd ${cmd_name} || (install_exe $package_name && log_info "Successed install ${package_name}") || log_abort "failed install $package_name"
   echo ' '
 }
 
@@ -117,6 +118,7 @@ fi
 
 if [ $build_zsh -eq 1 ]; then
   check_and_install 'zsh'
+  check_and_install 'git-delta' 'delta'
   check_and_install 'diff-so-fancy'
 fi
 

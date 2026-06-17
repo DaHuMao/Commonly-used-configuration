@@ -16,9 +16,9 @@ function M.edit_file(file_name)
 end
 
 -- 编辑 git status -s 结果的函数
-function M.edit_git_file(line)
+function M.parse_git_status_line(line)
     if not line or line == '' then
-        return
+        return nil
     end
 
     -- 先按照空白分割整行，拿到状态位
@@ -29,12 +29,12 @@ function M.edit_git_file(line)
     local status = arr[1]
 
     if not status then
-        return
+        return nil
     end
 
     -- 删除文件（D 开头）的记录不需要在 fzf 里打开，直接忽略
     if status:sub(1, 1) == 'D' then
-        return
+        return nil
     end
 
     local file_path
@@ -68,7 +68,19 @@ function M.edit_git_file(line)
     end
 
     if file_path and file_path ~= '' then
-        M.edit_file(file_path)
+        return {
+            status = status,
+            file_path = file_path,
+        }
+    end
+
+    return nil
+end
+
+function M.edit_git_file(line)
+    local parsed = M.parse_git_status_line(line)
+    if parsed and parsed.file_path then
+        M.edit_file(parsed.file_path)
     end
 end
 
@@ -300,6 +312,74 @@ function M.FindWordInCurBuffer(str)
     fzf_plugin.fzf_run(command_fmt, M.edit_rg_file, { fzf_opts = fzf_opts })
 end
 
+function M.SelectGitFile()
+    local git_status_lines = vim.fn.systemlist({ 'git', '-C', M.search_dir, 'status', '--short' })
+    if vim.v.shell_error ~= 0 then
+        vim.notify('git status 执行失败: ' .. M.search_dir, vim.log.levels.ERROR)
+        return
+    end
+
+    local changed_files = {}
+    for _, line in ipairs(git_status_lines) do
+        local status_code = line:sub(1, 2)
+        -- 只保留“修改类”文件：如 M / MM / U / UU / R / RM / T 等
+        -- 排除新增（A、??）和删除（D）相关状态
+        if status_code ~= '??' and status_code ~= '!!' and not status_code:find('A', 1, true) and not status_code:find('D', 1, true) then
+            table.insert(changed_files, line)
+        end
+    end
+
+    if #changed_files == 0 then
+        vim.notify('当前没有可选择的已修改文件', vim.log.levels.INFO)
+        return
+    end
+
+    local preview_script = table.concat({
+        'sh -c ',
+        vim.fn.shellescape(table.concat({
+            'line="$1"',
+            'cd ' .. vim.fn.shellescape(M.search_dir) .. ' || exit 1',
+            'status=$(printf "%s" "$line" | cut -c1-2)',
+            'path=$(printf "%s" "$line" | cut -c4-)',
+            'case "$path" in',
+            '  *" -> "*) path=${path##* -> } ;;',
+            'esac',
+            '[ -n "$path" ] || exit 0',
+            'show_section() {',
+            '  title="$1"',
+            '  shift',
+            '  diff_output=$("$@")',
+            '  if [ -n "$diff_output" ]; then',
+            '    if [ -n "$printed" ]; then',
+            '      printf "\\n"',
+            '    fi',
+            '    printf "%s\\n\\n" "$title"',
+            '    printf "%s\\n" "$diff_output" | delta --paging=never --width="${FZF_PREVIEW_COLUMNS:-120}"',
+            '    printed=1',
+            '  fi',
+            '}',
+            'if printf "%s" "$status" | grep -q "U"; then',
+            '  show_section "[CONFLICT]" git diff --cc -- "$path"',
+            'fi',
+            'if [ -z "$printed" ]; then',
+            '  show_section "[STAGED]" git diff --cached -- "$path"',
+            '  show_section "[WORKTREE]" git diff -- "$path"',
+            'fi',
+            'if [ -z "$printed" ]; then',
+            '  git diff --cc -- "$path" | delta --paging=never --width="${FZF_PREVIEW_COLUMNS:-120}"',
+            'fi',
+        }, '\n')),
+        ' -- {}',
+    })
+
+    local fzf_opts = {
+        '--preview', preview_script,
+        '--preview-window', 'right:70%,border-left,wrap',
+    }
+
+    fzf_plugin.fzf_run(changed_files, M.edit_git_file, { fzf_opts = fzf_opts })
+end
+
 -- 命令注册
 function M.setup()
     -- ChangDir: 改变搜索目录
@@ -481,9 +561,7 @@ function M.setup()
 
     -- Rgit: 使用 git status -s 列出文件并打开选中的文件
     vim.api.nvim_create_user_command('Rgit', function()
-        -- git status 需要在 search_dir 下执行
-        local cmd = 'cd ' .. vim.fn.shellescape(M.search_dir) .. ' && git status -s'
-        fzf_plugin.fzf_run(cmd, M.edit_git_file)
+        M.SelectGitFile()
     end, {})
 
     -- RBufferList: 列出所有缓冲区并打开选中的
