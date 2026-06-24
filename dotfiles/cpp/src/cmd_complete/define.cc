@@ -77,7 +77,7 @@ std::string GetSocketClientBaseName() {
   if (socket_dir == nullptr) {
     return std::string();
   }
-  return std::string(socket_dir) + "/zsh_complete_client";
+  return std::string(socket_dir) + "/cmd_complete_client";
 }
 
 std::string GetSocketServerBaseName() {
@@ -85,5 +85,5 @@ std::string GetSocketServerBaseName() {
   if (socket_dir == nullptr) {
     return std::string();
   }
-  return std::string(socket_dir) + "/zsh_complete_server";
+  return std::string(socket_dir) + "/cmd_complete_server";
 }
