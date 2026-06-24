@@ -7,6 +7,7 @@ $strArray = $str.Trim() -split '\s+'
 $str1=$strArray[0]
 $str2=$strArray[1]
 
+Write-Host "num $num str: $str str1: $str1 str2: $str2"
 if ($num -eq 1) {
     if ($strArray[0] -eq '??') {
         if (Test-Path -Path $strArray[1] -PathType Container) {
@@ -19,7 +20,7 @@ if ($num -eq 1) {
             bat --color=always $strArray[1]
         }
     } else {
-        Write-Host "command git diff $str2} | diff-so-fancy --colors"
+        Write-Host "command git diff $str2 | diff-so-fancy --colors"
         git diff $strArray[1] | diff-so-fancy --colors
     }
 } elseif ($num -eq 0) {

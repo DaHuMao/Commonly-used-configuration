@@ -1,6 +1,25 @@
 local M = {}
 local fzf_plugin = require('fzf_plugin')
 
+local function is_windows()
+    return vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
+end
+
+local function get_terminal_command(is_not_load_profile)
+    if is_windows() then
+        if is_not_load_profile then
+            return { 'pwsh', '-NoProfile' }
+        end
+        return { 'pwsh' }
+    end
+
+    if is_not_load_profile then
+        return { vim.o.shell, '-f' }
+    end
+
+    return { vim.o.shell }
+end
+
 -- Window operation step size (as fraction of screen size)
 M.RESIZE_STEP = 0.05    -- Step size for resizing window (5% of screen)
 M.MOVE_STEP = 0.05       -- Step size for moving window (10% of screen)
@@ -67,7 +86,7 @@ local function find_window_by_name(name)
 end
 
 -- Create terminal window
-function M.create_window(name, size_type, is_not_load_zsh_profile, cmd)
+function M.create_window(name, size_type, is_not_load_profile, cmd)
     size_type = size_type or 'l'
     -- If no name provided, use default name
     if not name or name == '' then
@@ -128,11 +147,7 @@ function M.create_window(name, size_type, is_not_load_zsh_profile, cmd)
     })
 
     -- Open terminal in the new window
-    if is_not_load_zsh_profile then
-        vim.fn.termopen(vim.o.shell .. ' -f')
-    else
-        vim.fn.termopen(vim.o.shell)
-    end
+    vim.fn.termopen(get_terminal_command(is_not_load_profile))
 
     -- If cmd is provided and not empty, send it to the terminal
     if cmd and cmd ~= '' then

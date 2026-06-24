@@ -13,6 +13,18 @@ M.FZF_DEFAULT_OPTS = {
 -- 默认窗口配置
 M.default_windows = { width = 0.9, height = 0.9 }
 
+local function is_windows()
+    return vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
+end
+
+local function build_termopen_cmd(full_cmd)
+    if is_windows() then
+        return { 'pwsh', '-NoProfile', '-Command', full_cmd }
+    end
+
+    return full_cmd
+end
+
 -- 创建浮动终端窗口
 local function create_float_window(opts)
     opts = opts or {}
@@ -77,6 +89,7 @@ function M.fzf_run(source, sink, opts)
         local input = table.concat(source, '\n')
         full_cmd = 'echo ' .. vim.fn.shellescape(input) .. ' | ' .. fzf_cmd
     end
+    -- vim.notify(full_cmd, vim.log.levels.INFO)
 
     -- 创建临时文件来存储选中结果
     local temp_file = vim.fn.tempname()
@@ -86,9 +99,9 @@ function M.fzf_run(source, sink, opts)
     local buf, win = create_float_window(win_opts)
 
     -- 在终端中运行命令
-    -- 注意：不要手动拼接 shell 和 -c，交给 Neovim 根据当前平台和 &shell/&shellcmdflag 处理
-    -- 直接把整条命令字符串交给 termopen，这样在 macOS/Linux 会用 sh -c，在 Windows 会用正确的 shellcmdflag
-    local job_id = vim.fn.termopen(full_cmd, {
+    -- Windows 下显式使用 powershell -NoProfile -Command，避免走 Neovim 默认 shell / 用户 profile。
+    -- macOS/Linux 仍把整条命令字符串交给 termopen，由 Neovim 按当前 &shell 处理。
+    local job_id = vim.fn.termopen(build_termopen_cmd(full_cmd), {
         on_exit = function(_, exit_code, _)
             -- 关闭窗口
             vim.schedule(function()

@@ -291,13 +291,35 @@ if (Test-Path Alias:ls) {
 function ls {
     param(
         [Parameter(ValueFromRemainingArguments = $true)]
-        [string[]]$Path = ".",
-        [switch]$l,
-        [switch]$r
+        [string[]]$ArgsList = @(".")
     )
 
+    # 解析参数：合并选项如 -la 拆分为 -l -a
+    $flag_l = $false
+    $flag_r = $false
+    $flag_a = $false
+    $paths = @()
+
+    foreach ($arg in $ArgsList) {
+        if ($arg -match '^-(.+)$') {
+            $flags = $Matches[1]
+            foreach ($ch in $flags.ToCharArray()) {
+                switch ($ch) {
+                    'l' { $flag_l = $true }
+                    'r' { $flag_r = $true }
+                    'a' { $flag_a = $true }
+                    default { Write-Warning "Unknown option: -$ch" }
+                }
+            }
+        } else {
+            $paths += $arg
+        }
+    }
+
+    if ($paths.Count -eq 0) { $paths = @(".") }
+
     # 解析路径
-    $resolvedPaths = foreach ($p in $Path) {
+    $resolvedPaths = foreach ($p in $paths) {
         try {
             Resolve-Path -Path $p -ErrorAction Stop | Select-Object -ExpandProperty Path
         } catch {
@@ -307,29 +329,29 @@ function ls {
     }
 
     # 获取文件列表
-    $items = if ($r) {
+    $items = if ($flag_r) {
         $resolvedPaths | ForEach-Object {
-            Get-ChildItem -Path $_ -Recurse -ErrorAction SilentlyContinue |
+            Get-ChildItem -Path $_ -Recurse -Force:$flag_a -ErrorAction SilentlyContinue |
             ForEach-Object {
                 $relativePath = $_.FullName.Substring((Get-Location).Path.Length + 1)
                 $_ | Add-Member -NotePropertyName "RelativePath" -NotePropertyValue $relativePath -PassThru
             }
         }
     } else {
-        $resolvedPaths | ForEach-Object { Get-ChildItem -Path $_ -ErrorAction SilentlyContinue }
+        $resolvedPaths | ForEach-Object { Get-ChildItem -Path $_ -Force:$flag_a -ErrorAction SilentlyContinue }
     }
 
     # 详细模式或递归模式处理
-    if ($l -or $r) {
+    if ($flag_l -or $flag_r) {
         if ($items.Count -gt 30) {
             Write-Warning "Showing first 30 of $($items.Count) items."
             $items = $items | Select-Object -First 30
         }
 
         # 详细模式（-l）
-        if ($l) {
+        if ($flag_l) {
             $formattedItems = foreach ($item in $items) {
-                $name = if ($r) { $item.RelativePath } else { $item.Name }
+                $name = if ($flag_r) { $item.RelativePath } else { $item.Name }
                 $colorName = if ($item.PSIsContainer) {
                   "$([char]0x1B)[34m$name$([char]0x1B)[0m"  # 使用十六进制ANSI ESC字符
                 } else {
@@ -470,6 +492,46 @@ function mv {
             }
             Move-Item -Path $Source -Destination $DestinationPath -Force:$f.IsPresent
             log_info "Moved file: $Source to $Destination"
+        }
+    }
+}
+
+# tail - 显示文件末尾内容
+if (Test-Path Alias:tail) {
+    Remove-AliasIfExists tail
+}
+
+function tail {
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$Path,
+
+        [Parameter(Position = 1)]
+        [int]$n = 10,
+
+        [switch]$f  # 实时跟踪文件变化
+    )
+
+    if (-not (Test-Path $Path -PathType Leaf)) {
+        log_error "File not found: $Path"
+        return
+    }
+
+    $resolvedPath = Resolve-Path $Path
+
+    if ($f) {
+        # 实时跟踪模式
+        try {
+            Get-Content -Path $resolvedPath -Tail $n -Wait
+        } catch {
+            log_error "Failed to tail file: $Path. $_"
+        }
+    } else {
+        # 显示最后n行
+        try {
+            Get-Content -Path $resolvedPath -Tail $n
+        } catch {
+            log_error "Failed to read file: $Path. $_"
         }
     }
 }

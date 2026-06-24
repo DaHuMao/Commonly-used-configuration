@@ -121,25 +121,62 @@ $global:git_log_prefix_function_map = @{
     "rebase"  = "_git_log"
     "rbi"     = "_git_log"
     "revert"  = "_git_log"
+    "show"  = "_git_log"
 }
 
 $zsh_prompt_dir = "$HOME/.myzsh/custom_prompt"
 
-$default_fzf_opt = " --ansi --wrap  --reverse --cycle --preview-window up:70%" +
-  " --preview-window=hidden" +
-  " --bind ctrl-/:toggle-preview,alt-w:toggle-preview-wrap" +
+$default_fzf_opt = " --ansi --wrap  --reverse --cycle" +
+  " --preview-window=up,70%,hidden" +
+  " --bind ctrl-/:toggle-preview,ctrl-_:toggle-preview,alt-p:toggle-preview,f2:toggle-preview,alt-w:toggle-preview-wrap" +
   " --bind ctrl-b:preview-half-page-up,ctrl-n:preview-half-page-down"
+
+$global:fzf_debug_log = Join-Path $env:TEMP "fzf_preview_debug.log"
+
+function _write_fzf_debug_log {
+  param (
+      [string]$message
+  )
+
+  try {
+      $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss.fff"
+      Add-Content -Path $global:fzf_debug_log -Value "$timestamp [plugin] $message" -Encoding UTF8
+  } catch {
+  }
+}
+
+function _new_fzf_pwsh_preview_command {
+  param (
+      [string]$scriptPath,
+      [string[]]$arguments
+  )
+
+  $quotedArguments = foreach ($argument in $arguments) {
+      if ($argument -match '^\d+$') {
+          $argument
+      } else {
+          '"{0}"' -f $argument
+      }
+  }
+
+  # 这里不要给 scriptPath 再额外包一层引号。
+  # 当前 fzf 预览命令最终会经过 PowerShell -> fzf -> cmd /s/c，
+  # scriptPath 再带引号时，在 Windows 下更容易被当成字面量命令片段。
+  # 但像 {} 这种会展开成带空格的一整行，必须保留双引号，避免被拆参。
+  $command = 'pwsh -NoProfile -File {0} {1}' -f $scriptPath, ($quotedArguments -join ' ')
+  return $command
+}
 
 function fzf_common_selected {
     $LBUFFER = ""
-      $searchName = $(get_lbuffer)
-      $searchName = $searchName.Trim()
+    $searchName = $(get_lbuffer)
+    $searchName = $searchName.Trim()
 
-      if ([string]::IsNullOrEmpty($searchName)) {
-        $LBUFFER = $(Get-Content "$zsh_prompt_dir/remind_cmd" | fzf --ansi)
-          update_buffer $LBUFFER
-          return
-      }
+    if ([string]::IsNullOrEmpty($searchName)) {
+      $LBUFFER = $(Get-Content "$zsh_prompt_dir/remind_cmd" | fzf --ansi)
+        update_buffer $LBUFFER
+        return
+    }
 
     $matchFile = Get-ChildItem -Path $zsh_prompt_dir -Filter "$searchName.prompt" -File
       if (-not [string]::IsNullOrEmpty($matchFile)) {
@@ -148,106 +185,105 @@ function fzf_common_selected {
           return
       }
     $LBUFFER = $(get_lbuffer)
-      $tokens =$LBUFFER -split ' '
-      $params = '-' + ($LBUFFER -split '--')[-1]
-      $lbuf =$LBUFFER
-      $cmd = ""
-      $cmdParams = ""
-      $fzfOpt = $default_fzf_opt
-      $previewTool = ""
-      $baseDir = "."
-      $index = -1
-      $is_multi_line = 1
-      if ($tokens.Length -gt 0) {
-        $headCmd = $tokens[0]
-          if ($headCmd -eq "git") {
-            $cmd = "_git_status"
-            $index = 1
-              if ($tokens.Length -gt 1) {
-                $token2 = $tokens[1]
-                  if ($git_log_prefix_function_map[$token2]) {
-                    $cmd = $git_log_prefix_function_map[$token2]
-                      $index = 0
-                      $is_multi_line = 0
-                  }
-                elseif ($token2 -eq "diff" -or $token2 -eq "co") {
-                  $cmdParams = " | rg '^ M|^MM|^ D'"
-                }
-                elseif ($token2 -eq "cob") {
-                  $cmd = "_git_branch"
+    $tokens =$LBUFFER -split ' '
+    $params = '-' + ($LBUFFER -split '--')[-1]
+    $lbuf =$LBUFFER
+    $cmd = ""
+    $cmdParams = ""
+    $fzfOpt = $default_fzf_opt
+    $previewTool = ""
+    $baseDir = "."
+    $index = -1
+    $is_multi_line = 1
+    if ($tokens.Length -gt 0) {
+      $headCmd = $tokens[0]
+        if ($headCmd -eq "git") {
+          $cmd = "_git_status"
+          $index = 1
+            if ($tokens.Length -gt 1) {
+              $token2 = $tokens[1]
+                if ($git_log_prefix_function_map[$token2]) {
+                  $cmd = $git_log_prefix_function_map[$token2]
                     $index = 0
-                    $preview_tool = ''
-                    $lbuf = "git co "
+                    $is_multi_line = 0
                 }
+              elseif ($token2 -eq "diff" -or $token2 -eq "co") {
+                $cmdParams = " | rg '^ M|^MM|^ D'"
               }
-            $previewTool = "pwsh -NoProfile $HOME/.myposh/bin/git_preview.ps1 $index {}"
-          }else {
-            $cmd="_fzf_compgen_all"
-            if ($headCmd -eq "cd" -or $headCmd -eq "open" -or $headCmd -eq "mkdir" -or $headCmd -eq "touch" -or $LBuffer -match "cp -r") {
-              $cmdParams = "--type d"
-            }
-
-            if ($tokens[-1] -match "^-d$") {
-              $tokens =$tokens[0..($tokens.Length - 2)]
-                $cmdParams += " --type d"
-                tokens = $tokens[0..($tokens.Length - 2)]
-            } elseif ($tokens[-1] -match "^-d\d+$") {
-              $number = $tokens[-1].Replace("-d", "")
-                $cmdParams += " --max-depth $number"
-                $tokens = $tokens[0..($tokens.Length - 2)]
-            }
-
-            $hitDepthRule = $false
-            # 新规则（按“末位字符”判断深度）：
-            # 把最后一个 token 拆成两段：
-            # - head = 第 1 个字符到倒数第 2 个字符（可能为空；为空时强制为 `.`）
-            # - tail = 最后 1 个字符
-            # 若 tail 是数字且 head 是目录：命中规则 -> 在该目录下做 `fd --max-depth <tail>` 深度搜索。
-            # 例：`xx xxx A/B1` -> head=A/B, tail=1 -> 在 `A/B` 下 `fd --max-depth 1 ...`
-            # 例：`xx xxx 1`    -> head=.,  tail=1 -> 在当前目录 `fd --max-depth 1 ...`
-            if ($tokens.Length -gt 0) {
-              $lastToken = $tokens[-1]
-              if (-not [string]::IsNullOrEmpty($lastToken)) {
-                $tail = $lastToken.Substring($lastToken.Length - 1, 1)
-                $head = if ($lastToken.Length -gt 1) { $lastToken.Substring(0, $lastToken.Length - 1) } else { "" }
-                if ([string]::IsNullOrEmpty($head)) { $head = "." }
-                $head = $head.Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
-
-                if ($tail -match "^\d$") {
-                  if (Test-Path -Path $head -PathType Container) {
-                    $cmdParams += " --max-depth $tail"
-                    $baseDir = $head
-                    $dir = $baseDir
-                    $hitDepthRule = $true
-                    # 目录/深度信息已经编码在 lastToken 里，把它从命令前缀移除
-                    $tokens = if ($tokens.Length -gt 1) { $tokens[0..($tokens.Length - 2)] } else { @() }
-                  }
-                }
+              elseif ($token2 -eq "cob") {
+                $cmd = "_git_branch"
+                  $index = 0
+                  $preview_tool = ''
+                  $lbuf = "git co "
               }
             }
+          $gitPreviewScript = Join-Path $HOME ".myposh\bin\git_preview.ps1"
+          $previewTool = "pwsh -NoProfile -File $gitPreviewScript $index {}"
+        }else {
+          $cmd="_fzf_compgen_all"
+          if ($headCmd -eq "cd" -or $headCmd -eq "open" -or $headCmd -eq "mkdir" -or $headCmd -eq "touch" -or $LBuffer -match "cp -r") {
+            $cmdParams = "--type d"
+          }
 
-            if (-not $hitDepthRule) {
-              # 原逻辑：若最后一个 token 是目录，则把它当作 baseDir，并从 tokens 中移除。
-              # 注意：这里要先判断长度，避免 tokens 为空时报错。
-              if ($tokens.Length -gt 0) {
-                $dir = $tokens[-1].Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
-                if (Test-Path -Path $dir -PathType Container) {
-                  $baseDir = $dir
+          if ($tokens[-1] -match "^-d$") {
+            $tokens =$tokens[0..($tokens.Length - 2)]
+              $cmdParams += " --type d"
+              tokens = $tokens[0..($tokens.Length - 2)]
+          } elseif ($tokens[-1] -match "^-d\d+$") {
+            $number = $tokens[-1].Replace("-d", "")
+              $cmdParams += " --max-depth $number"
+              $tokens = $tokens[0..($tokens.Length - 2)]
+          }
+
+          $hitDepthRule = $false
+          # 新规则（按“末位字符”判断深度）：
+          # 把最后一个 token 拆成两段：
+          # - head = 第 1 个字符到倒数第 2 个字符（可能为空；为空时强制为 `.`）
+          # - tail = 最后 1 个字符
+          # 若 tail 是数字且 head 是目录：命中规则 -> 在该目录下做 `fd --max-depth <tail>` 深度搜索。
+          # 例：`xx xxx A/B1` -> head=A/B, tail=1 -> 在 `A/B` 下 `fd --max-depth 1 ...`
+          # 例：`xx xxx 1`    -> head=.,  tail=1 -> 在当前目录 `fd --max-depth 1 ...`
+          if ($tokens.Length -gt 0) {
+            $lastToken = $tokens[-1]
+            if (-not [string]::IsNullOrEmpty($lastToken)) {
+              $tail = $lastToken.Substring($lastToken.Length - 1, 1)
+              $head = if ($lastToken.Length -gt 1) { $lastToken.Substring(0, $lastToken.Length - 1) } else { "" }
+              if ([string]::IsNullOrEmpty($head)) { $head = "." }
+              $head = $head.Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
+
+              if ($tail -match "^\d$") {
+                if (Test-Path -Path $head -PathType Container) {
+                  $cmdParams += " --max-depth $tail"
+                  $baseDir = $head
+                  $hitDepthRule = $true
+                  # 目录/深度信息已经编码在 lastToken 里，把它从命令前缀移除
                   $tokens = if ($tokens.Length -gt 1) { $tokens[0..($tokens.Length - 2)] } else { @() }
                 }
-              } else {
-                $dir = "."
               }
             }
-            $cmdParams += " --base-directory $baseDir"
-              $lbuf = ($tokens -join ' ')
-              $previewTool = "pwsh -NoProfile $HOME/.myposh/bin/file_dir_preview.ps1 $dir {}"
           }
-      }
+
+          if (-not $hitDepthRule) {
+            # 原逻辑：若最后一个 token 是目录，则把它当作 baseDir，并从 tokens 中移除。
+            # 注意：这里要先判断长度，避免 tokens 为空时报错。
+            if ($tokens.Length -gt 0) {
+              $dir = $tokens[-1].Replace("~", [System.Environment]::GetFolderPath("UserProfile"))
+              if (Test-Path -Path $dir -PathType Container) {
+                $baseDir = $dir
+                $tokens = if ($tokens.Length -gt 1) { $tokens[0..($tokens.Length - 2)] } else { @() }
+              }
+            }
+          }
+          $cmdParams += " --base-directory $baseDir"
+          $lbuf = ($tokens -join ' ')
+          $filePreviewScript = Join-Path $HOME ".myposh\bin\file_dir_preview.ps1"
+          $previewTool = "pwsh -NoProfile -File $filePreviewScript $baseDir {}"
+        }
+    }
     if ($is_multi_line -eq 1) {
       $fzfOpt = "--multi " + $fzfOpt
     }
-    #echo "$cmd $cmdParams | fzf $fzfOpt --preview '$previewTool'" > ~/tmp.log
+    echo "$cmd $cmdParams | fzf $fzfOpt --preview '$previewTool'" > ~/tmp.log
     $selected = $(invoke-Expression "$cmd $cmdParams | fzf $fzfOpt --preview '$previewTool'")
     $LBuffer = $lbuf
     #不是空字符串

@@ -1,6 +1,21 @@
 local M = {}
 local fzf_plugin = require('fzf_plugin')
 
+local function strip_ansi_escape_codes(text)
+    if not text or text == '' then
+        return text
+    end
+    return text:gsub('%[[%d;]*m', '')
+end
+
+local function run_in_search_dir(search_dir, command)
+    local escaped_dir = vim.fn.shellescape(search_dir)
+    --if vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1 then
+    --    return string.format('Set-Location -LiteralPath %s; if ($?) { %s }', escaped_dir, command)
+    --end
+    return string.format('cd %s && %s', escaped_dir, command)
+end
+
 -- 全局搜索目录变量，默认为当前目录
 M.search_dir = vim.fn.getcwd()
 
@@ -112,6 +127,7 @@ end
 
 -- 编辑 rg 搜索结果的函数
 function M.edit_rg_file(strr)
+    strr = strip_ansi_escape_codes(strr)
     local arr = vim.split(strr, ':')
     local index = 1
     if vim.fn.filereadable(arr[1]) == 1 then
@@ -150,22 +166,16 @@ function M.RipgrepFzf(query, file_suffix, exclude_cmd)
     end
 
     -- 在搜索目录下执行命令
-    local search_dir = vim.fn.shellescape(M.search_dir)
     local initial_command
     if file_suffix and file_suffix ~= '' then
-        initial_command = string.format(
-            'cd %s && ' .. M.RG_DEFAULT_CONFIG .. ' -g "*.{%s}" %s %s',
-            search_dir,
-            file_suffix,
-            exclude_cmd or '',
-            str
+        initial_command = run_in_search_dir(
+            M.search_dir,
+            string.format(M.RG_DEFAULT_CONFIG .. ' -g "*.{%s}" %s %s', file_suffix, exclude_cmd or '', str)
         )
     else
-        initial_command = string.format(
-            'cd %s && ' .. M.RG_DEFAULT_CONFIG .. ' %s %s',
-            search_dir,
-            exclude_cmd or '',
-            str
+        initial_command = run_in_search_dir(
+            M.search_dir,
+            string.format(M.RG_DEFAULT_CONFIG .. ' %s %s', exclude_cmd or '', str)
         )
     end
     vim.notify('initial_command: ' .. initial_command, vim.log.levels.INFO)
@@ -174,11 +184,10 @@ end
 
 function M.RipgrepFzfAll(...)
     local args = {...}
-    local search_dir = vim.fn.shellescape(M.search_dir)
-    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG
+    local command_fmt = M.RG_DEFAULT_CONFIG
 
     if args[1] == 0 then
-        command_fmt = 'cd ' .. search_dir .. ' && rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 250K'
+        command_fmt = 'rg --column --line-number --no-heading --color=always --no-ignore-vcs --max-columns 250 --max-filesize 250K'
     end
 
     local is_regexp = ' -F '
@@ -204,7 +213,7 @@ function M.RipgrepFzfAll(...)
         command_fmt = command_fmt .. " --smart-case " .. is_regexp .. " ''"
     end
 
-    M.fzf_for_rg(command_fmt, M.edit_rg_file)
+    M.fzf_for_rg(run_in_search_dir(M.search_dir, command_fmt), M.edit_rg_file)
 end
 
 function M.RipgrepFzfFunction(func_name, enable_smart_case)
@@ -213,13 +222,12 @@ function M.RipgrepFzfFunction(func_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
-    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. func_name .. '\\('
     local str2 = '^ *' .. func_name .. '\\('
-    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s"'
+    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2)
 
-    M.fzf_for_rg(initial_command, M.edit_rg_file)
+    M.fzf_for_rg(run_in_search_dir(M.search_dir, initial_command), M.edit_rg_file)
 end
 
 function M.RipgrepFzfClassDefine(class_name, enable_smart_case)
@@ -228,7 +236,6 @@ function M.RipgrepFzfClassDefine(class_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
-    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = "#define *" .. class_name
     local str2 = "using *" .. class_name .. ' *='
     local str3 = "class .*" .. class_name .. ' '
@@ -238,10 +245,10 @@ function M.RipgrepFzfClassDefine(class_name, enable_smart_case)
     local gstr1 = "class .*" .. class_name .. ' *;'
     local gstr2 = "struct .*" .. class_name .. ' *;'
 
-    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s|%s|%s|%s|%s" | rg -v "%s|%s"'
+    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h}" -e "%s|%s|%s|%s|%s|%s" | rg -v "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2, str3, str4, str5, str6, gstr1, gstr2)
 
-    M.fzf_for_rg(initial_command, M.edit_rg_file)
+    M.fzf_for_rg(run_in_search_dir(M.search_dir, initial_command), M.edit_rg_file)
 end
 
 function M.RipgrepFzfValDefine(val_name, enable_smart_case)
@@ -250,15 +257,14 @@ function M.RipgrepFzfValDefine(val_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
-    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' *;'
     local str2 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' *='
     local str3 = '^ *(const |constexpr )? *[a-zA-Z0-9_]+((::[a-zA-Z0-9_]+)?(<.*>)?)*\\*?  *' .. val_name .. ' .*;'
 
-    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h,cpp,cc,c,m,mm,java}" -e "%s|%s|%s"'
+    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{h,cpp,cc,c,m,mm,java}" -e "%s|%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2, str3)
 
-    M.fzf_for_rg(initial_command, M.edit_rg_file)
+    M.fzf_for_rg(run_in_search_dir(M.search_dir, initial_command), M.edit_rg_file)
 end
 
 function M.RipgrepFzfFunctionRef(func_name, enable_smart_case)
@@ -267,14 +273,13 @@ function M.RipgrepFzfFunctionRef(func_name, enable_smart_case)
         smart_case = ' --smart-case '
     end
 
-    local search_dir = vim.fn.shellescape(M.search_dir)
     local str1 = ' *[a-zA-Z0-9_]+::' .. func_name .. '\\('
     local str2 = '^ *[a-zA-Z0-9_]+  *' .. func_name .. '.*\\{'
 
-    local command_fmt = 'cd ' .. search_dir .. ' && ' .. M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{cpp,cc,c}" -e "%s|%s"'
+    local command_fmt = M.RG_DEFAULT_CONFIG .. smart_case .. ' -g "*.{cpp,cc,c}" -e "%s|%s"'
     local initial_command = string.format(command_fmt, str1, str2)
 
-    M.fzf_for_rg(initial_command, M.edit_rg_file)
+    M.fzf_for_rg(run_in_search_dir(M.search_dir, initial_command), M.edit_rg_file)
 end
 
 function M.FindFile(file_path, is_all)
@@ -284,13 +289,13 @@ function M.FindFile(file_path, is_all)
         path = '.'
     end
 
-    local command_fmt = 'cd ' .. vim.fn.shellescape(search_dir) .. ' && fd --type f --hidden --follow --exclude .o --exclude .git '
+    local command_fmt = 'fd --type f --hidden --follow --exclude .o --exclude .git '
     if is_all and is_all > 0 then
         command_fmt = command_fmt .. '--no-ignore'
     end
     command_fmt = command_fmt .. ' . ' .. path
 
-    M.fzf_for_rg(command_fmt, M.edit_file, 'bat --color=always --theme=gruvbox-dark {}')
+    M.fzf_for_rg(run_in_search_dir(search_dir, command_fmt), M.edit_file, 'bat --color=always --theme=gruvbox-dark {}')
 end
 
 function M.FindWordInCurBuffer(str)
