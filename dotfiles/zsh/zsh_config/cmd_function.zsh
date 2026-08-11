@@ -16,6 +16,186 @@ function new_branch(){
   git push --set-upstream origin $branch_name
 }
 
+function git_has_modified_files() {
+  local quiet=0
+  local worktree_output=""
+  local index_output=""
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --quiet)
+        quiet=1
+        ;;
+      *)
+        echo "用法: git_has_modified_files [--quiet]"
+        return 2
+        ;;
+    esac
+    shift
+  done
+
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "❌ 错误：当前目录不是 Git 仓库"
+    return 2
+  fi
+
+  worktree_output=$(git diff --name-only --ignore-submodules=all -- 2>&1)
+  local worktree_res=$?
+  if [ $worktree_res -ne 0 ]; then
+    echo "❌ 检查工作区改动失败"
+    echo "$worktree_output"
+    return $worktree_res
+  fi
+
+  index_output=$(git diff --cached --name-only --ignore-submodules=all -- 2>&1)
+  local index_res=$?
+  if [ $index_res -ne 0 ]; then
+    echo "❌ 检查暂存区改动失败"
+    echo "$index_output"
+    return $index_res
+  fi
+
+  if [ -n "$worktree_output" ] || [ -n "$index_output" ]; then
+    if [ $quiet -eq 0 ]; then
+      echo "检测结果: 有已跟踪文件改动"
+      if [ -n "$worktree_output" ]; then
+        echo "工作区修改文件:"
+        echo "$worktree_output"
+      fi
+      if [ -n "$index_output" ]; then
+        echo "暂存区修改文件:"
+        echo "$index_output"
+      fi
+      echo "说明: 纯未跟踪新文件不会命中这个检测"
+    fi
+    return 0
+  fi
+
+  if [ $quiet -eq 0 ]; then
+    echo "检测结果: 没有已跟踪文件改动"
+    echo "说明: 纯未跟踪新文件不会命中这个检测"
+  fi
+  return 1
+}
+
+function git_push() {
+  local res=0
+  local need_stash_pop=0
+  local current_branch=""
+  local output=""
+  local stash_ref=""
+  local stash_before_ref=""
+  local stash_after_ref=""
+  local has_local_changes=0
+  local push_force=0
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -f|--force)
+        push_force=1
+        ;;
+      *)
+        echo "用法: git_push [-f|--force]"
+        return 1
+        ;;
+    esac
+    shift
+  done
+
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "❌ 错误：当前目录不是 Git 仓库"
+    res=1
+  fi
+
+  if [ $res -eq 0 ]; then
+    current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [ -z "$current_branch" ] || [ "$current_branch" = "HEAD" ]; then
+      echo "❌ 错误：未获取到当前分支，请先切到一个本地分支"
+      res=1
+    else
+      echo "当前分支: $current_branch"
+    fi
+  fi
+
+  if [ $res -eq 0 ]; then
+    git_has_modified_files --quiet
+    local local_changes_res=$?
+    if [ $local_changes_res -eq 0 ]; then
+      has_local_changes=1
+    elif [ $local_changes_res -gt 1 ]; then
+      res=$local_changes_res
+    fi
+  fi
+
+  if [ $res -eq 0 ] && [ $has_local_changes -eq 1 ]; then
+      stash_before_ref=$(git rev-parse --verify refs/stash 2>/dev/null)
+      output=$(git stash push -m "git_push auto stash" 2>&1)
+      local stash_res=$?
+      if [ $stash_res -ne 0 ]; then
+        echo "❌ git stash 执行失败"
+        echo "$output"
+        res=$stash_res
+      else
+        stash_after_ref=$(git rev-parse --verify refs/stash 2>/dev/null)
+        if [ -n "$stash_after_ref" ] && [ "$stash_after_ref" != "$stash_before_ref" ]; then
+          stash_ref="$stash_after_ref"
+          need_stash_pop=1
+          echo "ℹ️ 检测到本地改动，已自动执行 git stash"
+        else
+          echo "❌ 检测到本地改动，但 git stash 未生成新的 stash 条目"
+          echo "$output"
+          res=1
+        fi
+      fi
+  fi
+
+  if [ $res -eq 0 ] && [ $push_force -eq 0 ]; then
+    output=$(git pull --rebase 2>&1)
+    local pull_res=$?
+    if [ $pull_res -ne 0 ]; then
+      echo "❌ git pull --rebase 执行失败"
+      echo "$output"
+      res=$pull_res
+    fi
+  fi
+
+  if [ $res -eq 0 ]; then
+    if [ $push_force -eq 1 ]; then
+      output=$(git push -f origin "$current_branch" 2>&1)
+    else
+      output=$(git push origin "$current_branch" 2>&1)
+    fi
+    local push_res=$?
+    if [ $push_res -ne 0 ]; then
+      if [ $push_force -eq 1 ]; then
+        echo "❌ git push -f origin $current_branch 执行失败"
+      else
+        echo "❌ git push origin $current_branch 执行失败"
+      fi
+      echo "$output"
+      res=$push_res
+    fi
+  fi
+
+  echo $output
+
+  if [ $need_stash_pop -eq 1 ]; then
+    output=$(git stash pop 2>&1)
+    local stash_pop_res=$?
+    if [ $stash_pop_res -ne 0 ]; then
+      echo "❌ git stash pop 执行失败"
+      echo "$output"
+      if [ $res -eq 0 ]; then
+        res=$stash_pop_res
+      fi
+    else
+      echo "ℹ️ 已自动恢复之前的本地改动"
+    fi
+  fi
+
+  return $res
+}
+
 function _remove_branch_single() {
   local branch="$1"
   # 自动去除用户输入的 origin/ 前缀，避免误输入
@@ -93,4 +273,3 @@ function remove_branch() {
 
   return $res
 }
-

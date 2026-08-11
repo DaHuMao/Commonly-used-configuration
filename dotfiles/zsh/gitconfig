@@ -19,21 +19,23 @@
 [interactive]
 	diffFilter = delta --color-only
 [alias]
-    st = status
-    ci = commit
-    cim = commit -m
-    rehd = reset --hard
-    resf = reset --soft
-    cno = commit --amend --no-edit
-    rbi = rebase -i
-    rbc = rebase --continue
-    lg = log --oneline --decorate -12 --color
-    ll = log --pretty=format:\"%C(yellow) %h%Cred %ad%Cgreen%d%Creset %s %C(blue)[%an]%Creset\" --date=short
-    lc = log --graph --color
-    co = checkout
-    br = branch
-    mg = merge --log=9999
-    d = difftool
+  st = status
+  cia = commit --amend
+  cim = commit -m
+  cno = commit --amend --no-edit
+  cp = cherry-pick
+  co = checkout
+  rehd = reset --hard
+  resf = reset --soft
+  rbi = rebase -i
+  rbc = rebase --continue
+  lg = log --oneline --decorate -12 --color
+  ll = log --pretty=format:\"%C(yellow) %h%Cred %ad%Cgreen%d%Creset %s %C(blue)[%an]%Creset\" --date=short
+  lc = log --graph --color
+  br = branch
+  mg = merge --log=9999
+  d = difftool
+  plr == pull rebase
 [user]
 	name = zhangtongxiaobj
 	email = zhangtongxiaobj@kanyun.com

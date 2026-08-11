@@ -133,7 +133,7 @@ local function setup_commands()
 
   vim.api.nvim_create_user_command('Coco', function(opts)
     local window_name =   'coco_' .. opts.args
-    M.open_window_with_cmd('coco', 'm', window_name)
+    M.open_window_with_cmd('traecli', 'm', window_name)
   end, {
     nargs = '?',
     desc = 'Open a new Claude terminal window',
