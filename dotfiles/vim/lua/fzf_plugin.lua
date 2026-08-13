@@ -25,6 +25,25 @@ local function build_termopen_cmd(full_cmd)
     return full_cmd
 end
 
+local function build_source_cmd(source, fzf_cmd)
+    if type(source) == 'string' then
+        -- Let fzf spawn the producer command itself instead of relying on a shell
+        -- pipeline like `source | fzf`, so Enter can exit without waiting for the
+        -- upstream command segment to fully drain.
+        if is_windows() then
+            return string.format('$env:FZF_DEFAULT_COMMAND = %s; %s', vim.fn.shellescape(source), fzf_cmd)
+        end
+        return string.format('FZF_DEFAULT_COMMAND=%s %s', vim.fn.shellescape(source), fzf_cmd)
+    end
+
+    if type(source) == 'table' then
+        local input = table.concat(source, '\n')
+        return 'echo ' .. vim.fn.shellescape(input) .. ' | ' .. fzf_cmd
+    end
+
+    return fzf_cmd
+end
+
 -- 创建浮动终端窗口
 local function create_float_window(opts)
     opts = opts or {}
@@ -80,15 +99,7 @@ function M.fzf_run(source, sink, opts)
     end
 
     -- 构建完整命令
-    local full_cmd = ''
-    if type(source) == 'string' then
-        -- source 是 shell 命令，用管道连接
-        full_cmd = source .. ' | ' .. fzf_cmd
-    elseif type(source) == 'table' then
-        -- source 是列表，用 echo 输出
-        local input = table.concat(source, '\n')
-        full_cmd = 'echo ' .. vim.fn.shellescape(input) .. ' | ' .. fzf_cmd
-    end
+    local full_cmd = build_source_cmd(source, fzf_cmd)
     -- vim.notify(full_cmd, vim.log.levels.INFO)
 
     -- 创建临时文件来存储选中结果
