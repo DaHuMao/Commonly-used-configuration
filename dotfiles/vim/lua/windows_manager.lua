@@ -32,6 +32,7 @@ M.state = {
     window_counter = 0,      -- Window counter
     fzf_window = nil,        -- Track FZF window ID for toggle functionality
     fzf_action = nil,        -- Track current FZF action type ('show' or 'delete')
+    pre_window = nil,        -- Previous foreground window for Alt+- switching
 }
 
 -- Window size configuration
@@ -189,8 +190,17 @@ local function find_window_index(windows, win_id)
     return nil
 end
 
+local function switch_to_window_by_name(name)
+    M.hide_window()
+    M.show_window_by_name(name)
+end
+
 -- Remove closed window from arrays
 function M.remove_closed_window(win_id)
+    if M.state.pre_window and M.state.pre_window.win == win_id then
+        M.state.pre_window = nil
+    end
+
     -- Try to remove from foreground array
     local index = find_window_index(M.state.foreground_windows, win_id)
     if index then
@@ -350,8 +360,7 @@ function M.show_or_exit_windows(action)
         prompt_msg = 'Delete Window> '
     else  -- default to 'show'
         action_func = function(name)
-            M.hide_window()
-            M.show_window_by_name(name)
+            switch_to_window_by_name(name)
             M.state.fzf_window = nil
             M.state.fzf_action = nil
         end
@@ -434,6 +443,7 @@ function M.hide_window()
 
     -- Remove from foreground array
     local win_info = table.remove(M.state.foreground_windows, index)
+    M.state.pre_window = win_info
 
     -- Hide window (by setting hide flag)
     vim.api.nvim_win_set_config(win_info.win, {
@@ -597,6 +607,8 @@ function M.next_windows()
     return
   end
 
+  M.state.pre_window = M.state.foreground_windows[current_index]
+
   -- 3. Move current window to background (add to end of background array)
   local current_win_info = table.remove(M.state.foreground_windows, current_index)
 
@@ -652,6 +664,17 @@ function M.next_windows()
   vim.cmd('startinsert')
 end
 
+function M.previous_window()
+  local pre_window = M.state.pre_window
+  if not pre_window or not vim.api.nvim_win_is_valid(pre_window.win) then
+    M.state.pre_window = nil
+    vim.notify('No previous window available', vim.log.levels.INFO)
+    return
+  end
+
+  switch_to_window_by_name(pre_window.name)
+end
+
 -- Setup keymaps
 function M.setup_keymaps()
   -- Alt+/ : Show window
@@ -670,6 +693,11 @@ function M.setup_keymaps()
   vim.keymap.set({'n', 't'}, '<M-\\>', function()
     M.next_windows()
   end, { desc = 'Switch window: send current to background, bring first background to foreground' })
+
+  -- Alt+- : Switch back to the previous foreground window
+  vim.keymap.set({'n', 't'}, '<M-->', function()
+    M.previous_window()
+  end, { desc = 'Switch back to previous window' })
 
   -- Shift+Alt+f : Search windows with FZF
   vim.keymap.set({'n', 't'}, '<S-M-l>', function()
