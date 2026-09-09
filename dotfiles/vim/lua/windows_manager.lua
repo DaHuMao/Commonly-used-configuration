@@ -32,7 +32,7 @@ M.state = {
     window_counter = 0,      -- Window counter
     fzf_window = nil,        -- Track FZF window ID for toggle functionality
     fzf_action = nil,        -- Track current FZF action type ('show' or 'delete')
-    pre_window = nil,        -- Previous foreground window for Alt+- switching
+    pre_window = nil,        -- Last switched-from foreground window for Alt+- switching
 }
 
 -- Window size configuration
@@ -191,8 +191,65 @@ local function find_window_index(windows, win_id)
 end
 
 local function switch_to_window_by_name(name)
-    M.hide_window()
+    local target_win, _, _ = find_window_by_name(name)
+    if not target_win then
+        vim.notify('Window "' .. name .. '" not found', vim.log.levels.WARN)
+        return
+    end
+
+    local current_win = vim.api.nvim_get_current_win()
+    local current_index = find_window_index(M.state.foreground_windows, current_win)
+
+    if current_index then
+        local current_win_info = M.state.foreground_windows[current_index]
+        if current_win_info.name == name then
+            return
+        end
+
+        M.state.pre_window = current_win_info
+        M.hide_window()
+    end
+
     M.show_window_by_name(name)
+end
+
+local function focus_next_available_window(current_win)
+    -- Switch focus to last foreground window if any exist
+    if #M.state.foreground_windows > 0 then
+        local last_fg_win = M.state.foreground_windows[#M.state.foreground_windows]
+        if vim.api.nvim_win_is_valid(last_fg_win.win) then
+            vim.api.nvim_set_current_win(last_fg_win.win)
+            vim.cmd('startinsert')
+            return
+        end
+    end
+
+    -- Otherwise, switch to any other available window
+    local wins = vim.api.nvim_list_wins()
+    for _, win in ipairs(wins) do
+        if win ~= current_win and vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_set_current_win(win)
+            break
+        end
+    end
+end
+
+local function move_foreground_window_to_background(index)
+    local win_info = table.remove(M.state.foreground_windows, index)
+
+    vim.api.nvim_win_set_config(win_info.win, {
+        relative = 'editor',
+        width = win_info.config.width,
+        height = win_info.config.height,
+        row = win_info.config.row,
+        col = win_info.config.col,
+        style = 'minimal',
+        border = 'rounded',
+        hide = true,
+    })
+
+    table.insert(M.state.background_windows, win_info)
+    return win_info
 end
 
 -- Remove closed window from arrays
@@ -441,43 +498,8 @@ function M.hide_window()
         return
     end
 
-    -- Remove from foreground array
-    local win_info = table.remove(M.state.foreground_windows, index)
-    M.state.pre_window = win_info
-
-    -- Hide window (by setting hide flag)
-    vim.api.nvim_win_set_config(win_info.win, {
-        relative = 'editor',
-        width = win_info.config.width,
-        height = win_info.config.height,
-        row = win_info.config.row,
-        col = win_info.config.col,
-        style = 'minimal',
-        border = 'rounded',
-        hide = true,
-    })
-
-    -- Add to background array
-    table.insert(M.state.background_windows, win_info)
-
-    -- Switch focus to last foreground window if any exist
-    if #M.state.foreground_windows > 0 then
-        local last_fg_win = M.state.foreground_windows[#M.state.foreground_windows]
-        if vim.api.nvim_win_is_valid(last_fg_win.win) then
-            vim.api.nvim_set_current_win(last_fg_win.win)
-            vim.cmd('startinsert')
-            return
-        end
-    end
-
-    -- Otherwise, switch to any other available window
-    local wins = vim.api.nvim_list_wins()
-    for _, win in ipairs(wins) do
-        if win ~= current_win and vim.api.nvim_win_is_valid(win) then
-            vim.api.nvim_set_current_win(win)
-            break
-        end
-    end
+    move_foreground_window_to_background(index)
+    focus_next_available_window(current_win)
 end
 
 -- Resize window (keeping center position)
@@ -610,22 +632,7 @@ function M.next_windows()
   M.state.pre_window = M.state.foreground_windows[current_index]
 
   -- 3. Move current window to background (add to end of background array)
-  local current_win_info = table.remove(M.state.foreground_windows, current_index)
-
-  -- Hide the window
-  vim.api.nvim_win_set_config(current_win_info.win, {
-    relative = 'editor',
-    width = current_win_info.config.width,
-    height = current_win_info.config.height,
-    row = current_win_info.config.row,
-    col = current_win_info.config.col,
-    style = 'minimal',
-    border = 'rounded',
-    hide = true,
-  })
-
-  -- Add to end of background array
-  table.insert(M.state.background_windows, current_win_info)
+  local current_win_info = move_foreground_window_to_background(current_index)
 
   -- 4. Move first background window to foreground
   local first_bg_win = table.remove(M.state.background_windows, 1)
