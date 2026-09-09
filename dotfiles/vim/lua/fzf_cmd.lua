@@ -30,6 +30,12 @@ function M.edit_file(file_name)
     vim.cmd('silent e ' .. file_full_name)
 end
 
+local function edit_file_in_dir(search_dir, file_name)
+    local file_full_name = search_dir .. '/' .. file_name
+    vim.notify('edit file: ' .. file_full_name, vim.log.levels.INFO)
+    vim.cmd('silent e ' .. file_full_name)
+end
+
 -- 编辑 git status -s 结果的函数
 function M.parse_git_status_line(line)
     if not line or line == '' then
@@ -284,18 +290,23 @@ end
 
 function M.FindFile(file_path, is_all)
     local search_dir = M.search_dir
-    local path = file_path or '.'
-    if path == '' then
-        path = '.'
+    if file_path and file_path ~= '' then
+        search_dir = file_path
     end
 
     local command_fmt = 'fd --type f --hidden --follow --exclude .o --exclude .git '
     if is_all and is_all > 0 then
         command_fmt = command_fmt .. '--no-ignore'
     end
-    command_fmt = command_fmt .. ' . ' .. path
+    command_fmt = command_fmt .. ' . .'
 
-    M.fzf_for_rg(run_in_search_dir(search_dir, command_fmt), M.edit_file, 'bat --color=always --theme=gruvbox-dark {}')
+    M.fzf_for_rg(
+        run_in_search_dir(search_dir, command_fmt),
+        function(selected)
+            edit_file_in_dir(search_dir, selected)
+        end,
+        run_in_search_dir(search_dir, 'bat --color=always --theme=gruvbox-dark {}')
+    )
 end
 
 function M.FindWordInCurBuffer(str)
