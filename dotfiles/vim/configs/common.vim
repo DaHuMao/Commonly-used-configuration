@@ -8,6 +8,7 @@ set termguicolors
 
 set autoread
 set ffs=unix,dos,mac
+set nofixendofline
 
 set formatoptions+=m
 set formatoptions+=B
@@ -87,4 +88,3 @@ hi! link ShowMarksHLu DiffChange
 autocmd BufNewFile,BufReadPost *.mmd,*.mermaid set filetype=mermaid
 
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/snippets']
-
