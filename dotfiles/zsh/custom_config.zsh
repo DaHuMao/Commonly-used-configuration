@@ -19,6 +19,7 @@ export PATH="$HOME/.pyenv/shims/:$PATH"
 export CLANG_FORMAT_PATH=/opt/homebrew/Cellar/clang-format/18.1.5/share/clang/clang-format.py
 export VIM_USED_NODE_BIN="$HOME/.nvm/versions/node/v20.0.0/bin/node"
 
+export PATH="$PATH:$HOME/.myzsh/bin"
 
 
 # depot_tools
@@ -27,7 +28,6 @@ export DEPOT_TOOLS_UPDATE=0
 export DASHSCOPE_API_KEY=sk-939a6fdd6903496db9ca4ae65df255e0
 
 alias code="~/Desktop/software/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
-alias python="/usr/local/bin/python2"
 alias vim=nvim
 alias vi=nvim
 

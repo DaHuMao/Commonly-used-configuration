@@ -35,7 +35,9 @@
   br = branch
   mg = merge --log=9999
   d = difftool
-  plr == pull rebase
+  plr = pull --rebase
+  sth = stash
+  stp = stash pop
 [user]
 	name = zhangtongxiaobj
 	email = zhangtongxiaobj@kanyun.com

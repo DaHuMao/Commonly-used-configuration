@@ -26,8 +26,9 @@ _git_log() {
   git log --color=always --pretty=format:'%C(yellow)%h%C(red) %ad%C(green)%d%C(reset) %s %C(blue)[%an]%C(reset)' --date=short
 
 }
+
 _git_branch() {
-  git branch -a | sed 's:.*/::'
+  git for-each-ref --format='%(refname:short)' refs/heads/
 }
 
 _select_git_edit() {
@@ -101,6 +102,7 @@ git_log_prefix_function_map=(
   "rbi" _git_log
   "revert" _git_log
   "show" _git_log
+  "git_show_file" _git_log
 )
 
 typeset -g -A normal_cmd_map
