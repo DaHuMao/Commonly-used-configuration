@@ -2,10 +2,10 @@
 
 _git_function_print_commit_ids() {
   local commit_list="$1"
-  printf 'commit ids:\n' >&2
+  log_info "commit ids:"
   while IFS= read -r line; do
     [[ -n "${line// }" ]] || continue
-    printf '%s\n' "$line" >&2
+    log_info "$line"
   done <<EOF
 $commit_list
 EOF
@@ -31,17 +31,11 @@ _git_function_assert_clean_state() {
 }
 
 _git_function_usage_git_show_file() {
-  cat <<'EOF' >&2
-用法:
-  git_show_file <commit_id>
-EOF
+  log_error "用法: git_show_file <commit_id>"
 }
 
 _git_function_usage_cherry_pick() {
-  cat <<'EOF' >&2
-用法:
-  cherry_pick <source_branch> <commit_count>
-EOF
+  log_error "用法: cherry_pick <source_branch> <commit_count>"
 }
 
 git_show_file() {
@@ -100,12 +94,12 @@ cherry_pick() {
   }
 
   commit_list="$(_git_function_reverse_lines "$raw_commit_list")"
-  printf '[cherry_pick] current_branch=%s source_branch=%s count=%s\n' "$current_branch" "$source_branch" "$commit_count" >&2
+  log_info "cherry_pick: current_branch=${current_branch} source_branch=${source_branch} count=${commit_count}"
   _git_function_print_commit_ids "$commit_list"
 
   while IFS= read -r commit; do
     [[ -n "$commit" ]] || continue
-    printf '[cherry_pick] cherry-pick %s\n' "$commit" >&2
+    log_info "cherry_pick: cherry-pick ${commit}"
     if ! git cherry-pick "$commit"; then
       log_error "cherry_pick: cherry-pick ${commit} 发生冲突，已停止；当前冲突现场已保留，请处理后自行继续"
       _git_function_print_commit_ids "$commit_list"
@@ -133,7 +127,7 @@ function git_has_modified_files() {
         quiet=1
         ;;
       *)
-        echo "用法: git_has_modified_files [--quiet]"
+        log_error "用法: git_has_modified_files [--quiet]"
         return 2
         ;;
     esac
@@ -141,45 +135,45 @@ function git_has_modified_files() {
   done
 
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    echo "❌ 错误：当前目录不是 Git 仓库"
+    log_error "当前目录不是 Git 仓库"
     return 2
   fi
 
   worktree_output=$(git diff --name-only --ignore-submodules=all -- 2>&1)
   local worktree_res=$?
   if [ $worktree_res -ne 0 ]; then
-    echo "❌ 检查工作区改动失败"
-    echo "$worktree_output"
+    log_error "检查工作区改动失败"
+    [ -n "$worktree_output" ] && printf '%s\n' "$worktree_output"
     return $worktree_res
   fi
 
   index_output=$(git diff --cached --name-only --ignore-submodules=all -- 2>&1)
   local index_res=$?
   if [ $index_res -ne 0 ]; then
-    echo "❌ 检查暂存区改动失败"
-    echo "$index_output"
+    log_error "检查暂存区改动失败"
+    [ -n "$index_output" ] && printf '%s\n' "$index_output"
     return $index_res
   fi
 
   if [ -n "$worktree_output" ] || [ -n "$index_output" ]; then
     if [ $quiet -eq 0 ]; then
-      echo "检测结果: 有已跟踪文件改动"
+      log_warn "检测结果: 有已跟踪文件改动"
       if [ -n "$worktree_output" ]; then
-        echo "工作区修改文件:"
-        echo "$worktree_output"
+        log_warn "工作区修改文件:"
+        printf '%s\n' "$worktree_output"
       fi
       if [ -n "$index_output" ]; then
-        echo "暂存区修改文件:"
-        echo "$index_output"
+        log_warn "暂存区修改文件:"
+        printf '%s\n' "$index_output"
       fi
-      echo "说明: 纯未跟踪新文件不会命中这个检测"
+      log_info "说明: 纯未跟踪新文件不会命中这个检测"
     fi
     return 0
   fi
 
   if [ $quiet -eq 0 ]; then
-    echo "检测结果: 没有已跟踪文件改动"
-    echo "说明: 纯未跟踪新文件不会命中这个检测"
+    log_info "检测结果: 没有已跟踪文件改动"
+    log_info "说明: 纯未跟踪新文件不会命中这个检测"
   fi
   return 1
 }
@@ -201,7 +195,7 @@ function git_push() {
         push_force=1
         ;;
       *)
-        echo "用法: git_push [-f|--force]"
+        log_error "用法: git_push [-f|--force]"
         return 1
         ;;
     esac
@@ -209,17 +203,17 @@ function git_push() {
   done
 
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    echo "❌ 错误：当前目录不是 Git 仓库"
+    log_error "当前目录不是 Git 仓库"
     res=1
   fi
 
   if [ $res -eq 0 ]; then
     current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
     if [ -z "$current_branch" ] || [ "$current_branch" = "HEAD" ]; then
-      echo "❌ 错误：未获取到当前分支，请先切到一个本地分支"
+      log_error "未获取到当前分支，请先切到一个本地分支"
       res=1
     else
-      echo "当前分支: $current_branch"
+      log_info "当前分支: $current_branch"
     fi
   fi
 
@@ -238,18 +232,18 @@ function git_push() {
       output=$(git stash push -m "git_push auto stash" 2>&1)
       local stash_res=$?
       if [ $stash_res -ne 0 ]; then
-        echo "❌ git stash 执行失败"
-        echo "$output"
+        log_error "git stash 执行失败"
+        [ -n "$output" ] && printf '%s\n' "$output"
         res=$stash_res
       else
         stash_after_ref=$(git rev-parse --verify refs/stash 2>/dev/null)
         if [ -n "$stash_after_ref" ] && [ "$stash_after_ref" != "$stash_before_ref" ]; then
           stash_ref="$stash_after_ref"
           need_stash_pop=1
-          echo "ℹ️ 检测到本地改动，已自动执行 git stash"
+          log_warn "检测到本地改动，已自动执行 git stash"
         else
-          echo "❌ 检测到本地改动，但 git stash 未生成新的 stash 条目"
-          echo "$output"
+          log_error "检测到本地改动，但 git stash 未生成新的 stash 条目"
+          [ -n "$output" ] && printf '%s\n' "$output"
           res=1
         fi
       fi
@@ -259,8 +253,8 @@ function git_push() {
     output=$(git pull --rebase 2>&1)
     local pull_res=$?
     if [ $pull_res -ne 0 ]; then
-      echo "❌ git pull --rebase 执行失败"
-      echo "$output"
+      log_error "git pull --rebase 执行失败"
+      [ -n "$output" ] && printf '%s\n' "$output"
       res=$pull_res
     fi
   fi
@@ -274,28 +268,28 @@ function git_push() {
     local push_res=$?
     if [ $push_res -ne 0 ]; then
       if [ $push_force -eq 1 ]; then
-        echo "❌ git push -f origin $current_branch 执行失败"
+        log_error "git push -f origin $current_branch 执行失败"
       else
-        echo "❌ git push origin $current_branch 执行失败"
+        log_error "git push origin $current_branch 执行失败"
       fi
-      echo "$output"
+      [ -n "$output" ] && printf '%s\n' "$output"
       res=$push_res
     fi
   fi
 
-  echo $output
+  printf '%s\n' "$output"
 
   if [ $need_stash_pop -eq 1 ]; then
     output=$(git stash pop 2>&1)
     local stash_pop_res=$?
     if [ $stash_pop_res -ne 0 ]; then
-      echo "❌ git stash pop 执行失败"
-      echo "$output"
+      log_error "git stash pop 执行失败"
+      [ -n "$output" ] && printf '%s\n' "$output"
       if [ $res -eq 0 ]; then
         res=$stash_pop_res
       fi
     else
-      echo "ℹ️ 已自动恢复之前的本地改动"
+      log_info "已自动恢复之前的本地改动"
     fi
   fi
 
@@ -309,61 +303,64 @@ function _remove_branch_single() {
 
   # 2. 校验当前目录是否为Git仓库
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-    echo "❌ 错误：当前目录不是 Git 仓库"
+    log_error "当前目录不是 Git 仓库"
     return 1
   fi
 
   # 3. 校验当前分支是否为待删除分支，避免删当前分支报错
   local current_branch=$(git rev-parse --abbrev-ref HEAD)
   if [ "$current_branch" = "$branch" ]; then
-    echo "❌ 错误：当前正处于待删除分支 $branch 上，请先切换到其他分支再执行"
+    log_error "当前正处于待删除分支 $branch 上，请先切换到其他分支再执行"
     return 1
   fi
 
   # 4. 删除本地分支
-  echo -e "\n>>> 正在处理本地分支: $branch"
+  printf '\n'
+  log_info "正在处理本地分支: $branch"
   if git show-ref --verify --quiet "refs/heads/$branch"; then
     # 优先安全删除：仅分支已合并到主干才允许删除
     if git branch -d "$branch" 2>/dev/null; then
-      echo "✅ 本地分支 $branch 删除成功"
+      log_info "本地分支 $branch 删除成功"
     else
       # 未合并分支二次确认强制删除
-      echo "⚠️  本地分支 $branch 未完全合并到当前分支，是否强制删除? (y/N)"
+      log_warn "本地分支 $branch 未完全合并到当前分支，是否强制删除? (y/N)"
       read -r answer
       if [[ "$answer" =~ ^[Yy]$ ]]; then
         git branch -D "$branch"
-        echo "✅ 本地分支 $branch 已强制删除"
+        log_info "本地分支 $branch 已强制删除"
       else
-        echo "⏭️  已跳过本地分支删除"
+        log_warn "已跳过本地分支删除"
       fi
     fi
   else
-    echo "⏭️  本地不存在分支 $branch，跳过本地删除"
+    log_warn "本地不存在分支 $branch，跳过本地删除"
   fi
 
   # 5. 删除远程分支
-  echo -e "\n>>> 正在处理远程(origin)分支: $branch"
+  printf '\n'
+  log_info "正在处理远程(origin)分支: $branch"
   if git ls-remote --exit-code --heads origin "$branch" > /dev/null 2>&1; then
     if git push origin --delete "$branch"; then
-      echo "✅ 远程分支 origin/$branch 删除成功"
+      log_info "远程分支 origin/$branch 删除成功"
       # 自动清理本地无效的远程追踪分支引用
       git fetch --prune
-      echo "✅ 已自动清理本地无效的远程分支追踪记录"
+      log_info "已自动清理本地无效的远程分支追踪记录"
     else
-      echo "❌ 远程分支删除失败，请检查仓库权限或分支状态"
+      log_error "远程分支删除失败，请检查仓库权限或分支状态"
       return 1
     fi
   else
-    echo "⏭️  远程不存在分支 $branch，跳过远程删除"
+    log_warn "远程不存在分支 $branch，跳过远程删除"
   fi
 
-  echo -e "\n🎉 分支清理操作执行完成"
+  printf '\n'
+  log_info "分支清理操作执行完成"
 }
 
 function remove_branch() {
   if [ $# -eq 0 ]; then
-    echo "用法: remove_branch <分支名1> [分支名2] ..."
-    echo "功能: 依次删除多个 Git 分支（本地和远程 origin）"
+    log_error "用法: remove_branch <分支名1> [分支名2] ..."
+    log_info "功能: 依次删除多个 Git 分支（本地和远程 origin）"
     return 1
   fi
 
