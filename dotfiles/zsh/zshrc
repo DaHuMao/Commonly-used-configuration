@@ -15,12 +15,13 @@ SourceSh $ZSH_CONFIG_DIR/tool_function.sh
 SourceSh $ZSH_CONFIG_DIR/common.zsh
 
 SourceSh $ZSH_CONFIG_DIR/zsh_history_config.zsh
-SourceSh $ZSH_CONFIG_DIR/cmd_function.zsh
 SourceSh $ZSH_CONFIG_DIR/zsh_zinit.zsh
-SourceSh $ZSH_CONFIG_DIR/lazy_load.zsh
 SourceSh $ZSH_CONFIG_DIR/zsh_aliases.zsh
-SourceSh $ZSH_CONFIG_DIR/fzf.zsh
 SourceSh $ZSH_CONFIG_DIR/zsh_fzf_extra.zsh
+SourceSh $ZSH_CONFIG_DIR/cmd_function.zsh
+SourceSh $ZSH_CONFIG_DIR/git_function.sh
+SourceSh $ZSH_CONFIG_DIR/lazy_load.zsh
+SourceSh $ZSH_CONFIG_DIR/fzf.zsh
 SourceSh $ZSH_CONFIG_DIR/vi_mode.zsh
 #zsh_theme 一定要在 vi_mode 之后加载
 #否则有些按键绑定会失效
