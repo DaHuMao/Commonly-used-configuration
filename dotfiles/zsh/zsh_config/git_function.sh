@@ -111,9 +111,23 @@ EOF
 }
 
 function new_branch(){
-  branch_name=$1
-  git checkout -b $branch_name
-  git push --set-upstream origin $branch_name
+  local branch_name=$1
+  local base_branch=${2:-}
+
+  if [ -z "$base_branch" ]; then
+    git checkout -b "$branch_name"
+  else
+    git fetch origin "$base_branch" || {
+      log_error "new_branch: base branch 不存在或拉取失败: origin/${base_branch}"
+      return 1
+    }
+    git show-ref --verify --quiet "refs/remotes/origin/${base_branch}" || {
+      log_error "new_branch: base branch 不存在: origin/${base_branch}"
+      return 1
+    }
+    git checkout -b "$branch_name" "origin/$base_branch"
+  fi
+  git push --set-upstream origin "$branch_name"
 }
 
 function git_has_modified_files() {
