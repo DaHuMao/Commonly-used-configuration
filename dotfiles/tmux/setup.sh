@@ -10,8 +10,10 @@ fi
 ln -sf "$SCRIPT_DIR/tmux.conf" ~/.tmux.conf
 ln -sf "$SCRIPT_DIR/fzf_window.sh" $tmux_conf_dir/fzf_window.sh
 ln -sf "$SCRIPT_DIR/fzf_select_pane.sh" $tmux_conf_dir/fzf_select_pane.sh
+ln -sf "$SCRIPT_DIR/last_pane_zoom.sh" $tmux_conf_dir/last_pane_zoom.sh
 chmod 777 $tmux_conf_dir/fzf_window.sh
 chmod 777 $tmux_conf_dir/fzf_select_pane.sh
+chmod 777 $tmux_conf_dir/last_pane_zoom.sh
 
 [[ $(uname) == *Darwin* ]] && ln -sf "$SCRIPT_DIR/tmux_osx.conf" ~/.tmux_osx.conf
 
