@@ -20,15 +20,19 @@
 	diffFilter = delta --color-only
 [alias]
   st = status
+  ci = commit
   cia = commit --amend
   cim = commit -m
   cno = commit --amend --no-edit
   cp = cherry-pick
+  cpc = cherry-pick --continue
+  cpa = cherry-pick --abort
   co = checkout
   rehd = reset --hard
   resf = reset --soft
   rbi = rebase -i
   rbc = rebase --continue
+  rba = rebase --abort
   lg = log --oneline --decorate -12 --color
   ll = log --pretty=format:\"%C(yellow) %h%Cred %ad%Cgreen%d%Creset %s %C(blue)[%an]%Creset\" --date=short
   lc = log --graph --color
@@ -38,6 +42,7 @@
   plr = pull --rebase
   sth = stash
   stp = stash pop
+  stl = stash list
 [user]
 	name = zhangtongxiaobj
 	email = zhangtongxiaobj@kanyun.com

@@ -6,10 +6,10 @@
 #include "base/local_udp_socket.h"
 #include "base/log.h"
 #include "define.h"
-#include "zsh_complete/message.h"
+#include "cmd_complete/message.h"
 #include "zsh_util/function_load.h"
 
-#include "zsh_complete.mdh"
+#include "zsh_compat.h"
 static std::unique_ptr<LocalUdpSocket> socket_client;
 static struct sockaddr_un server_addr;
 static char sg_buffer[BUFFER_MAX_SIZE];
@@ -21,8 +21,7 @@ static int64_t test_seq = 0;
 static std::string socket_client_file_path = "";
 
 // zsh_complete_insert函数
-static int zsh_complete_insert(UNUSED(char *name), char **args, Options ops,
-                               UNUSED(int func)) {
+static int zsh_complete_insert(char *, char **args, Options, int) {
   int key = atoi(args[0]);
   int len = strlen(args[1]);
   char *value = zsh_util::UnMetafy(args[1], &len);
@@ -143,8 +142,7 @@ static void qurry_str(int key, const char *value, bool need_array) {
 }
 
 // zsh_complete_query函数
-static int zsh_complete_query(UNUSED(char *name), char **args, Options ops,
-                              UNUSED(int func)) {
+static int zsh_complete_query(char *, char **args, Options, int) {
   int key = atoi(args[0]);
   char *value = args[1];
   qurry_str(key, value, false);
@@ -152,16 +150,14 @@ static int zsh_complete_query(UNUSED(char *name), char **args, Options ops,
 }
 
 // zsh_complete_query_array函数
-static int zsh_complete_query_array(UNUSED(char *name), char **args,
-                                    Options ops, UNUSED(int func)) {
+static int zsh_complete_query_array(char *, char **args, Options, int) {
   int key = atoi(args[0]);
   char *value = args[1];
   qurry_str(key, value, true);
   return 0;
 }
 
-static int zsh_complete_termina_exit(UNUSED(char *name), UNUSED(char **args),
-                                     UNUSED(Options ops), UNUSED(int func)) {
+static int zsh_complete_termina_exit(char *, char **args, Options, int) {
   int key = atoi(args[0]);
 
   // Prepare ClientMessage using sg_buffer
@@ -179,8 +175,7 @@ static int zsh_complete_termina_exit(UNUSED(char *name), UNUSED(char **args),
   return 0;
 }
 
-static int zsh_complete_server_exit(UNUSED(char *name), UNUSED(char **args),
-                                    UNUSED(Options ops), UNUSED(int func)) {
+static int zsh_complete_server_exit(char *, char **, Options, int) {
   // Prepare ClientMessage using sg_buffer
   size_t msg_size = sizeof(ClientMessage);
   ClientMessage *client_msg = reinterpret_cast<ClientMessage *>(sg_buffer);
@@ -209,7 +204,7 @@ static struct builtin bintab[] = {
             0, "", NULL),
 };
 
-int setup_(Module m) {
+extern "C" int setup_(Module) {
   int res = 0;
   LogStream::SetLogLevel(LogLevel::kInfo);
 
@@ -249,11 +244,17 @@ int setup_(Module m) {
   return res;
 }
 
-int boot_(Module m) {
+extern "C" int boot_(Module) {
   return addbuiltins("zsh_complete", bintab, sizeof(bintab) / sizeof(*bintab));
 }
 
-int cleanup_(Module m) {
+extern "C" int cleanup_(Module) {
+  // Remove handlers before zsh unloads the library containing their code.
+  for (auto &entry : bintab) {
+    if (entry.node.flags & BINF_ADDED) {
+      deletebuiltin(entry.node.nam);
+    }
+  }
   if (socket_client) {
     socket_client->Close();
     socket_client.reset();
@@ -261,4 +262,4 @@ int cleanup_(Module m) {
   return 0;
 }
 
-int finish_(Module m) { return 0; }
+extern "C" int finish_(Module) { return 0; }

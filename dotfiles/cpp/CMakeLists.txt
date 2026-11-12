@@ -104,7 +104,7 @@ if (UNIT_TEST)
   )
   add_executable(test_history_data
     src/test/test_history_data.cc
-    src/zsh_complete/zsh_complete_server/history_data.cc
+    src/cmd_complete/cmd_complete_server/history_data.cc
     src/test/test_util.cc
     ${base}
   )
@@ -112,7 +112,7 @@ if (UNIT_TEST)
   add_executable(test_socket_client ${test_socket_client_src} ${base})
 endif()
 
-add_subdirectory(src/zsh_complete)
+add_subdirectory(src/cmd_complete)
 
 
 

@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../zsh_module_common
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -35,10 +34,10 @@ if (ZSH_MODULE)
 endif()
 
 if (ZSH_SERVER)
-  add_executable(zsh_complete_server
+  add_executable(cmd_complete_server
     ./define.cc
-    ./zsh_complete_server/zsh_complete_server.cc
-    ./zsh_complete_server/history_data.cc
+    ./cmd_complete_server/cmd_complete_server.cc
+    ./cmd_complete_server/history_data.cc
     ../base/local_udp_socket.cc
     ../base/check.cc
     ../base/log.cc

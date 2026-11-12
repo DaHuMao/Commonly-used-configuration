@@ -13,9 +13,9 @@ fi
 
 # Version checking function
 function check_and_cleanup_version() {
-  local source_version_file="$ZSH_REAL_DIR/../cpp/src/zsh_complete/version.h"
+  local source_version_file="$ZSH_REAL_DIR/../cpp/src/cmd_complete/version.h"
   local deploy_version_file="$ZSH_COMPETE_DIR/version.h"
-  local server_binary="$ZSH_COMPETE_DIR/zsh_complete_server"
+  local server_binary="$ZSH_COMPETE_DIR/cmd_complete_server"
   local module_library="$ZSH_COMPETE_DIR/libcustom_zsh_complete.so"
 
   if [[ ! -f "$source_version_file" ]]; then
@@ -67,9 +67,9 @@ function check_and_cleanup_version() {
     log_info "Server version mismatch detected, cleaning up server files..."
 
     # Kill running server process
-    if pgrep -x "zsh_complete_server" > /dev/null; then
-      log_info "Killing running zsh_complete_server process..."
-      pkill -9 -x "zsh_complete_server"
+    if pgrep -x "cmd_complete_server" > /dev/null; then
+      log_info "Killing running cmd_complete_server process..."
+      pkill -9 -x "cmd_complete_server"
     fi
 
     # Remove old server binary
@@ -121,7 +121,7 @@ function build_zsh_complete() {
     log_info "Building zsh_complete for MacOS"
     ZSH_SOCKET_DIR=$ZSH_SOCKET_DIR ZSH_CACHE_DIR=$ZSH_CACHE_DIR CUSTOM_ZSH_HISTORY_FILE=$CUSTOM_ZSH_HISTORY_FILE bash build_mac.sh --zsh_module
     log_and_return_on_error "build_mac.sh failed" || return 1
-    cp build/src/zsh_complete/libcustom_zsh_complete.so $ZSH_COMPETE_DIR
+    cp build/src/cmd_complete/libcustom_zsh_complete.so $ZSH_COMPETE_DIR
     mklink $ZSH_COMPETE_DIR/libcustom_zsh_complete.so $ZSH_COMPETE_DIR/libcustom_zsh_complete.bundle
   elif is_windows; then
     log_info "Building zsh_complete for Windows"
@@ -139,7 +139,7 @@ function build_zsh_server() {
     log_info "Building zsh_server for MacOS"
     ZSH_SOCKET_DIR=$ZSH_SOCKET_DIR ZSH_CACHE_DIR=$ZSH_CACHE_DIR CUSTOM_ZSH_HISTORY_FILE=$CUSTOM_ZSH_HISTORY_FILE bash build_mac.sh --zsh_server
     log_and_return_on_error "build_mac.sh failed" || return 1
-    cp build/src/zsh_complete/zsh_complete_server $ZSH_COMPETE_DIR
+    cp build/src/cmd_complete/cmd_complete_server $ZSH_COMPETE_DIR
   elif is_windows; then
     log_info "Building zsh_server for Windows"
     bash build_win.sh --zsh_server
@@ -151,17 +151,17 @@ function build_zsh_server() {
   cd -
 }
 
-if ! pgrep -x "zsh_complete_server" > /dev/null
+if ! pgrep -x "cmd_complete_server" > /dev/null
 then
-  if [[ ! -f $ZSH_COMPETE_DIR/zsh_complete_server ]];then
+  if [[ ! -f $ZSH_COMPETE_DIR/cmd_complete_server ]];then
     build_zsh_server
     log_info "ZSH_CACHE_DIR: $ZSH_CACHE_DIR"
   fi
-  log_info "test zsh_complete_server..."
-  $ZSH_COMPETE_DIR/zsh_complete_server --test
+  log_info "test cmd_complete_server..."
+  $ZSH_COMPETE_DIR/cmd_complete_server --test
   log_and_return_on_error "failed to run zsh_server" || return 1
   log_info "zsh_server 进程不存在，启动它..."
-  nohup $ZSH_COMPETE_DIR/zsh_complete_server > /dev/null 2>&1 &
+  nohup $ZSH_COMPETE_DIR/cmd_complete_server > /dev/null 2>&1 &
   log_info "zsh_server 已在后台启动 ..."
 else
   log_info "zsh_server 进程已经在运行 ..."
@@ -174,6 +174,6 @@ fi
 
 # Copy version.h to deployed directory
 log_info "Copying version.h to $ZSH_COMPETE_DIR..."
-cp "$ZSH_REAL_DIR/../cpp/src/zsh_complete/version.h" "$ZSH_COMPETE_DIR/version.h"
+cp "$ZSH_REAL_DIR/../cpp/src/cmd_complete/version.h" "$ZSH_COMPETE_DIR/version.h"
 log_and_return_on_error "Failed to copy version.h"
 

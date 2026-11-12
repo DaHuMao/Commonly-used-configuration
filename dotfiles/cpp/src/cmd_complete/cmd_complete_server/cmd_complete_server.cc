@@ -12,9 +12,9 @@
 #include "base/log.h"
 #include "base/local_udp_socket.h"
 #include "base/util.h"
-#include "zsh_complete_server/history_data.h"
-#include "zsh_complete/version.h"
-#include "zsh_complete/message.h"
+#include "cmd_complete_server/history_data.h"
+#include "cmd_complete/version.h"
+#include "cmd_complete/message.h"
 
 constexpr const char* kTag = "zsh_server";
 

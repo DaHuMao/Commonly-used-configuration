@@ -310,6 +310,113 @@ function git_push() {
   return $res
 }
 
+function _git_function_days_ago_unix() {
+  local days="$1"
+
+  if date -v-"${days}"d +%s >/dev/null 2>&1; then
+    date -v-"${days}"d +%s
+  else
+    date -d "${days} days ago" +%s
+  fi
+}
+
+function show_expired_branch() {
+  local expired_days="$1"
+  local user_email=""
+  local user_name=""
+  local cutoff_time=""
+
+  if [ $# -ne 1 ] || [ -z "$expired_days" ] || ! [ "$expired_days" -gt 0 ] 2>/dev/null; then
+    printf '[ERROR] 用法: show_expired_branch <过期天数>\n' >&2
+    return 1
+  fi
+
+  if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    printf '[ERROR] 当前目录不是 Git 仓库\n' >&2
+    return 1
+  fi
+
+  user_email="$(git config --get user.email)"
+  user_name="$(git config --get user.name)"
+  if [ -z "$user_email" ] && [ -z "$user_name" ]; then
+    printf '[ERROR] 当前仓库未配置 git user.email 或 user.name，无法识别当前作者\n' >&2
+    return 1
+  fi
+
+  cutoff_time="$(_git_function_days_ago_unix "$expired_days")" || {
+    printf '[ERROR] 计算过期时间失败: %s 天\n' "$expired_days" >&2
+    return 1
+  }
+
+  git fetch --prune origin >/dev/null 2>&1 || {
+    printf '[ERROR] 拉取远程分支失败: origin\n' >&2
+    return 1
+  }
+
+  git for-each-ref --format='%(refname:strip=3)%09%(committerdate:unix)%09%(authoremail:trim)%09%(authorname)' refs/remotes/origin |
+  while IFS="$(printf '\t')" read -r branch commit_time author_email author_name; do
+    [ -n "$branch" ] || continue
+    [ "$branch" != "HEAD" ] || continue
+    [ -n "$commit_time" ] || continue
+
+    if [ -n "$user_email" ]; then
+      [ "$author_email" = "$user_email" ] || continue
+    else
+      [ "$author_name" = "$user_name" ] || continue
+    fi
+
+    if [ "$commit_time" -lt "$cutoff_time" ]; then
+      printf '%s\n' "$branch"
+    fi
+  done
+}
+
+function remove_expired_branch() {
+  local expired_days="$1"
+  local filter_func="${2:-}"
+  local expired_branches=""
+  local branch=""
+  local answer=""
+  local res=0
+
+  if [ $# -lt 1 ] || [ $# -gt 2 ] || [ -z "$expired_days" ] || ! [ "$expired_days" -gt 0 ] 2>/dev/null; then
+    log_error "用法: remove_expired_branch <过期天数> [过滤函数]"
+    return 1
+  fi
+
+  if [ -n "$filter_func" ] && ! command -v "$filter_func" >/dev/null 2>&1; then
+    log_error "过滤函数不存在: $filter_func"
+    return 1
+  fi
+
+  expired_branches="$(show_expired_branch "$expired_days")" || return 1
+  if [ -z "$expired_branches" ]; then
+    log_info "没有找到当前作者创建且超过 ${expired_days} 天的远程分支"
+    return 0
+  fi
+
+  while IFS= read -r branch <&3; do
+    [ -n "$branch" ] || continue
+
+    if [ -n "$filter_func" ] && "$filter_func" "$branch"; then
+      log_info "跳过受保护或过滤分支: $branch"
+      continue
+    fi
+
+    printf '是否删除过期分支 %s ? (y/N) ' "$branch"
+    read -r answer
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+      remove_branch "$branch" || res=1
+    else
+      log_warn "已跳过分支: $branch"
+    fi
+  done 3<<EOF
+$expired_branches
+EOF
+
+  return $res
+}
+
 function _remove_branch_single() {
   local branch="$1"
   # 自动去除用户输入的 origin/ 前缀，避免误输入
@@ -324,8 +431,11 @@ function _remove_branch_single() {
   # 3. 校验当前分支是否为待删除分支，避免删当前分支报错
   local current_branch=$(git rev-parse --abbrev-ref HEAD)
   if [ "$current_branch" = "$branch" ]; then
-    log_error "当前正处于待删除分支 $branch 上，请先切换到其他分支再执行"
-    return 1
+    log_info "当前正处于待删除分支 $branch 上，先切换到 main 分支"
+    git checkout main || {
+      log_error "切换到 main 分支失败，已停止删除分支 $branch"
+      return 1
+    }
   fi
 
   # 4. 删除本地分支
