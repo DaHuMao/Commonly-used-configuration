@@ -368,8 +368,8 @@ wfxr::clear_lbuf() {
 }
 
 zle -N wfxr::clear_lbuf
-bindkey '^J' wfxr::clear_lbuf
-bindkey -M viins '^J' wfxr::clear_lbuf
+bindkey '^h' wfxr::clear_lbuf
+bindkey -M viins '^h' wfxr::clear_lbuf
 
 # 光标移动相关快捷键-----------------
 
