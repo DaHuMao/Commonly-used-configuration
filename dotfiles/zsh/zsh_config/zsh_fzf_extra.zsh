@@ -102,6 +102,7 @@ git_log_prefix_function_map=(
   "rbi" _git_log
   "revert" _git_log
   "show" _git_log
+  "shown" _git_log
   "git_show_file" _git_log
 )
 

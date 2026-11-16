@@ -43,6 +43,7 @@
   sth = stash
   stp = stash pop
   stl = stash list
+  shown = show --name-only
 [user]
 	name = zhangtongxiaobj
 	email = zhangtongxiaobj@kanyun.com
